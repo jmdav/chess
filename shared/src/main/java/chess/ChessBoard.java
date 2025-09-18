@@ -6,37 +6,38 @@ package chess;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
+
 public class ChessBoard {
 
-    public ChessBoard() {
-        var boardArray = new array ChessPiece[8][8];
+  private ChessPiece[][] boardArray;
 
-    /**
-     * Adds a chess piece to the chessboard
-     *
-     * @param position where to add the piece to
-     * @param piece    the piece to add
-     */
-    public void addPiece(ChessPosition position, ChessPiece piece) {
+  public ChessBoard() { boardArray = new ChessPiece[8][8]; }
 
-    }
+  /**
+   * Adds a chess piece to the chessboard
+   *
+   * @param position where to add the piece to
+   * @param piece    the piece to add
+   */
 
-    /**
-     * Gets a chess piece on the chessboard
-     *
-     * @param position The position to get the piece from
-     * @return Either the piece at the position, or null if no piece is at that
-     * position
-     */
-    public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
-    }
+  public void addPiece(ChessPosition position, ChessPiece piece) {}
 
-    /**
-     * Sets the board to the default starting board
-     * (How the game of chess normally starts)
-     */
-    public void resetBoard() {
-        throw new RuntimeException("Not implemented");
-    }
+  /**
+   * Gets a chess piece on the chessboard
+   *
+   * @param position The position to get the piece from
+   * @return Either the piece at the position, or null if no piece is at that
+   * position
+   */
+
+  public ChessPiece getPiece(ChessPosition position) {
+    return boardArray[position.getColumn()][position.getRow()];
+  }
+
+  /**
+   * Sets the board to the default starting board
+   * (How the game of chess normally starts)
+   */
+
+  public void resetBoard() {}
 }
