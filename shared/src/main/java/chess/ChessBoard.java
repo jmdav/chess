@@ -9,8 +9,7 @@ package chess;
 public class ChessBoard {
 
     public ChessBoard() {
-        
-    }
+        var boardArray = new array ChessPiece[8][8];
 
     /**
      * Adds a chess piece to the chessboard
@@ -19,7 +18,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+
     }
 
     /**
