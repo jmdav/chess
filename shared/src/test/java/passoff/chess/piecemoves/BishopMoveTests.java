@@ -8,12 +8,16 @@ public class BishopMoveTests {
 
   @Test
   public void bishopMoveUntilEdge() {
-    TestUtilities.validateMoves("" "
-                                    | | | | | | | | | | | | | | | | | | | | | |
-                                    | | | | | | | | | B | | | | | | | | | | | |
-                                    | | | | | | | | | | | | | | | | | | | | | |
-                                    | | | | | | |
-                                    "" ",
+      TestUtilities.validateMoves("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | |B| | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        """,
                                     new ChessPosition(5, 4),
                                 new int[][] {
                                     {6, 5},
@@ -34,12 +38,12 @@ public class BishopMoveTests {
 
   @Test
   public void bishopCaptureEnemy() {
-    TestUtilities.validateMoves("" "
+    TestUtilities.validateMoves("""
                                     | | | | | | | | | | | | | Q | | | | | | | |
                                     | | | | | | | | b | | | | | | | | r | | | |
                                     | | | | | | | | | | | | | | | | | | P | | |
                                     | | | | | | | | | |
-                                    "" ",
+                                    """,
                                     new ChessPosition(5, 2),
                                 new int[][] {
                                     {6, 3},
@@ -54,12 +58,12 @@ public class BishopMoveTests {
 
   @Test
   public void bishopBlocked() {
-    TestUtilities.validateMoves("" "
+    TestUtilities.validateMoves("""
                                     | | | | | | | | | | | | | | | | | | | | | |
                                     | | | | | | | | | | | | | | | | | | | | | |
                                     | | | | | | | | | | | | | | | R | | P | | |
                                     | | | | | B | | |
-                                    "" ",
+                                    """,
                                     new ChessPosition(1, 6),
                                 new int[][] {});
   }

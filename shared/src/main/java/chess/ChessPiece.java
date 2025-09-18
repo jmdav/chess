@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Represents a single chess piece
@@ -45,7 +46,13 @@ public class ChessPiece {
 
   public Collection<ChessMove> pieceMoves(ChessBoard board,
                                           ChessPosition myPosition) {
+      int x = myPosition.getColumn();
+      int y = myPosition.getRow();
 
+    switch(type){
+        case PAWN:
+
+    }
     return new HashSet<ChessMove>();
   }
 }
