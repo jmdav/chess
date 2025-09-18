@@ -16,6 +16,8 @@ public class ChessPiece {
   private PieceType type;
 
   public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+      this.pieceColor = pieceColor;
+      this.type = type;
   }
 
   /**
@@ -49,10 +51,14 @@ public class ChessPiece {
       int x = myPosition.getColumn();
       int y = myPosition.getRow();
 
-    switch(type){
-        case PAWN:
-
-    }
     return new HashSet<ChessMove>();
   }
+
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+                "pieceColor=" + pieceColor +
+                ", type=" + type +
+                '}';
+    }
 }

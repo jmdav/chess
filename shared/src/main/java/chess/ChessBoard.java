@@ -1,5 +1,12 @@
 package chess;
 
+import java.util.Arrays;
+
+import static chess.ChessPiece.PieceType;
+import static chess.ChessGame.TeamColor;
+
+
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -40,6 +47,45 @@ public class ChessBoard {
    * Sets the board to the default starting board
    * (How the game of chess normally starts)
    */
+  private void placeComplexRow(int index, ChessGame.TeamColor color){
+      boardArray[0][index] = new ChessPiece(color, PieceType.ROOK);
+      boardArray[1][index] = new ChessPiece(color, PieceType.KNIGHT);
+      boardArray[2][index] = new ChessPiece(color, PieceType.BISHOP);
+      if(color == TeamColor.WHITE){
+          boardArray[3][index] = new ChessPiece(color, PieceType.QUEEN);
+          boardArray[4][index] = new ChessPiece(color, PieceType.KING);
+      }
+      else{
+          boardArray[3][index] = new ChessPiece(color, PieceType.KING);
+          boardArray[4][index] = new ChessPiece(color, PieceType.QUEEN);
+      }
+      boardArray[5][index] = new ChessPiece(color, PieceType.BISHOP);
+      boardArray[6][index] = new ChessPiece(color, PieceType.KNIGHT);
+      boardArray[7][index] = new ChessPiece(color, PieceType.ROOK);
+  }
 
-  public void resetBoard() {}
+    private void placePawns(int index, ChessGame.TeamColor color){
+        for(int i = 0; i < 8; i++){
+            boardArray[i][index] = new ChessPiece(color, PieceType.PAWN);
+        }
+
+    }
+
+  public void resetBoard() {
+      //Place bottom row
+      placeComplexRow(0,TeamColor.WHITE);
+      placePawns(1,TeamColor.WHITE);
+      placePawns(6,TeamColor.BLACK);
+      placeComplexRow(7,TeamColor.BLACK);
+  }
+
+    @Override
+    public String toString() {
+      String out = "";
+        for (ChessPiece[] row : boardArray){
+            out += Arrays.toString(row);
+        }
+        return out;
+    }
+
 }
