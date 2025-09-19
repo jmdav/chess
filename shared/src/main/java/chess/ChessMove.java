@@ -22,13 +22,6 @@ public class ChessMove {
         this.promotionPiece = promotionPiece;
     }
 
-    public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
-
-        this.startPosition = startPosition;
-        this.endPosition = endPosition;
-        this.promotionPiece = null;
-    }
-
     /**
      * @return ChessPosition of starting location
      */
@@ -68,5 +61,10 @@ public class ChessMove {
     @Override
     public int hashCode() {
         return Objects.hash(startPosition, endPosition, promotionPiece);
+    }
+
+    @Override
+    public String toString() {
+        return endPosition.toString();
     }
 }

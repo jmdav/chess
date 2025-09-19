@@ -16,7 +16,6 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
-    private final boolean firstMove = false;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.pieceColor = pieceColor;
@@ -66,25 +65,43 @@ public class ChessPiece {
             this.start = start;
         }
 
-        public SpaceStatus CheckAddSpace(int x, int y, SpaceStatus addCondition) {
+        public SpaceStatus CheckAddSpace(int x, int y, SpaceStatus addCondition){
+            return CheckAddSpace(x, y, addCondition, false);
+        }
 
-            ChessPosition myPosition = new ChessPosition(x + 1, y + 1);
+        public SpaceStatus CheckAddSpace(int x, int y, SpaceStatus addCondition, boolean promotion) {
+            PieceType[] promotionOptions = {PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK};
+            ChessPosition targetPosition = new ChessPosition(y + 1, x + 1);
 
-            if (myPosition.getRow() > 8 || myPosition.getColumn() > 8 || myPosition.getColumn() < 1 || myPosition.getRow() < 0) {
+            if (targetPosition.getRow() > 8 || targetPosition.getColumn() > 8 || targetPosition.getColumn() < 1 || targetPosition.getRow() < 1) {
                 return SpaceStatus.OOB;
             }
 
-            ChessPiece target = board.getPiece(myPosition);
+            ChessPiece target = board.getPiece(targetPosition);
+
             if (target == null) {
                 if (addCondition == SpaceStatus.EMPTY || addCondition == SpaceStatus.KILLOREMPTY) {
-                    output.add(new ChessMove(start, myPosition));
+                    if(!promotion) {
+                        output.add(new ChessMove(start, targetPosition, null));
+                    }
+                    else{
+                        for(PieceType option : promotionOptions){
+                            output.add(new ChessMove(start, targetPosition, option));
+                        }
+                    }
                 }
                 return SpaceStatus.EMPTY;
             }
             if (target.getTeamColor() != pieceColor) {
                 if (addCondition == SpaceStatus.KILL || addCondition == SpaceStatus.KILLOREMPTY) {
-                    output.add(new ChessMove(start, myPosition));
-                }
+                    if(!promotion) {
+                        output.add(new ChessMove(start, targetPosition, null));
+                    }
+                    else{
+                        for(PieceType option : promotionOptions){
+                            output.add(new ChessMove(start, targetPosition, option));
+                        }
+                    }                }
                 return SpaceStatus.KILL;
             } else {
                 return SpaceStatus.BLOCK;
@@ -96,8 +113,10 @@ public class ChessPiece {
 
     public Collection<ChessMove> pieceMoves(ChessBoard board,
                                             ChessPosition myPosition) {
-        int x = myPosition.getColumn();
-        int y = myPosition.getRow();
+        System.out.println(myPosition);
+        int x = myPosition.getColumn() - 1;
+        int y = myPosition.getRow() - 1;
+        System.out.println(x + " " + y);
 
         HashSet<ChessMove> validMoves = new HashSet<ChessMove>();
         SpaceStatus status;
@@ -105,13 +124,32 @@ public class ChessPiece {
 
         switch (type) {
             case PAWN:
-                if (firstMove) {
-                    //Check if it's the two move starting special
-                    checker.CheckAddSpace(x, y + 2, SpaceStatus.EMPTY);
+                boolean promotion = false;
+                if(pieceColor == ChessGame.TeamColor.WHITE) {
+                    if(y == 6) {
+                        promotion = true;
+                    }
+                    status = checker.CheckAddSpace(x, y + 1, SpaceStatus.EMPTY, promotion);
+                    if (y == 1 && status == SpaceStatus.EMPTY) {
+                        //Check if it's the two move starting special
+                        checker.CheckAddSpace(x, y + 2, SpaceStatus.EMPTY);
+                    }
+                    checker.CheckAddSpace(x + 1, y + 1, SpaceStatus.KILL, promotion);
+                    checker.CheckAddSpace(x - 1, y + 1, SpaceStatus.KILL, promotion);
                 }
-                checker.CheckAddSpace(x, y + 1, SpaceStatus.EMPTY);
-                checker.CheckAddSpace(x + 1, y + 1, SpaceStatus.KILL);
-                checker.CheckAddSpace(x - 1, y + 1, SpaceStatus.KILL);
+                else{
+                    if(y == 1) {
+                        promotion = true;
+                    }
+                    status = checker.CheckAddSpace(x, y - 1, SpaceStatus.EMPTY, promotion);
+                    if (y == 6 && status == SpaceStatus.EMPTY) {
+                        //Check if it's the two move starting special
+                        checker.CheckAddSpace(x, y - 2, SpaceStatus.EMPTY);
+                    }
+                    checker.CheckAddSpace(x + 1, y - 1, SpaceStatus.KILL, promotion);
+                    checker.CheckAddSpace(x - 1, y - 1, SpaceStatus.KILL, promotion);
+                }
+
                 break;
 
             case ROOK:
