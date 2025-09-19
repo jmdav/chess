@@ -2,6 +2,8 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -15,7 +17,7 @@ public class ChessPiece {
   private ChessGame.TeamColor pieceColor;
   private PieceType type;
 
-  public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+  public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
       this.pieceColor = pieceColor;
       this.type = type;
   }
@@ -56,9 +58,44 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        return "ChessPiece{" +
-                "pieceColor=" + pieceColor +
-                ", type=" + type +
-                '}';
+        String out = "";
+        switch(type){
+            case KING -> {
+                out = "k";
+            }
+            case QUEEN -> {
+                out = "q";
+            }
+            case KNIGHT -> {
+                out = "n";
+            }
+            case ROOK -> {
+                out = "r";
+            }
+            case BISHOP -> {
+                out = "b";
+            }
+            case PAWN -> {
+                out = "p";
+            }
+        }
+        if(pieceColor == ChessGame.TeamColor.WHITE){
+            out = out.toUpperCase(Locale.ROOT);
+        }
+        return out;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
     }
 }

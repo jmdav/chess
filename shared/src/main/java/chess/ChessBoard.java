@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import static chess.ChessPiece.PieceType;
 import static chess.ChessGame.TeamColor;
@@ -51,14 +52,8 @@ public class ChessBoard {
       boardArray[0][index] = new ChessPiece(color, PieceType.ROOK);
       boardArray[1][index] = new ChessPiece(color, PieceType.KNIGHT);
       boardArray[2][index] = new ChessPiece(color, PieceType.BISHOP);
-      if(color == TeamColor.WHITE){
-          boardArray[3][index] = new ChessPiece(color, PieceType.QUEEN);
-          boardArray[4][index] = new ChessPiece(color, PieceType.KING);
-      }
-      else{
-          boardArray[3][index] = new ChessPiece(color, PieceType.KING);
-          boardArray[4][index] = new ChessPiece(color, PieceType.QUEEN);
-      }
+      boardArray[3][index] = new ChessPiece(color, PieceType.QUEEN);
+      boardArray[4][index] = new ChessPiece(color, PieceType.KING);
       boardArray[5][index] = new ChessPiece(color, PieceType.BISHOP);
       boardArray[6][index] = new ChessPiece(color, PieceType.KNIGHT);
       boardArray[7][index] = new ChessPiece(color, PieceType.ROOK);
@@ -83,9 +78,22 @@ public class ChessBoard {
     public String toString() {
       String out = "";
         for (ChessPiece[] row : boardArray){
-            out += Arrays.toString(row);
+            out += Arrays.toString(row) + "\n";
         }
         return out;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(boardArray, that.boardArray);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(boardArray);
+    }
 }
