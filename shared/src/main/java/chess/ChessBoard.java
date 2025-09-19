@@ -17,7 +17,7 @@ import static chess.ChessGame.TeamColor;
 
 public class ChessBoard {
 
-  private ChessPiece[][] boardArray;
+  private final ChessPiece[][] boardArray;
 
   public ChessBoard() { boardArray = new ChessPiece[8][8]; }
 
