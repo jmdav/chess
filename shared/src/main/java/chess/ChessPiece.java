@@ -153,25 +153,25 @@ public class ChessPiece {
                 break;
 
             case ROOK:
-                for (int i = 1; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x + i, y, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
                     }
                 }
-                for (int i = 0; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x - i, y, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
                     }
                 }
-                for (int i = 0; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x, y + i, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
                     }
                 }
-                for (int i = 0; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x, y - i, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
@@ -197,19 +197,19 @@ public class ChessPiece {
                         break;
                     }
                 }
-                for (int i = 0; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x + i, y - i, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
                     }
                 }
-                for (int i = 0; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x - i, y + i, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
                     }
                 }
-                for (int i = 0; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x - i, y - i, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
@@ -218,49 +218,49 @@ public class ChessPiece {
                 break;
 
             case QUEEN:
-                for (int i = 1; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x + i, y, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
                     }
                 }
-                for (int i = 0; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x - i, y, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
                     }
                 }
-                for (int i = 0; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x, y + i, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
                     }
                 }
-                for (int i = 0; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x, y - i, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
                     }
                 }
-                for (int i = 1; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x + i, y + i, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
                     }
                 }
-                for (int i = 0; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x + i, y - i, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
                     }
                 }
-                for (int i = 0; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x - i, y + i, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
                     }
                 }
-                for (int i = 0; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x - i, y - i, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
