@@ -270,7 +270,11 @@ public class ChessPiece {
 
             case KING:
                 checker.CheckAddSpace(x + 1, y, SpaceStatus.KILLOREMPTY);
+                checker.CheckAddSpace(x + 1, y + 1, SpaceStatus.KILLOREMPTY);
+                checker.CheckAddSpace(x + 1, y - 1, SpaceStatus.KILLOREMPTY);
                 checker.CheckAddSpace(x - 1, y, SpaceStatus.KILLOREMPTY);
+                checker.CheckAddSpace(x - 1, y + 1, SpaceStatus.KILLOREMPTY);
+                checker.CheckAddSpace(x - 1, y - 1, SpaceStatus.KILLOREMPTY);
                 checker.CheckAddSpace(x, y + 1, SpaceStatus.KILLOREMPTY);
                 checker.CheckAddSpace(x, y - 1, SpaceStatus.KILLOREMPTY);
                 break;
