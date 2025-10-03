@@ -63,6 +63,7 @@ public class ChessGame {
           return null;
       }
       Collection<ChessMove> possibleMoves = targetPiece.pieceMoves(board,startPosition);
+      System.out.println(possibleMoves);
       for(ChessMove move : possibleMoves) {
           ChessBoard hypothetical = new ChessBoard(board);
           if(!doesMovePlaceInCheck(move,hypothetical)) {
@@ -93,10 +94,17 @@ public class ChessGame {
       }
       Collection<ChessMove> validOptions = validMoves(move.getStartPosition());
       for(ChessMove option : validOptions){
+          System.out.println(option + " " + move);
           if(option.equals(move)){
               System.out.println("move made.");
               piece = board.popPiece(move.getStartPosition());
+
+              if(move.getPromotionPiece() != null) {
+                  piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+              }
+
               board.addPiece(move.getEndPosition(), piece);
+
               if(teamTurn == TeamColor.WHITE){
                   teamTurn = TeamColor.BLACK;
               }

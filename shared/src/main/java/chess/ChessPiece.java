@@ -205,7 +205,7 @@ public class ChessPiece {
                 break;
 
             case BISHOP:
-                for (int i = 1; i < 4; i++) {
+                for (int i = 1; i < 7; i++) {
                     status = checker.CheckAddSpace(x + i, y + i, SpaceStatus.KILLOREMPTY);
                     if (status != SpaceStatus.EMPTY) {
                         break;
