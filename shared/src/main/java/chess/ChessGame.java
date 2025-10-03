@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -8,15 +9,23 @@ import java.util.Collection;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
+
 public class ChessGame {
 
-  public ChessGame() {}
+    TeamColor teamTurn;
+    ChessBoard board;
+
+  public ChessGame() {
+      teamTurn = TeamColor.WHITE;
+      board = new ChessBoard();
+      board.resetBoard();
+  }
 
   /**
    * @return Which team's turn it is
    */
   public TeamColor getTeamTurn() {
-    throw new RuntimeException("Not implemented");
+      return teamTurn;
   }
 
   /**
@@ -25,7 +34,7 @@ public class ChessGame {
    * @param team the team whose turn it is
    */
   public void setTeamTurn(TeamColor team) {
-    throw new RuntimeException("Not implemented");
+    teamTurn = team;
   }
 
   /**
@@ -43,7 +52,16 @@ public class ChessGame {
    */
 
   public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-    throw new RuntimeException("Not implemented");
+
+      HashSet<ChessMove> moves = new HashSet<ChessMove>();
+      ChessPiece targetPiece = board.getPiece(startPosition);
+      if(targetPiece == null){
+          return null;
+      }
+      Collection<ChessMove> possibleMoves = targetPiece.pieceMoves(board,startPosition);
+
+
+      return moves;
   }
 
   /**
@@ -63,7 +81,32 @@ public class ChessGame {
    * @return True if the specified team is in check
    */
   public boolean isInCheck(TeamColor teamColor) {
-    throw new RuntimeException("Not implemented");
+
+      ChessPiece[][] boardArray = board.getBoardArray();
+      Collection<ChessPosition> allDangerSpaces = new HashSet<ChessPosition>();
+      ChessPosition kingPos = null;
+
+      for (int row = 0; row < boardArray.length; row++) {
+          for (int col = 0; col < boardArray[row].length; col++) {
+              ChessPiece piece = boardArray[row][col];
+              if (piece == null) break;
+              Collection<ChessMove> dangerSpaces = piece.pieceMoves(board, new ChessPosition(row, col), true);
+              for (ChessMove move : dangerSpaces) {
+                  allDangerSpaces.add(move.getEndPosition());
+              }
+              if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                  if (piece.getTeamColor() == teamColor) {
+                      kingPos = new ChessPosition(row, col);
+                  }
+              }
+          }
+      }
+      for(ChessPosition dangerSpace : allDangerSpaces){
+          if (dangerSpace == kingPos){
+              return true;
+          }
+      }
+      return false;
   }
 
   /**

@@ -113,6 +113,11 @@ public class ChessPiece {
 
     public Collection<ChessMove> pieceMoves(ChessBoard board,
                                             ChessPosition myPosition) {
+     return pieceMoves(board, myPosition, false);
+    }
+
+    public Collection<ChessMove> pieceMoves(ChessBoard board,
+                                            ChessPosition myPosition, boolean dangerOnly) {
         System.out.println(myPosition);
         int x = myPosition.getColumn() - 1;
         int y = myPosition.getRow() - 1;
@@ -122,6 +127,12 @@ public class ChessPiece {
         SpaceStatus status;
         SpaceChecker checker = new SpaceChecker(board, validMoves, myPosition);
 
+        SpaceStatus emptyIfAllowed = null;
+        if(!dangerOnly){
+            emptyIfAllowed = SpaceStatus.EMPTY;
+        }
+
+
         switch (type) {
             case PAWN:
                 boolean promotion = false;
@@ -129,10 +140,10 @@ public class ChessPiece {
                     if(y == 6) {
                         promotion = true;
                     }
-                    status = checker.CheckAddSpace(x, y + 1, SpaceStatus.EMPTY, promotion);
+                    status = checker.CheckAddSpace(x, y + 1, emptyIfAllowed, promotion);
                     if (y == 1 && status == SpaceStatus.EMPTY) {
                         //Check if it's the two move starting special
-                        checker.CheckAddSpace(x, y + 2, SpaceStatus.EMPTY);
+                        checker.CheckAddSpace(x, y + 2, emptyIfAllowed);
                     }
                     checker.CheckAddSpace(x + 1, y + 1, SpaceStatus.KILL, promotion);
                     checker.CheckAddSpace(x - 1, y + 1, SpaceStatus.KILL, promotion);
@@ -141,10 +152,10 @@ public class ChessPiece {
                     if(y == 1) {
                         promotion = true;
                     }
-                    status = checker.CheckAddSpace(x, y - 1, SpaceStatus.EMPTY, promotion);
+                    status = checker.CheckAddSpace(x, y - 1, emptyIfAllowed, promotion);
                     if (y == 6 && status == SpaceStatus.EMPTY) {
                         //Check if it's the two move starting special
-                        checker.CheckAddSpace(x, y - 2, SpaceStatus.EMPTY);
+                        checker.CheckAddSpace(x, y - 2, emptyIfAllowed);
                     }
                     checker.CheckAddSpace(x + 1, y - 1, SpaceStatus.KILL, promotion);
                     checker.CheckAddSpace(x - 1, y - 1, SpaceStatus.KILL, promotion);

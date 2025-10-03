@@ -1,11 +1,12 @@
 package chess;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 import static chess.ChessPiece.PieceType;
 import static chess.ChessGame.TeamColor;
-
 
 
 /**
@@ -73,6 +74,11 @@ public class ChessBoard {
       placePawns(6,TeamColor.BLACK);
       placeComplexRow(7,TeamColor.BLACK);
   }
+
+  public ChessPiece[][] getBoardArray(){
+      return boardArray;
+  }
+
 
     @Override
     public String toString() {
