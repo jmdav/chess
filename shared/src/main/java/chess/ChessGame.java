@@ -88,16 +88,25 @@ public class ChessGame {
 
   public void makeMove(ChessMove move) throws InvalidMoveException {
       ChessPiece piece = board.getPiece(move.getStartPosition());
-      if(piece.getTeamColor() != teamTurn){
+      if(piece == null || piece.getTeamColor() != teamTurn){
           throw new InvalidMoveException();
       }
       Collection<ChessMove> validOptions = validMoves(move.getStartPosition());
       for(ChessMove option : validOptions){
           if(option.equals(move)){
+              System.out.println("move made.");
               piece = board.popPiece(move.getStartPosition());
               board.addPiece(move.getEndPosition(), piece);
+              if(teamTurn == TeamColor.WHITE){
+                  teamTurn = TeamColor.BLACK;
+              }
+              else{
+                  teamTurn = TeamColor.WHITE;
+              }
+              return;
           }
       }
+      throw new InvalidMoveException();
 
   }
 
@@ -135,12 +144,9 @@ public class ChessGame {
       }
       for(ChessPosition dangerSpace : allDangerSpaces){
           if (dangerSpace.equals(kingPos)){
-              System.out.println("that's not good!");
-              System.out.println(targetBoard);
+              //System.out.println("that's not good!");
+              //System.out.println(targetBoard);
               return true;
-          }
-          else{
-              System.out.println("that is good!");
           }
       }
       return false;
