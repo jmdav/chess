@@ -59,8 +59,12 @@ public class ChessGame {
           return null;
       }
       Collection<ChessMove> possibleMoves = targetPiece.pieceMoves(board,startPosition);
-
-
+      for(ChessMove move : possibleMoves) {
+          ChessBoard hypothetical = new ChessBoard(board);
+          if(!doesMovePlaceInCheck(move,hypothetical)){
+            moves.add(move);
+          }
+      }
       return moves;
   }
 
@@ -70,9 +74,19 @@ public class ChessGame {
    * @param move chess move to perform
    * @throws InvalidMoveException if move is invalid
    */
-  public void makeMove(ChessMove move) throws InvalidMoveException {
-    throw new RuntimeException("Not implemented");
+
+  public boolean doesMovePlaceInCheck(ChessMove move, ChessBoard targetBoard){
+      ChessPiece piece = board.popPiece(move.getStartPosition());
+      board.addPiece(move.getEndPosition(), piece);
+      return isInCheck(teamTurn, targetBoard);
   }
+
+  public void makeMove(ChessMove move) throws InvalidMoveException {
+      ChessPiece piece = board.popPiece(move.getStartPosition());
+      board.addPiece(move.getEndPosition(), piece);
+  }
+
+
 
   /**
    * Determines if the given team is in check
@@ -80,17 +94,20 @@ public class ChessGame {
    * @param teamColor which team to check for check
    * @return True if the specified team is in check
    */
-  public boolean isInCheck(TeamColor teamColor) {
 
-      ChessPiece[][] boardArray = board.getBoardArray();
+  public boolean isInCheck(TeamColor teamColor){
+      return isInCheck(teamColor, board);
+  }
+  public boolean isInCheck(TeamColor teamColor, ChessBoard targetBoard) {
+
       Collection<ChessPosition> allDangerSpaces = new HashSet<ChessPosition>();
       ChessPosition kingPos = null;
 
-      for (int row = 0; row < boardArray.length; row++) {
-          for (int col = 0; col < boardArray[row].length; col++) {
-              ChessPiece piece = boardArray[row][col];
+      for (int row = 0; row < targetBoard.length(); row++) {
+          for (int col = 0; col < targetBoard.length(); col++) {
+              ChessPiece piece = targetBoard.getPiece(new ChessPosition(row,col));
               if (piece == null) break;
-              Collection<ChessMove> dangerSpaces = piece.pieceMoves(board, new ChessPosition(row, col), true);
+              Collection<ChessMove> dangerSpaces = piece.pieceMoves(targetBoard, new ChessPosition(row, col), true);
               for (ChessMove move : dangerSpaces) {
                   allDangerSpaces.add(move.getEndPosition());
               }

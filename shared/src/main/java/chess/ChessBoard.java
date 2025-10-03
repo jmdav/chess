@@ -18,9 +18,11 @@ import static chess.ChessGame.TeamColor;
 
 public class ChessBoard {
 
-  private final ChessPiece[][] boardArray;
+  private ChessPiece[][] boardArray;
 
   public ChessBoard() { boardArray = new ChessPiece[8][8]; }
+
+    public ChessBoard(ChessBoard copy) { boardArray = Arrays.copyOf(copy.boardArray, copy.boardArray.length); }
 
   /**
    * Adds a chess piece to the chessboard
@@ -33,7 +35,18 @@ public class ChessBoard {
       boardArray[position.getColumn()-1][position.getRow()-1] = piece;
   }
 
-  /**
+  public ChessPiece popPiece(ChessPosition position) {
+        ChessPiece piece = boardArray[position.getColumn()-1][position.getRow()-1];
+        boardArray[position.getColumn()-1][position.getRow()-1] = null;
+        return piece;
+  }
+
+    public int length(){
+        return boardArray.length;
+    }
+
+
+    /**
    * Gets a chess piece on the chessboard
    *
    * @param position The position to get the piece from
@@ -75,9 +88,7 @@ public class ChessBoard {
       placeComplexRow(7,TeamColor.BLACK);
   }
 
-  public ChessPiece[][] getBoardArray(){
-      return boardArray;
-  }
+
 
 
     @Override
