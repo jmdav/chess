@@ -22,6 +22,11 @@ public class ChessPiece {
         this.type = type;
     }
 
+    public ChessPiece(ChessPiece copy){
+        this.pieceColor = copy.pieceColor;
+        this.type = copy.type;
+    }
+
     /**
      * The various different chess piece options
      */
@@ -118,10 +123,8 @@ public class ChessPiece {
 
     public Collection<ChessMove> pieceMoves(ChessBoard board,
                                             ChessPosition myPosition, boolean dangerOnly) {
-        System.out.println(myPosition);
         int x = myPosition.getColumn() - 1;
         int y = myPosition.getRow() - 1;
-        System.out.println(x + " " + y);
 
         HashSet<ChessMove> validMoves = new HashSet<ChessMove>();
         SpaceStatus status;

@@ -1,5 +1,6 @@
 package chess;
 
+import java.io.Console;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -25,6 +26,7 @@ public class ChessGame {
   /**
    * @return Which team's turn it is
    */
+
   public TeamColor getTeamTurn() {
       return teamTurn;
   }
@@ -56,16 +58,18 @@ public class ChessGame {
 
       HashSet<ChessMove> moves = new HashSet<ChessMove>();
       ChessPiece targetPiece = board.getPiece(startPosition);
+      teamTurn = targetPiece.getTeamColor();
       if(targetPiece == null){
           return null;
       }
       Collection<ChessMove> possibleMoves = targetPiece.pieceMoves(board,startPosition);
       for(ChessMove move : possibleMoves) {
           ChessBoard hypothetical = new ChessBoard(board);
-          if(!doesMovePlaceInCheck(move,hypothetical)){
-            moves.add(move);
+          if(!doesMovePlaceInCheck(move,hypothetical)) {
+              moves.add(move);
           }
       }
+      System.out.println(moves);
       return moves;
   }
 
@@ -77,8 +81,8 @@ public class ChessGame {
    */
 
   public boolean doesMovePlaceInCheck(ChessMove move, ChessBoard targetBoard){
-      ChessPiece piece = board.popPiece(move.getStartPosition());
-      board.addPiece(move.getEndPosition(), piece);
+      ChessPiece piece = targetBoard.popPiece(move.getStartPosition());
+      targetBoard.addPiece(move.getEndPosition(), piece);
       return isInCheck(teamTurn, targetBoard);
   }
 
@@ -86,8 +90,6 @@ public class ChessGame {
       ChessPiece piece = board.popPiece(move.getStartPosition());
       board.addPiece(move.getEndPosition(), piece);
   }
-
-
 
   /**
    * Determines if the given team is in check
@@ -106,22 +108,29 @@ public class ChessGame {
 
       for (int row = 0; row < targetBoard.length(); row++) {
           for (int col = 0; col < targetBoard.length(); col++) {
-              ChessPiece piece = targetBoard.getPiece(new ChessPosition(row,col));
-              if (piece == null) break;
-              Collection<ChessMove> dangerSpaces = piece.pieceMoves(targetBoard, new ChessPosition(row, col), true);
-              for (ChessMove move : dangerSpaces) {
-                  allDangerSpaces.add(move.getEndPosition());
-              }
+              ChessPiece piece = targetBoard.getPiece(new ChessPosition(row + 1,col + 1));
+              if (piece == null) continue;
               if (piece.getPieceType() == ChessPiece.PieceType.KING) {
                   if (piece.getTeamColor() == teamColor) {
-                      kingPos = new ChessPosition(row, col);
+                      kingPos = new ChessPosition(row + 1, col + 1);
+                  }
+              }
+              if (piece.getTeamColor() != teamColor) {
+                  Collection<ChessMove> dangerSpaces = piece.pieceMoves(targetBoard, new ChessPosition(row + 1, col + 1), true);
+                  for (ChessMove move : dangerSpaces) {
+                      allDangerSpaces.add(move.getEndPosition());
                   }
               }
           }
       }
       for(ChessPosition dangerSpace : allDangerSpaces){
-          if (dangerSpace == kingPos){
+          if (dangerSpace.equals(kingPos)){
+              System.out.println("that's not good!");
+              System.out.println(targetBoard);
               return true;
+          }
+          else{
+              System.out.println("that is good!");
           }
       }
       return false;

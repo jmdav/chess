@@ -22,7 +22,14 @@ public class ChessBoard {
 
   public ChessBoard() { boardArray = new ChessPiece[8][8]; }
 
-    public ChessBoard(ChessBoard copy) { boardArray = Arrays.copyOf(copy.boardArray, copy.boardArray.length); }
+    public ChessBoard(ChessBoard copy) {
+      boardArray = new ChessPiece[8][8];
+      for(int i = 0; i < 8; i++){
+          for(int j = 0; j < 8; j++) {
+              this.boardArray[i][j] = copy.boardArray[i][j];
+          }
+      }
+    }
 
   /**
    * Adds a chess piece to the chessboard
@@ -36,8 +43,11 @@ public class ChessBoard {
   }
 
   public ChessPiece popPiece(ChessPosition position) {
-        ChessPiece piece = boardArray[position.getColumn()-1][position.getRow()-1];
-        boardArray[position.getColumn()-1][position.getRow()-1] = null;
+      ChessPiece piece = null;
+        if(boardArray[position.getColumn()-1][position.getRow()-1] != null) {
+            piece = new ChessPiece(boardArray[position.getColumn() - 1][position.getRow() - 1]);
+            boardArray[position.getColumn() - 1][position.getRow() - 1] = null;
+        }
         return piece;
   }
 
