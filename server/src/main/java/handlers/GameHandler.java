@@ -30,7 +30,7 @@ public class GameHandler {
   public void createGame(Context ctx) throws DataAccessException {
     String authToken = ctx.header("authToken");
     String gameName = serializer.fromJson(ctx.body(), String.class);
-    List<GameData> output = gameService.createGame(authToken, gameName);
+    String output = gameService.createGame(authToken, gameName);
     ctx.status(201);
     String jsonOutput = serializer.toJson(output);
     ctx.result(jsonOutput);
