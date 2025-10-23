@@ -1,6 +1,8 @@
 package handlers;
 
+import dataAccess.DataAccessException;
 import io.javalin.http.Context;
+import model.AuthData;
 import model.UserData;
 import service.UserService;
 
@@ -12,9 +14,9 @@ public class UserHandler {
     this.userService = userService;
   }
 
-  public void register(Context ctx) {
+  public void register(Context ctx) throws DataAccessException {
     UserData userData = ctx.bodyAsClass(UserData.class);
-    UserData output = userService.register(userData);
+    AuthData output = userService.register(userData);
     ctx.status(201).json(output);
   }
 }

@@ -2,9 +2,9 @@ package dataAccess;
 
 import model.UserData;
 
-public interface UserDataAccess extends AuthAccess {
+public interface UserDataAccess {
 
-  UserData getUser(String username) throws dataAccess.NoDataException;
+  UserData getUser(String username) throws DataAccessException;
 
-  UserData createUser(UserData data) throws dataAccess.DataConflictException;
+  UserData createUser(UserData data) throws DataAccessException;
 }

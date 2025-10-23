@@ -2,8 +2,6 @@ package server;
 
 import handlers.*;
 import io.javalin.*;
-import io.javalin.http.Context;
-import model.*;
 import service.*;
 
 public class Server {
@@ -16,12 +14,7 @@ public class Server {
     UserHandler userHandler = new UserHandler(userService);
 
     javalin = Javalin.create(config -> config.staticFiles.add("web"));
-    javalin.get("/user", userHandler::createUser);
-  }
-
-  private void exceptionHandler(ResponseException ex, Context ctx) {
-    ctx.status(ex.toHttpStatusCode());
-    ctx.json(ex.toJson());
+    javalin.post("/user", userHandler::register);
   }
 
   public int run(int desiredPort) {
