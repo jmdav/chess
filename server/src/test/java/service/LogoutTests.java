@@ -1,9 +1,10 @@
 package service;
 
-import DataAccess.AuthRAMDAO;
-import DataAccess.DataAccessException;
 import model.*;
 import org.junit.jupiter.api.*;
+
+import dataaccess.AuthRAMDAO;
+import dataaccess.DataAccessException;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LogoutTests {

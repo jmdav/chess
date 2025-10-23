@@ -1,6 +1,6 @@
 package server;
 
-import DataAccess.AuthRAMDAO;
+import dataaccess.AuthRAMDAO;
 import handlers.*;
 import io.javalin.*;
 import service.*;

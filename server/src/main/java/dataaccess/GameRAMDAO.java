@@ -1,4 +1,4 @@
-package DataAccess;
+package dataaccess;
 import chess.ChessGame.TeamColor;
 import java.util.List;
 import java.util.Map;

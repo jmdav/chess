@@ -1,7 +1,8 @@
 package handlers;
-import DataAccess.AuthDataAccess;
-import DataAccess.DataAccessException;
 import com.google.gson.Gson;
+
+import dataaccess.AuthDataAccess;
+import dataaccess.DataAccessException;
 import io.javalin.http.Context;
 import model.AuthData;
 import model.UserData;

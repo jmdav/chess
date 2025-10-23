@@ -1,8 +1,8 @@
 package service;
 
-import DataAccess.AuthRAMDAO;
-import DataAccess.DataAccessException;
 import chess.ChessGame.TeamColor;
+import dataaccess.AuthRAMDAO;
+import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameRequestData;
 import model.UserData;
@@ -11,21 +11,20 @@ import org.junit.jupiter.api.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CreateGameTests {
 
-  // ### TESTING SETUP/CLEANUP ###
-
+  private static GameService gameService;
   public static UserData newUser;
   public static AuthData spoofAuth;
   private static UserService userService;
-  private static GameService gameService;
-  // ### TESTING SETUP/CLEANUP ###
+  
 
   @BeforeAll
   public static void init() {
 
-    newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
+    newUser = new UserData("oldUser", "theFunk", "yfresh@mail.com");
     AuthRAMDAO authBase = new AuthRAMDAO();
-    userService = new UserService(authBase);
     gameService = new GameService(authBase);
+    userService = new UserService(authBase);
+    
   }
 
   @Test
@@ -33,7 +32,7 @@ public class CreateGameTests {
   @DisplayName("Make game")
   public void makeGame() throws DataAccessException {
     spoofAuth = userService.register(newUser);
-    gameService.createGame(spoofAuth.authToken(), "test");
+    gameService.createGame(spoofAuth.authToken(), "t2est");
     Assertions.assertNotNull(
         gameService.listGames(spoofAuth.authToken()).games().get(0),
         "yeppers... it's real");
