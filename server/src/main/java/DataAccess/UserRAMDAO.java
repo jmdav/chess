@@ -1,4 +1,4 @@
-package dataAccess;
+package DataAccess;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import model.UserData;

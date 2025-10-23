@@ -1,8 +1,8 @@
 package service;
 
+import DataAccess.AuthRAMDAO;
+import DataAccess.DataAccessException;
 import chess.ChessGame.TeamColor;
-import dataAccess.AuthRAMDAO;
-import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameRequestData;
 import model.UserData;
@@ -43,6 +43,7 @@ public class CreateGameTests {
   @Order(2)
   @DisplayName("Game does not exist")
   public void joinBad() throws DataAccessException {
+    userService.destroy();
     final AuthData spoofAuth = userService.register(newUser);
     GameRequestData request = new GameRequestData(TeamColor.WHITE, 2);
 

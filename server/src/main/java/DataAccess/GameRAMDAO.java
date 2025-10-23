@@ -1,4 +1,4 @@
-package dataAccess;
+package DataAccess;
 import chess.ChessGame.TeamColor;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,7 @@ public class GameRAMDAO implements GameDataAccess {
   @Override
   public GameList getGames() throws DataAccessException {
     List<GameData> output = new Vector<>();
-    gameDB.forEach((ID, data) -> { output.add(data); });
+    gameDB.forEach((id, data) -> { output.add(data); });
     return new GameList(output);
   };
 

@@ -1,10 +1,10 @@
 package service;
 
-import dataAccess.AuthDataAccess;
-import dataAccess.AuthRAMDAO;
-import dataAccess.DataAccessException;
-import dataAccess.UserDataAccess;
-import dataAccess.UserRAMDAO;
+import DataAccess.AuthDataAccess;
+import DataAccess.AuthRAMDAO;
+import DataAccess.DataAccessException;
+import DataAccess.UserDataAccess;
+import DataAccess.UserRAMDAO;
 import model.AuthData;
 import model.UserData;
 

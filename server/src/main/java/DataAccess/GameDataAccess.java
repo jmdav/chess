@@ -1,4 +1,4 @@
-package dataAccess;
+package DataAccess;
 
 import model.GameID;
 import model.GameList;

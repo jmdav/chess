@@ -1,7 +1,7 @@
 package service;
 
-import dataAccess.AuthRAMDAO;
-import dataAccess.DataAccessException;
+import DataAccess.AuthRAMDAO;
+import DataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;

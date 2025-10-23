@@ -1,7 +1,7 @@
 package handlers;
+import DataAccess.AuthDataAccess;
+import DataAccess.DataAccessException;
 import com.google.gson.Gson;
-import dataAccess.AuthDataAccess;
-import dataAccess.DataAccessException;
 import io.javalin.http.Context;
 import model.GameID;
 import model.GameList;

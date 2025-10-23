@@ -1,8 +1,8 @@
 package service;
 
+import DataAccess.AuthRAMDAO;
+import DataAccess.DataAccessException;
 import chess.ChessGame.TeamColor;
-import dataAccess.AuthRAMDAO;
-import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameID;
 import model.GameRequestData;

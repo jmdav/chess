@@ -1,10 +1,10 @@
 package service;
 
-import dataAccess.AuthDataAccess;
-import dataAccess.AuthRAMDAO;
-import dataAccess.DataAccessException;
-import dataAccess.GameDataAccess;
-import dataAccess.GameRAMDAO;
+import DataAccess.AuthDataAccess;
+import DataAccess.AuthRAMDAO;
+import DataAccess.DataAccessException;
+import DataAccess.GameDataAccess;
+import DataAccess.GameRAMDAO;
 import model.AuthData;
 import model.GameID;
 import model.GameList;

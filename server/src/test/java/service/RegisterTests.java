@@ -1,7 +1,7 @@
 package service;
 
-import dataAccess.AuthRAMDAO;
-import dataAccess.DataAccessException;
+import DataAccess.AuthRAMDAO;
+import DataAccess.DataAccessException;
 import model.*;
 import org.junit.jupiter.api.*;
 
@@ -40,6 +40,7 @@ public class RegisterTests {
   @Order(2)
   @DisplayName("User Already Exists")
   public void loginFail() throws DataAccessException {
+    userService.destroy();
     userService.register(newUser);
     Assertions.assertThrows(DataAccessException.class,
                             ()
