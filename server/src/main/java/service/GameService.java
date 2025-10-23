@@ -33,11 +33,11 @@ public class GameService {
     }
   }
 
-  public List<GameData> createGame(String authToken, GameData userData)
+  public String createGame(String authToken, String gameName)
       throws DataAccessException {
     AuthData session = authAccess.getSession(authToken);
     if (session != null) {
-      return gameAccess.createGame(userData);
+      return gameAccess.createGame(gameName);
     } else {
       throw new DataAccessException("Unauthorized");
     }

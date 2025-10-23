@@ -7,7 +7,7 @@ public interface GameDataAccess {
 
   List<GameData> getGames() throws DataAccessException;
 
-  GameData createGame() throws DataAccessException;
+  String createGame(String gameName) throws DataAccessException;
 
   void destroy() throws DataAccessException;
 }

@@ -1,6 +1,7 @@
 package dataAccess;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import model.GameData;
@@ -17,9 +18,11 @@ public class GameRAMDAO implements GameDataAccess {
   };
 
   @Override
-  public UserData createUser(UserData data) throws DataAccessException {
-    gameDB.put(data.username(), data);
-    return data;
+  public String createGame(String gameName) throws DataAccessException {
+    GameData game =
+        new GameData(UUID.randomUUID().toString(), null, null, gameName);
+    gameDB.put(game.gameID(), game);
+    return game.gameID();
   };
 
   @Override

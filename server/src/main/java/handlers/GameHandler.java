@@ -29,15 +29,15 @@ public class GameHandler {
 
   public void createGame(Context ctx) throws DataAccessException {
     String authToken = ctx.header("authToken");
-    GameData userData = serializer.fromJson(ctx.body(), GameData.class);
-    List<GameData> output = gameService.createGame(authToken, userData);
+    String gameName = serializer.fromJson(ctx.body(), String.class);
+    List<GameData> output = gameService.createGame(authToken, gameName);
     ctx.status(201);
     String jsonOutput = serializer.toJson(output);
     ctx.result(jsonOutput);
   }
 
   public void joinGame(Context ctx) throws DataAccessException {
-    AuthData userData = serializer.fromJson(ctx.body(), AuthData.class);
+    String authToken = ctx.header("authToken");
     List<GameData> output = gameService.listGames(userData);
     ctx.status(201);
     String jsonOutput = serializer.toJson(output);
