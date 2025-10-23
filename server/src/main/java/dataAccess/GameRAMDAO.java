@@ -1,4 +1,5 @@
 package dataAccess;
+import chess.ChessGame.TeamColor;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -30,11 +31,17 @@ public class GameRAMDAO implements GameDataAccess {
   public void joinGame(String username, GameRequestData data)
       throws DataAccessException {
 
-    GameData targetGame = gameDB.get(data.gameID());
-    if (targetGame == null) {
+    if (data.gameID() == null) {
       throw new DataAccessException(400, "Error: bad request");
     }
-    if (data.playerColor() == "WHITE") {
+
+    GameData targetGame = gameDB.get(data.gameID());
+
+    if (targetGame == null || (data.playerColor() != TeamColor.WHITE &&
+                               data.playerColor() != TeamColor.BLACK)) {
+      throw new DataAccessException(400, "Error: bad request");
+    }
+    if (data.playerColor() == TeamColor.WHITE) {
       if (targetGame.whiteUsername() != null) {
         throw new DataAccessException(403, "Error: already taken");
       } else {
@@ -43,7 +50,7 @@ public class GameRAMDAO implements GameDataAccess {
                          targetGame.blackUsername(), targetGame.gameName());
       }
     }
-    if (data.playerColor() == "BLACK") {
+    if (data.playerColor() == TeamColor.BLACK) {
       if (targetGame.blackUsername() != null) {
         throw new DataAccessException(403, "Error: already taken");
       } else {
@@ -52,7 +59,6 @@ public class GameRAMDAO implements GameDataAccess {
                          username, targetGame.gameName());
       }
     }
-
     gameDB.remove(data.gameID());
     gameDB.put(targetGame.gameID(), targetGame);
   }

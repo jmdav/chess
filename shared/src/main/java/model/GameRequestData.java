@@ -1,3 +1,6 @@
 package model;
 
-public record GameRequestData(String playerColor, Integer gameID) {}
+import chess.ChessGame;
+
+public record GameRequestData(ChessGame.TeamColor playerColor, Integer gameID) {
+}

@@ -38,6 +38,9 @@ public class GameService {
 
   public GameID createGame(String authToken, String gameName)
       throws DataAccessException {
+    if (gameName == null) {
+      throw new DataAccessException(400, "Error: bad request");
+    }
     AuthData session = authAccess.getSession(authToken);
     if (session != null) {
       return gameAccess.createGame(gameName);
