@@ -8,6 +8,7 @@ import dataAccess.GameRAMDAO;
 import java.util.List;
 import model.AuthData;
 import model.GameData;
+import model.GameID;
 import model.GameRequestData;
 
 public class GameService {
@@ -30,17 +31,17 @@ public class GameService {
     if (session != null) {
       return gameAccess.getGames();
     } else {
-      throw new DataAccessException(401, "Unauthorized");
+      throw new DataAccessException(401, "Error: unauthorized");
     }
   }
 
-  public String createGame(String authToken, String gameName)
+  public GameID createGame(String authToken, String gameName)
       throws DataAccessException {
     AuthData session = authAccess.getSession(authToken);
     if (session != null) {
       return gameAccess.createGame(gameName);
     } else {
-      throw new DataAccessException(401, "Unauthorized");
+      throw new DataAccessException(401, "Error: unauthorized");
     }
   }
 
@@ -50,7 +51,7 @@ public class GameService {
     if (session != null) {
       gameAccess.joinGame(session.username(), request);
     } else {
-      throw new DataAccessException(401, "Unauthorized");
+      throw new DataAccessException(401, "Error: unauthorized");
     }
   }
 }

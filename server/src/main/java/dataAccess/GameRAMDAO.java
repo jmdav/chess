@@ -5,11 +5,12 @@ import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import model.GameData;
+import model.GameID;
 import model.GameRequestData;
 
 public class GameRAMDAO implements GameDataAccess {
 
-  private Map<String, GameData> gameDB = new ConcurrentHashMap<>();
+  private Map<Integer, GameData> gameDB = new ConcurrentHashMap<>();
 
   @Override
   public List<GameData> getGames() throws DataAccessException {
@@ -19,11 +20,10 @@ public class GameRAMDAO implements GameDataAccess {
   };
 
   @Override
-  public String createGame(String gameName) throws DataAccessException {
-    GameData game =
-        new GameData(UUID.randomUUID().toString(), null, null, gameName);
+  public GameID createGame(String gameName) throws DataAccessException {
+    GameData game = new GameData(gameDB.size(), null, null, gameName);
     gameDB.put(game.gameID(), game);
-    return game.gameID();
+    return new GameID(game.gameID());
   };
 
   @Override

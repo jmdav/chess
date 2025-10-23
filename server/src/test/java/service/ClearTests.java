@@ -1,6 +1,5 @@
 package service;
 
-import chess.ChessGame;
 import java.net.HttpURLConnection;
 import java.util.*;
 import org.junit.jupiter.api.*;

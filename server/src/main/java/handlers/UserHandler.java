@@ -3,7 +3,6 @@ import com.google.gson.Gson;
 import dataAccess.AuthDataAccess;
 import dataAccess.DataAccessException;
 import io.javalin.http.Context;
-import javax.sound.midi.SysexMessage;
 import model.AuthData;
 import model.UserData;
 import service.UserService;

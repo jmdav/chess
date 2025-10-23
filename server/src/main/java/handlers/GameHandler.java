@@ -6,6 +6,7 @@ import io.javalin.http.Context;
 import java.util.List;
 import model.AuthData;
 import model.GameData;
+import model.GameID;
 import model.GameRequestData;
 import model.GameStartData;
 import model.UserData;
@@ -26,30 +27,41 @@ public class GameHandler {
     List<GameData> output;
     try {
       output = gameService.listGames(authToken);
-      ctx.status(201);
+      ctx.status(200);
       String jsonOutput = serializer.toJson(output);
       ctx.result(jsonOutput);
     } catch (DataAccessException e) {
-      ctx.status(400);
+      ctx.status(e.getStatusCode());
+      ctx.result(serializer.toJson(e.getErrorMessage()));
     }
   }
 
-  public void createGame(Context ctx) throws DataAccessException {
+  public void createGame(Context ctx) {
     String authToken = ctx.header("authorization");
     String gameName =
         serializer.fromJson(ctx.body(), GameStartData.class).gameName();
-    String output = gameService.createGame(authToken, gameName);
-    ctx.status(201);
-    String jsonOutput = serializer.toJson(output);
-    ctx.result(jsonOutput);
+    GameID output;
+    try {
+      output = gameService.createGame(authToken, gameName);
+      ctx.status(200);
+      ctx.result(serializer.toJson(output));
+    } catch (DataAccessException e) {
+      ctx.status(e.getStatusCode());
+      ctx.result(serializer.toJson(e.getErrorMessage()));
+    }
   }
 
-  public void joinGame(Context ctx) throws DataAccessException {
+  public void joinGame(Context ctx) {
     String authToken = ctx.header("authorization");
     GameRequestData gameRequest =
         serializer.fromJson(ctx.body(), GameRequestData.class);
-    gameService.joinGame(authToken, gameRequest);
-    ctx.status(200);
+    try {
+      gameService.joinGame(authToken, gameRequest);
+      ctx.status(200);
+    } catch (DataAccessException e) {
+      ctx.status(e.getStatusCode());
+      ctx.result(serializer.toJson(e.getErrorMessage()));
+    }
   }
 
   public void destroy(Context ctx) throws DataAccessException {

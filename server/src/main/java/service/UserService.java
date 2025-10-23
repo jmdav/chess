@@ -51,7 +51,7 @@ public class UserService {
     if (session != null) {
       authAccess.deleteSession(session.authToken());
     } else {
-      throw new DataAccessException(401, "unauthorized");
+      throw new DataAccessException(401, "Error: unauthorized");
     }
   }
 
