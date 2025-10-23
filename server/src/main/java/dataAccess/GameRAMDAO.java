@@ -21,7 +21,7 @@ public class GameRAMDAO implements GameDataAccess {
 
   @Override
   public GameID createGame(String gameName) throws DataAccessException {
-    GameData game = new GameData(gameDB.size(), null, null, gameName);
+    GameData game = new GameData(gameDB.size() + 1000, null, null, gameName);
     gameDB.put(game.gameID(), game);
     return new GameID(game.gameID());
   };
