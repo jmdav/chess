@@ -1,14 +1,10 @@
 package service;
 
-import chess.ChessGame.TeamColor;
 import dataAccess.AuthRAMDAO;
 import dataAccess.DataAccessException;
 import model.AuthData;
-import model.GameID;
-import model.GameRequestData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import passoff.model.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class GameListTests {
