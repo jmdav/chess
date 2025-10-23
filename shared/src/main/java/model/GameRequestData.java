@@ -1,3 +1,3 @@
 package model;
 
-public record GameRequestData(Boolean white, String gameID) {}
+public record GameRequestData(String playerColor, String gameID) {}

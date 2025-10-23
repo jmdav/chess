@@ -39,7 +39,7 @@ public class RegisterTests {
     AuthData registerResult = userService.register(newUser);
     Assertions.assertEquals(newUser.username(), registerResult.username(),
                             "Response did not give the same username as user");
-    Assertions.assertNotNull(registerResult.token(),
+    Assertions.assertNotNull(registerResult.authToken(),
                              "Response did not return authentication String");
   }
 

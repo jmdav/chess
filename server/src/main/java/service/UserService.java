@@ -19,33 +19,40 @@ public class UserService {
   }
 
   public AuthData register(UserData data) throws DataAccessException {
+    if (data.username() == null) {
+      throw new DataAccessException(400, "Error: bad request");
+    }
     if (userAccess.getUser(data.username()) == null) {
       userAccess.createUser(data);
       return authAccess.createSession(data.username());
     } else {
-      throw new DataAccessException("Account already exists");
+      throw new DataAccessException(403, "Error: already taken");
     }
   }
 
   public AuthData login(UserData data) throws DataAccessException {
-    UserData prospectiveUser = userAccess.getUser(data.username());
-    System.out.println(prospectiveUser);
-    System.out.println(data);
-    if (prospectiveUser != null &&
-        prospectiveUser.password().equals(data.password())) {
-      return authAccess.createSession(data.username());
+    if (data.username() != null) {
+      UserData prospectiveUser = userAccess.getUser(data.username());
+      System.out.println(prospectiveUser);
+      System.out.println(data);
+      if (prospectiveUser != null &&
+          prospectiveUser.password().equals(data.password())) {
+        return authAccess.createSession(data.username());
+      } else {
+        throw new DataAccessException(401, "Error: unauthorized");
+      }
     } else {
-      throw new DataAccessException("Username or password incorrect");
+      throw new DataAccessException(400, "Error: bad request");
     }
   }
 
   public void logout(String authToken) throws DataAccessException {
     AuthData session = authAccess.getSession(authToken);
     if (session != null) {
-      authAccess.deleteSession(session.token());
+      authAccess.deleteSession(session.authToken());
       return;
     } else {
-      throw new DataAccessException("Session does not exist");
+      throw new DataAccessException(401, "unauthorized");
     }
   }
 

@@ -36,10 +36,12 @@ public class LogoutTests {
   @DisplayName("Normal Logout")
   public void logoutSuccess() throws DataAccessException {
     AuthData registerResult = userService.register(newUser);
-    userService.logout(registerResult.token());
+    userService.logout(registerResult.authToken());
     Assertions.assertThrows(
         DataAccessException.class,
-        () -> userService.logout(registerResult.token()), "Can't logout twice");
+        ()
+            -> userService.logout(registerResult.authToken()),
+        "Can't logout twice");
   };
 
   @Test
@@ -48,7 +50,7 @@ public class LogoutTests {
   public void loginFail() throws DataAccessException {
     Assertions.assertThrows(DataAccessException.class,
                             ()
-                                -> userService.logout(authSpoof.token()),
+                                -> userService.logout(authSpoof.authToken()),
                             "Can't logout if you don't exist");
   };
 }

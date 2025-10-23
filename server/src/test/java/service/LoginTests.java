@@ -38,7 +38,7 @@ public class LoginTests {
   @DisplayName("Normal Login")
   public void loginSuccess() throws DataAccessException {
     AuthData registerResult = userService.register(newUser);
-    userService.logout(registerResult.token());
+    userService.logout(registerResult.authToken());
     AuthData loginResult = userService.login(newUser);
     Assertions.assertEquals(loginResult.username(), registerResult.username(),
                             "User logged in");
@@ -49,7 +49,7 @@ public class LoginTests {
   @DisplayName("Wrong password")
   public void loginFailPassword() throws DataAccessException {
     AuthData registerResult = userService.register(newUser);
-    userService.logout(registerResult.token());
+    userService.logout(registerResult.authToken());
     Assertions.assertThrows(
         DataAccessException.class,
         () -> userService.login(evilUser), "Wrong password");

@@ -21,18 +21,24 @@ public class UserHandler {
   public void register(Context ctx) throws DataAccessException {
     UserData userData = serializer.fromJson(ctx.body(), UserData.class);
     AuthData output = userService.register(userData);
-    ctx.status(201);
+    ctx.status(200);
     String jsonOutput = serializer.toJson(output);
     ctx.result(jsonOutput);
   }
 
-  public void login(Context ctx) throws DataAccessException {
+  public void login(Context ctx) {
     UserData userData = serializer.fromJson(ctx.body(), UserData.class);
     System.out.println(userData);
-    AuthData output = userService.login(userData);
-    ctx.status(201);
-    String jsonOutput = serializer.toJson(output);
-    ctx.result(jsonOutput);
+    AuthData output;
+    try {
+      output = userService.login(userData);
+      ctx.status(200);
+      String jsonOutput = serializer.toJson(output);
+      ctx.result(jsonOutput);
+    } catch (DataAccessException e) {
+      ctx.status(e.getStatusCode());
+      ctx.result(e.getMessage());
+    }
   }
 
   public void logout(Context ctx) throws DataAccessException {
@@ -44,4 +50,4 @@ public class UserHandler {
   public void destroy(Context ctx) throws DataAccessException {
     userService.destroy();
   }
-}
+};

@@ -7,6 +7,7 @@ import java.util.List;
 import model.AuthData;
 import model.GameData;
 import model.GameRequestData;
+import model.GameStartData;
 import model.UserData;
 import service.GameService;
 
@@ -20,17 +21,23 @@ public class GameHandler {
     this.gameService = gameService;
   }
 
-  public void listGames(Context ctx) throws DataAccessException {
+  public void listGames(Context ctx) {
     String authToken = ctx.header("authorization");
-    List<GameData> output = gameService.listGames(authToken);
-    ctx.status(201);
-    String jsonOutput = serializer.toJson(output);
-    ctx.result(jsonOutput);
+    List<GameData> output;
+    try {
+      output = gameService.listGames(authToken);
+      ctx.status(201);
+      String jsonOutput = serializer.toJson(output);
+      ctx.result(jsonOutput);
+    } catch (DataAccessException e) {
+      ctx.status(400);
+    }
   }
 
   public void createGame(Context ctx) throws DataAccessException {
     String authToken = ctx.header("authorization");
-    String gameName = serializer.fromJson(ctx.body(), String.class);
+    String gameName =
+        serializer.fromJson(ctx.body(), GameStartData.class).gameName();
     String output = gameService.createGame(authToken, gameName);
     ctx.status(201);
     String jsonOutput = serializer.toJson(output);

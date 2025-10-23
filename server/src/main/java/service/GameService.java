@@ -30,7 +30,7 @@ public class GameService {
     if (session != null) {
       return gameAccess.getGames();
     } else {
-      throw new DataAccessException("Unauthorized");
+      throw new DataAccessException(401, "Unauthorized");
     }
   }
 
@@ -40,7 +40,7 @@ public class GameService {
     if (session != null) {
       return gameAccess.createGame(gameName);
     } else {
-      throw new DataAccessException("Unauthorized");
+      throw new DataAccessException(401, "Unauthorized");
     }
   }
 
@@ -50,7 +50,7 @@ public class GameService {
     if (session != null) {
       gameAccess.joinGame(session.username(), request);
     } else {
-      throw new DataAccessException("Unauthorized");
+      throw new DataAccessException(401, "Unauthorized");
     }
   }
 }

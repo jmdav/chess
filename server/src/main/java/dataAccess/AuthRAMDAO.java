@@ -16,7 +16,7 @@ public class AuthRAMDAO implements AuthDataAccess {
   @Override
   public AuthData createSession(String username) throws DataAccessException {
     AuthData data = new AuthData(username, UUID.randomUUID().toString());
-    authDB.put(data.token(), data);
+    authDB.put(data.authToken(), data);
     return data;
   };
 

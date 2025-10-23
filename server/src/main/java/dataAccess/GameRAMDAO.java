@@ -32,20 +32,20 @@ public class GameRAMDAO implements GameDataAccess {
 
     GameData targetGame = gameDB.get(data.gameID());
     if (targetGame == null) {
-      throw new DataAccessException("Game does not exist");
+      throw new DataAccessException(400, "Error: bad request");
     }
-    if (data.white()) {
+    if (data.playerColor() == "WHITE") {
       if (targetGame.whiteUsername() != null) {
-        throw new DataAccessException("Already taken");
+        throw new DataAccessException(403, "Error: already taken");
       } else {
         targetGame =
             new GameData(targetGame.gameID(), username,
                          targetGame.blackUsername(), targetGame.gameName());
       }
     }
-    if (!data.white()) {
+    if (data.playerColor() == "BLACK") {
       if (targetGame.blackUsername() != null) {
-        throw new DataAccessException("Already taken");
+        throw new DataAccessException(403, "Error: already taken");
       } else {
         targetGame =
             new GameData(targetGame.gameID(), targetGame.whiteUsername(),

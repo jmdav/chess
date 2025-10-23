@@ -59,8 +59,8 @@ public class StandardAPITests {
     Assertions.assertNotNull(htmlFromServer, "Server returned an empty file");
     Assertions.assertTrue(
         htmlFromServer.contains("CS 240 Chess Server Web API"),
-        "file returned did not contain an exact match of text from provided " +
-        "index.html");
+        "file returned did not contain an exact match of text from provided "
+            + "index.html");
   }
 
   @Test
@@ -71,6 +71,8 @@ public class StandardAPITests {
     TestAuthResult loginResult = serverFacade.login(existingUser);
 
     assertHttpOk(loginResult);
+    System.out.println("the output:");
+    System.out.println(loginResult);
     Assertions.assertEquals(existingUser.getUsername(),
                             loginResult.getUsername(),
                             "Response did not give the same username as user");
