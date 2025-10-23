@@ -20,10 +20,10 @@ public class ClearTests {
 
   @BeforeAll
   public static void init() {
-
+    
+    AuthRAMDAO authBase = new AuthRAMDAO();
     newUser = new UserData("clearUser", "newUserPassword", "nu@a.com");
     gameService = new GameService(authBase);
-    AuthRAMDAO authBase = new AuthRAMDAO();
     userService = new UserService(authBase);
     
   }
