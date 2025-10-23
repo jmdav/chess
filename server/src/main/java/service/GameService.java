@@ -3,51 +3,43 @@ package service;
 import dataAccess.AuthDataAccess;
 import dataAccess.AuthRAMDAO;
 import dataAccess.DataAccessException;
-import dataAccess.UserDataAccess;
-import dataAccess.UserRAMDAO;
+import dataAccess.GameDataAccess;
+import dataAccess.GameRAMDAO;
+import java.util.List;
 import model.AuthData;
-import model.UserData;
+import model.GameData;
 
-public class UserService {
+public class GameService {
 
-  private final UserDataAccess userAccess;
+  private final GameDataAccess gameAccess;
   private final AuthDataAccess authAccess;
 
-  public UserService() {
-    this.userAccess = new UserRAMDAO();
-    this.authAccess = new AuthRAMDAO();
-  }
-
-  public AuthData register(UserData data) throws DataAccessException {
-    if (userAccess.getUser(data.username()) == null) {
-      userAccess.createUser(data);
-      return authAccess.createSession(data.username());
-    } else {
-      throw new DataAccessException("Account already exists");
-    }
-  }
-
-  public AuthData login(UserData data) throws DataAccessException {
-    UserData prospectiveUser = userAccess.getUser(data.username());
-    if (prospectiveUser != null) {
-      if (prospectiveUser.password() == data.password())
-        return authAccess.createSession(data.username());
-    }
-    throw new DataAccessException("Username or password incorrect");
-  }
-
-  public void logout(AuthData data) throws DataAccessException {
-    AuthData session = authAccess.getSession(data.token());
-    if (session != null) {
-      authAccess.deleteSession(session.token());
-      return;
-    } else {
-      throw new DataAccessException("Session does not exist");
-    }
+  public GameService(AuthRAMDAO authAccess) {
+    this.gameAccess = new GameRAMDAO();
+    this.authAccess = authAccess;
   }
 
   public void destroy() throws DataAccessException {
     authAccess.destroy();
-    userAccess.destroy();
+    gameAccess.destroy();
+  }
+
+  public List<GameData> listGames(String authToken) throws DataAccessException {
+    AuthData session = authAccess.getSession(authToken);
+    if (session != null) {
+      return gameAccess.getGames();
+    } else {
+      throw new DataAccessException("Unauthorized");
+    }
+  }
+
+  public List<GameData> createGame(String authToken, GameData userData)
+      throws DataAccessException {
+    AuthData session = authAccess.getSession(authToken);
+    if (session != null) {
+      return gameAccess.createGame(userData);
+    } else {
+      throw new DataAccessException("Unauthorized");
+    }
   }
 }

@@ -1,6 +1,7 @@
 package service;
 
 import chess.ChessGame;
+import dataAccess.AuthRAMDAO;
 import dataAccess.DataAccessException;
 import handlers.*;
 import java.net.HttpURLConnection;
@@ -26,7 +27,7 @@ public class LoginTests {
     newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
     evilUser = new UserData("NewUser", "the fart password", "nu@mail.com");
     authSpoof = new AuthData("fart", "the fart token");
-    userService = new UserService();
+    userService = new UserService(new AuthRAMDAO());
   }
 
   @BeforeEach
@@ -37,7 +38,7 @@ public class LoginTests {
   @DisplayName("Normal Login")
   public void loginSuccess() throws DataAccessException {
     AuthData registerResult = userService.register(newUser);
-    userService.logout(registerResult);
+    userService.logout(registerResult.token());
     AuthData loginResult = userService.login(newUser);
     Assertions.assertEquals(loginResult.username(), registerResult.username(),
                             "User logged in");
@@ -48,7 +49,7 @@ public class LoginTests {
   @DisplayName("Wrong password")
   public void loginFailPassword() throws DataAccessException {
     AuthData registerResult = userService.register(newUser);
-    userService.logout(registerResult);
+    userService.logout(registerResult.token());
     Assertions.assertThrows(
         DataAccessException.class,
         () -> userService.login(evilUser), "Wrong password");

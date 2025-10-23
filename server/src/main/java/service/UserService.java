@@ -13,9 +13,9 @@ public class UserService {
   private final UserDataAccess userAccess;
   private final AuthDataAccess authAccess;
 
-  public UserService() {
+  public UserService(AuthRAMDAO authAccess) {
     this.userAccess = new UserRAMDAO();
-    this.authAccess = new AuthRAMDAO();
+    this.authAccess = authAccess;
   }
 
   public AuthData register(UserData data) throws DataAccessException {
@@ -36,8 +36,8 @@ public class UserService {
     throw new DataAccessException("Username or password incorrect");
   }
 
-  public void logout(AuthData data) throws DataAccessException {
-    AuthData session = authAccess.getSession(data.token());
+  public void logout(String authToken) throws DataAccessException {
+    AuthData session = authAccess.getSession(authToken);
     if (session != null) {
       authAccess.deleteSession(session.token());
       return;

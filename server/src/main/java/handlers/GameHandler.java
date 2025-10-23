@@ -1,10 +1,13 @@
 package handlers;
 import com.google.gson.Gson;
+import dataAccess.AuthDataAccess;
 import dataAccess.DataAccessException;
 import io.javalin.http.Context;
+import java.util.List;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
-import service.UserService;
+import service.GameService;
 
 public class GameHandler {
 
@@ -12,33 +15,36 @@ public class GameHandler {
 
   private final GameService gameService;
 
-  public GameHandler(GameService gameService) {
+  public GameHandler(GameService gameService, AuthDataAccess authDataAccess) {
     this.gameService = gameService;
   }
 
-  public void register(Context ctx) throws DataAccessException {
-    UserData userData = serializer.fromJson(ctx.body(), UserData.class);
-    AuthData output = userService.register(userData);
+  public void listGames(Context ctx) throws DataAccessException {
+    String authToken = ctx.header("authToken");
+    List<GameData> output = gameService.listGames(authToken);
     ctx.status(201);
     String jsonOutput = serializer.toJson(output);
     ctx.result(jsonOutput);
   }
 
-  public void login(Context ctx) throws DataAccessException {
-    UserData userData = serializer.fromJson(ctx.body(), UserData.class);
-    AuthData output = userService.login(userData);
+  public void createGame(Context ctx) throws DataAccessException {
+    String authToken = ctx.header("authToken");
+    GameData userData = serializer.fromJson(ctx.body(), GameData.class);
+    List<GameData> output = gameService.createGame(authToken, userData);
     ctx.status(201);
     String jsonOutput = serializer.toJson(output);
     ctx.result(jsonOutput);
   }
 
-  public void logout(Context ctx) throws DataAccessException {
+  public void joinGame(Context ctx) throws DataAccessException {
     AuthData userData = serializer.fromJson(ctx.body(), AuthData.class);
-    userService.logout(userData);
+    List<GameData> output = gameService.listGames(userData);
     ctx.status(201);
+    String jsonOutput = serializer.toJson(output);
+    ctx.result(jsonOutput);
   }
 
   public void destroy(Context ctx) throws DataAccessException {
-    userService.destroy();
+    gameService.destroy();
   }
 }

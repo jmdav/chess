@@ -1,12 +1,12 @@
 package service;
 
 import chess.ChessGame;
+import dataAccess.AuthRAMDAO;
 import dataAccess.DataAccessException;
 import handlers.*;
 import java.net.HttpURLConnection;
 import java.util.*;
 import model.*;
-import model.UserData;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import server.Server;
@@ -23,7 +23,7 @@ public class RegisterTests {
   public static void init() {
 
     newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
-    userService = new UserService();
+    userService = new UserService(new AuthRAMDAO());
   }
 
   @BeforeEach

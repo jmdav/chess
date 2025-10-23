@@ -1,6 +1,7 @@
 package service;
 
 import chess.ChessGame;
+import dataAccess.AuthRAMDAO;
 import dataAccess.DataAccessException;
 import handlers.*;
 import java.net.HttpURLConnection;
@@ -24,7 +25,7 @@ public class LogoutTests {
 
     newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
     authSpoof = new AuthData("fart", "the fart token");
-    userService = new UserService();
+    userService = new UserService(new AuthRAMDAO());
   }
 
   @BeforeEach
@@ -35,18 +36,19 @@ public class LogoutTests {
   @DisplayName("Normal Logout")
   public void logoutSuccess() throws DataAccessException {
     AuthData registerResult = userService.register(newUser);
-    userService.logout(registerResult);
+    userService.logout(registerResult.token());
     Assertions.assertThrows(
         DataAccessException.class,
-        () -> userService.logout(registerResult), "Can't logout twice");
+        () -> userService.logout(registerResult.token()), "Can't logout twice");
   };
 
   @Test
   @Order(2)
   @DisplayName("No session")
   public void loginFail() throws DataAccessException {
-    Assertions.assertThrows(
-        DataAccessException.class,
-        () -> userService.logout(authSpoof), "Can't logout if you don't exist");
+    Assertions.assertThrows(DataAccessException.class,
+                            ()
+                                -> userService.logout(authSpoof.token()),
+                            "Can't logout if you don't exist");
   };
 }

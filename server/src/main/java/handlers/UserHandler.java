@@ -1,5 +1,6 @@
 package handlers;
 import com.google.gson.Gson;
+import dataAccess.AuthDataAccess;
 import dataAccess.DataAccessException;
 import io.javalin.http.Context;
 import model.AuthData;
@@ -12,7 +13,7 @@ public class UserHandler {
 
   private final UserService userService;
 
-  public UserHandler(UserService userService) {
+  public UserHandler(UserService userService, AuthDataAccess authDataAccess) {
     this.userService = userService;
   }
 
@@ -33,8 +34,8 @@ public class UserHandler {
   }
 
   public void logout(Context ctx) throws DataAccessException {
-    AuthData userData = serializer.fromJson(ctx.body(), AuthData.class);
-    userService.logout(userData);
+    String authToken = ctx.header("authToken");
+    userService.logout(authToken);
     ctx.status(201);
   }
 

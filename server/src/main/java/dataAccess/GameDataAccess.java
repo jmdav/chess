@@ -1,12 +1,13 @@
 package dataAccess;
 
-import model.UserData;
+import java.util.List;
+import model.GameData;
 
 public interface GameDataAccess {
 
-  UserData getUser(String username) throws DataAccessException;
+  List<GameData> getGames() throws DataAccessException;
 
-  UserData createUser(UserData data) throws DataAccessException;
+  GameData createGame() throws DataAccessException;
 
   void destroy() throws DataAccessException;
 }

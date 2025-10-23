@@ -1,15 +1,19 @@
 package dataAccess;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
-import model.UserData;
+import model.GameData;
 
-public class GameRAMDAO implements UserDataAccess {
+public class GameRAMDAO implements GameDataAccess {
 
-  private Map<String, UserData> gameDB = new ConcurrentHashMap<>();
+  private Map<String, GameData> gameDB = new ConcurrentHashMap<>();
 
   @Override
-  public UserData getUser(String username) throws DataAccessException {
-    return gameDB.get(username);
+  public List<GameData> getGames() throws DataAccessException {
+    List<GameData> output = new Vector<>();
+    gameDB.forEach((ID, data) -> { output.add(data); });
+    return output;
   };
 
   @Override
