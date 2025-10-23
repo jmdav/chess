@@ -75,183 +75,178 @@ public class ChessPiece {
       }
 
       ChessPiece target = board.getPiece(targetPosition);
+      boolean add = false;
+      SpaceStatus spaceStatus = SpaceStatus.BLOCK;
 
-      if (target == null) {
-        if (addCondition == SpaceStatus.EMPTY ||
-            addCondition == SpaceStatus.KILLOREMPTY) {
-          if (!promotion) {
-            output.add(new ChessMove(start, targetPosition, null));
-          } else {
-            for (PieceType option : promotionOptions) {
-              output.add(new ChessMove(start, targetPosition, option));
-            }
+      if (target == null && (addCondition == SpaceStatus.EMPTY ||
+                             addCondition == SpaceStatus.KILLOREMPTY)) {
+        add = true;
+        spaceStatus = SpaceStatus.EMPTY;
+      }
+      else if (target != null && (target.getTeamColor() != pieceColor &&
+          (addCondition == SpaceStatus.KILL ||
+           addCondition == SpaceStatus.KILLOREMPTY))) {
+        add = true;
+        spaceStatus = SpaceStatus.KILL;
+      }
+      if (add) {
+        if (!promotion) {
+          output.add(new ChessMove(start, targetPosition, null));
+        } else {
+          for (PieceType option : promotionOptions) {
+            output.add(new ChessMove(start, targetPosition, option));
           }
         }
-        return SpaceStatus.EMPTY;
       }
-      if (target.getTeamColor() != pieceColor) {
-        if (addCondition == SpaceStatus.KILL ||
-            addCondition == SpaceStatus.KILLOREMPTY) {
-          if (!promotion) {
-            output.add(new ChessMove(start, targetPosition, null));
-          } else {
-            for (PieceType option : promotionOptions) {
-              output.add(new ChessMove(start, targetPosition, option));
-            }
+      return spaceStatus;
+    }
+  }
+
+    public Collection<ChessMove> pieceMoves(ChessBoard board,
+                                            ChessPosition myPosition) {
+      return pieceMoves(board, myPosition, false);
+    }
+
+    public Collection<ChessMove>
+    pieceMoves(ChessBoard board, ChessPosition myPosition, boolean dangerOnly) {
+      int x = myPosition.getColumn() - 1;
+      int y = myPosition.getRow() - 1;
+
+      HashSet<ChessMove> validMoves = new HashSet<ChessMove>();
+      SpaceStatus status;
+      SpaceChecker checker = new SpaceChecker(board, validMoves, myPosition);
+
+      SpaceStatus emptyIfAllowed = null;
+      if (!dangerOnly) {
+        emptyIfAllowed = SpaceStatus.EMPTY;
+      }
+
+      switch (type) {
+      case PAWN:
+        boolean promotion = false;
+        if (pieceColor == ChessGame.TeamColor.WHITE) {
+          if (y == 6) {
+            promotion = true;
           }
+          status = checker.checkAddSpace(x, y + 1, emptyIfAllowed, promotion);
+          if (y == 1 && status == SpaceStatus.EMPTY) {
+            // Check if it's the two move starting special
+            checker.checkAddSpace(x, y + 2, emptyIfAllowed);
+          }
+          checker.checkAddSpace(x + 1, y + 1, SpaceStatus.KILL, promotion);
+          checker.checkAddSpace(x - 1, y + 1, SpaceStatus.KILL, promotion);
+        } else {
+          if (y == 1) {
+            promotion = true;
+          }
+          status = checker.checkAddSpace(x, y - 1, emptyIfAllowed, promotion);
+          if (y == 6 && status == SpaceStatus.EMPTY) {
+            // Check if it's the two move starting special
+            checker.checkAddSpace(x, y - 2, emptyIfAllowed);
+          }
+          checker.checkAddSpace(x + 1, y - 1, SpaceStatus.KILL, promotion);
+          checker.checkAddSpace(x - 1, y - 1, SpaceStatus.KILL, promotion);
         }
-        return SpaceStatus.KILL;
-      } else {
-        return SpaceStatus.BLOCK;
+
+        break;
+
+      case ROOK:
+        rookCheck(checker, SpaceStatus.KILLOREMPTY, x, y);
+        break;
+
+      case KNIGHT:
+        checker.checkAddSpace(x + 1, y + 2, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x + 2, y + 1, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x + 2, y - 1, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x + 1, y - 2, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x - 1, y - 2, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x - 2, y - 1, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x - 2, y + 1, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x - 1, y + 2, SpaceStatus.KILLOREMPTY);
+        break;
+
+      case BISHOP:
+        bishopCheck(checker, SpaceStatus.KILLOREMPTY, x, y);
+        break;
+
+      case QUEEN:
+        rookCheck(checker, SpaceStatus.KILLOREMPTY, x, y);
+        bishopCheck(checker, SpaceStatus.KILLOREMPTY, x, y);
+        break;
+
+      case KING:
+        checker.checkAddSpace(x + 1, y, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x + 1, y + 1, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x + 1, y - 1, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x - 1, y, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x - 1, y + 1, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x - 1, y - 1, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x, y + 1, SpaceStatus.KILLOREMPTY);
+        checker.checkAddSpace(x, y - 1, SpaceStatus.KILLOREMPTY);
+        break;
       }
-    }
-  }
 
-  public Collection<ChessMove> pieceMoves(ChessBoard board,
-                                          ChessPosition myPosition) {
-    return pieceMoves(board, myPosition, false);
-  }
-
-  public Collection<ChessMove>
-  pieceMoves(ChessBoard board, ChessPosition myPosition, boolean dangerOnly) {
-    int x = myPosition.getColumn() - 1;
-    int y = myPosition.getRow() - 1;
-
-    HashSet<ChessMove> validMoves = new HashSet<ChessMove>();
-    SpaceStatus status;
-    SpaceChecker checker = new SpaceChecker(board, validMoves, myPosition);
-
-    SpaceStatus emptyIfAllowed = null;
-    if (!dangerOnly) {
-      emptyIfAllowed = SpaceStatus.EMPTY;
+      return validMoves;
     }
 
-    switch (type) {
-    case PAWN:
-      boolean promotion = false;
-      if (pieceColor == ChessGame.TeamColor.WHITE) {
-        if (y == 6) {
-          promotion = true;
+    void rookCheck(SpaceChecker checker, SpaceStatus status, int x, int y) {
+      for (int i = 1; i < 8; i++) {
+        status = checker.checkAddSpace(x + i, y, SpaceStatus.KILLOREMPTY);
+        if (status != SpaceStatus.EMPTY) {
+          break;
         }
-        status = checker.checkAddSpace(x, y + 1, emptyIfAllowed, promotion);
-        if (y == 1 && status == SpaceStatus.EMPTY) {
-          // Check if it's the two move starting special
-          checker.checkAddSpace(x, y + 2, emptyIfAllowed);
+      }
+      for (int i = 1; i < 8; i++) {
+        status = checker.checkAddSpace(x - i, y, SpaceStatus.KILLOREMPTY);
+        if (status != SpaceStatus.EMPTY) {
+          break;
         }
-        checker.checkAddSpace(x + 1, y + 1, SpaceStatus.KILL, promotion);
-        checker.checkAddSpace(x - 1, y + 1, SpaceStatus.KILL, promotion);
-      } else {
-        if (y == 1) {
-          promotion = true;
+      }
+      for (int i = 1; i < 8; i++) {
+        status = checker.checkAddSpace(x, y + i, SpaceStatus.KILLOREMPTY);
+        if (status != SpaceStatus.EMPTY) {
+          break;
         }
-        status = checker.checkAddSpace(x, y - 1, emptyIfAllowed, promotion);
-        if (y == 6 && status == SpaceStatus.EMPTY) {
-          // Check if it's the two move starting special
-          checker.checkAddSpace(x, y - 2, emptyIfAllowed);
+      }
+      for (int i = 1; i < 8; i++) {
+        status = checker.checkAddSpace(x, y - i, SpaceStatus.KILLOREMPTY);
+        if (status != SpaceStatus.EMPTY) {
+          break;
         }
-        checker.checkAddSpace(x + 1, y - 1, SpaceStatus.KILL, promotion);
-        checker.checkAddSpace(x - 1, y - 1, SpaceStatus.KILL, promotion);
-      }
-
-      break;
-
-    case ROOK:
-      rookCheck(checker, SpaceStatus.KILLOREMPTY, x, y);
-      break;
-
-    case KNIGHT:
-      checker.checkAddSpace(x + 1, y + 2, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x + 2, y + 1, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x + 2, y - 1, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x + 1, y - 2, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x - 1, y - 2, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x - 2, y - 1, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x - 2, y + 1, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x - 1, y + 2, SpaceStatus.KILLOREMPTY);
-      break;
-
-    case BISHOP:
-      bishopCheck(checker, SpaceStatus.KILLOREMPTY, x, y);
-      break;
-
-    case QUEEN:
-      rookCheck(checker, SpaceStatus.KILLOREMPTY, x, y);
-      bishopCheck(checker, SpaceStatus.KILLOREMPTY, x, y);
-      break;
-
-    case KING:
-      checker.checkAddSpace(x + 1, y, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x + 1, y + 1, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x + 1, y - 1, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x - 1, y, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x - 1, y + 1, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x - 1, y - 1, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x, y + 1, SpaceStatus.KILLOREMPTY);
-      checker.checkAddSpace(x, y - 1, SpaceStatus.KILLOREMPTY);
-      break;
-    }
-
-    return validMoves;
-  }
-
-  void rookCheck(SpaceChecker checker, SpaceStatus status, int x, int y) {
-    for (int i = 1; i < 8; i++) {
-      status = checker.checkAddSpace(x + i, y, SpaceStatus.KILLOREMPTY);
-      if (status != SpaceStatus.EMPTY) {
-        break;
       }
     }
-    for (int i = 1; i < 8; i++) {
-      status = checker.checkAddSpace(x - i, y, SpaceStatus.KILLOREMPTY);
-      if (status != SpaceStatus.EMPTY) {
-        break;
-      }
-    }
-    for (int i = 1; i < 8; i++) {
-      status = checker.checkAddSpace(x, y + i, SpaceStatus.KILLOREMPTY);
-      if (status != SpaceStatus.EMPTY) {
-        break;
-      }
-    }
-    for (int i = 1; i < 8; i++) {
-      status = checker.checkAddSpace(x, y - i, SpaceStatus.KILLOREMPTY);
-      if (status != SpaceStatus.EMPTY) {
-        break;
-      }
-    }
-  }
 
-  void bishopCheck(SpaceChecker checker, SpaceStatus status, int x, int y) {
-    for (int i = 1; i < 7; i++) {
-      status = checker.checkAddSpace(x + i, y + i, SpaceStatus.KILLOREMPTY);
-      if (status != SpaceStatus.EMPTY) {
-        break;
+    void bishopCheck(SpaceChecker checker, SpaceStatus status, int x, int y) {
+      for (int i = 1; i < 8; i++) {
+        status = checker.checkAddSpace(x + i, y + i, SpaceStatus.KILLOREMPTY);
+        if (status != SpaceStatus.EMPTY) {
+          break;
+        }
+      }
+      for (int i = 1; i < 8; i++) {
+        status = checker.checkAddSpace(x + i, y - i, SpaceStatus.KILLOREMPTY);
+        if (status != SpaceStatus.EMPTY) {
+          break;
+        }
+      }
+      for (int i = 1; i < 8; i++) {
+        status = checker.checkAddSpace(x - i, y + i, SpaceStatus.KILLOREMPTY);
+        if (status != SpaceStatus.EMPTY) {
+          break;
+        }
+      }
+      for (int i = 1; i < 8; i++) {
+        status = checker.checkAddSpace(x - i, y - i, SpaceStatus.KILLOREMPTY);
+        if (status != SpaceStatus.EMPTY) {
+          break;
+        }
       }
     }
-    for (int i = 1; i < 7; i++) {
-      status = checker.checkAddSpace(x + i, y - i, SpaceStatus.KILLOREMPTY);
-      if (status != SpaceStatus.EMPTY) {
-        break;
-      }
-    }
-    for (int i = 1; i < 7; i++) {
-      status = checker.checkAddSpace(x - i, y + i, SpaceStatus.KILLOREMPTY);
-      if (status != SpaceStatus.EMPTY) {
-        break;
-      }
-    }
-    for (int i = 1; i < 7; i++) {
-      status = checker.checkAddSpace(x - i, y - i, SpaceStatus.KILLOREMPTY);
-      if (status != SpaceStatus.EMPTY) {
-        break;
-      }
-    }
-  }
 
-  @Override
-  public String toString() {
-    String out = "";
-    switch (type) {
+    @Override
+    public String toString() {
+      String out = "";
+      switch (type) {
             case KING -> {
                 out = "k";
             }
