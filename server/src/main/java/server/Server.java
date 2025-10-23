@@ -1,44 +1,33 @@
 package server;
-import model.*;
-import io.javalin.http.Context;
-import server.websocket.WebSocketHandler;
+
+import handlers.*;
 import io.javalin.*;
+import io.javalin.http.Context;
+import model.*;
+import service.*;
 
 public class Server {
 
-    private final ChessService service;
-    private final WebSocketHandler webSocketHandler;
-    private final Javalin javalin;
+  private final Javalin javalin;
 
-    public Server() {
-        javalin = Javalin.create(config -> config.staticFiles.add("web"))
-                .post("/pet", this::addPet)
-        ;
+  public Server() {
 
-        // Register your endpoints and exception handlers here.
+    UserService userService = new UserService();
+    UserHandler userHandler = new UserHandler(userService);
 
+    javalin = Javalin.create(config -> config.staticFiles.add("web"));
+    javalin.get("/user", userHandler::createUser);
+  }
 
-    }
+  private void exceptionHandler(ResponseException ex, Context ctx) {
+    ctx.status(ex.toHttpStatusCode());
+    ctx.json(ex.toJson());
+  }
 
-    private void exceptionHandler(ResponseException ex, Context ctx) {
-        ctx.status(ex.toHttpStatusCode());
-        ctx.json(ex.toJson());
-    }
+  public int run(int desiredPort) {
+    javalin.start(desiredPort);
+    return javalin.port();
+  }
 
-    public int run(int desiredPort) {
-        javalin.start(desiredPort);
-        return javalin.port();
-    }
-
-    public void stop() {
-        javalin.stop();
-    }
-
-    private void addPet(Context ctx) throws ResponseException {
-        Pet pet = new Gson().fromJson(ctx.body(), Pet.class);
-        pet = service.addPet(pet);
-        webSocketHandler.makeNoise(pet.name(), pet.sound());
-        ctx.json(new Gson().toJson(pet));
-    }
-
+  public void stop() { javalin.stop(); }
 }
