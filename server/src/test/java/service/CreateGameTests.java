@@ -1,5 +1,12 @@
 package service;
 
+import chess.ChessGame.TeamColor;
+import dataAccess.AuthRAMDAO;
+import dataAccess.DataAccessException;
+import model.AuthData;
+import model.GameID;
+import model.GameRequestData;
+import model.UserData;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 
@@ -8,16 +15,43 @@ public class CreateGameTests {
 
   // ### TESTING SETUP/CLEANUP ###
 
+  public static UserData newUser;
+  public static AuthData spoofAuth;
+  private static UserService userService;
+  private static GameService gameService;
+  // ### TESTING SETUP/CLEANUP ###
+
   @BeforeAll
   public static void init() {
 
-    new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
-    new TestUser("NewUser", "newUserPassword", "nu@mail.com");
+    newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
+    AuthRAMDAO authBase = new AuthRAMDAO();
+    userService = new UserService(authBase);
+    gameService = new GameService(authBase);
   }
 
-  @BeforeEach
-  public void setup() {}
+  @Test
+  @Order(1)
+  @DisplayName("Make game")
+  public void makeGame() throws DataAccessException {
+    spoofAuth = userService.register(newUser);
+    gameService.createGame(spoofAuth.authToken(), "test");
+    Assertions.assertNotNull(
+        gameService.listGames(spoofAuth.authToken()).games().get(0),
+        "yeppers... it's real");
+  };
 
-  // Makes a game successfully
-  // Game name already exists
-}
+  @Test
+  @Order(2)
+  @DisplayName("Game does not exist")
+  public void joinBad() throws DataAccessException {
+    final AuthData spoofAuth = userService.register(newUser);
+    GameRequestData request = new GameRequestData(TeamColor.WHITE, 2);
+
+    Assertions.assertThrows(
+        DataAccessException.class,
+        ()
+            -> gameService.joinGame(spoofAuth.authToken(), request),
+        "can't join game that don't exist");
+  };
+};

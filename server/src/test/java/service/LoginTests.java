@@ -41,6 +41,7 @@ public class LoginTests {
   @Order(2)
   @DisplayName("Wrong password")
   public void loginFailPassword() throws DataAccessException {
+    userService.destroy();
     AuthData registerResult = userService.register(newUser);
     userService.logout(registerResult.authToken());
     Assertions.assertThrows(

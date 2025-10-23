@@ -1,5 +1,12 @@
 package service;
 
+import chess.ChessGame.TeamColor;
+import dataAccess.AuthRAMDAO;
+import dataAccess.DataAccessException;
+import model.AuthData;
+import model.GameID;
+import model.GameRequestData;
+import model.UserData;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 
@@ -8,15 +15,32 @@ public class ClearTests {
 
   // ### TESTING SETUP/CLEANUP ###
 
+  public static UserData newUser;
+  public static AuthData spoofAuth;
+  private static UserService userService;
+  private static GameService gameService;
+  // ### TESTING SETUP/CLEANUP ###
+
   @BeforeAll
   public static void init() {
 
-    new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
-    new TestUser("NewUser", "newUserPassword", "nu@mail.com");
+    newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
+    AuthRAMDAO authBase = new AuthRAMDAO();
+    userService = new UserService(authBase);
+    gameService = new GameService(authBase);
   }
 
-  @BeforeEach
-  public void setup() {}
-
-  // Clear, is database clear
+  @Test
+  @Order(1)
+  @DisplayName("Normal List")
+  public void getList() throws DataAccessException {
+    spoofAuth = userService.register(newUser);
+    gameService.createGame(spoofAuth.authToken(), "test");
+    gameService.destroy();
+    Assertions.assertThrows(
+        DataAccessException.class,
+        ()
+            -> gameService.listGames(spoofAuth.authToken()).games(),
+        "can't list games that have been Exploded");
+  }
 }
