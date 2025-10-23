@@ -29,10 +29,32 @@ public class GameRAMDAO implements GameDataAccess {
   @Override
   public void joinGame(String username, GameRequestData data)
       throws DataAccessException {
+
     GameData targetGame = gameDB.get(data.gameID());
     if (targetGame == null) {
       throw new DataAccessException("Game does not exist");
     }
+    if (data.white()) {
+      if (targetGame.whiteUsername() != null) {
+        throw new DataAccessException("Already taken");
+      } else {
+        targetGame =
+            new GameData(targetGame.gameID(), username,
+                         targetGame.blackUsername(), targetGame.gameName());
+      }
+    }
+    if (!data.white()) {
+      if (targetGame.blackUsername() != null) {
+        throw new DataAccessException("Already taken");
+      } else {
+        targetGame =
+            new GameData(targetGame.gameID(), targetGame.whiteUsername(),
+                         username, targetGame.gameName());
+      }
+    }
+
+    gameDB.remove(data.gameID());
+    gameDB.put(targetGame.gameID(), targetGame);
   }
 
   @Override

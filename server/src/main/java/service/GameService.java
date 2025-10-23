@@ -44,11 +44,11 @@ public class GameService {
     }
   }
 
-  public String joinGame(String authToken, GameRequestData request)
+  public void joinGame(String authToken, GameRequestData request)
       throws DataAccessException {
     AuthData session = authAccess.getSession(authToken);
     if (session != null) {
-      return gameAccess.joinGame(session.username(), request);
+      gameAccess.joinGame(session.username(), request);
     } else {
       throw new DataAccessException("Unauthorized");
     }

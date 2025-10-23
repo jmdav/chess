@@ -3,6 +3,7 @@ import com.google.gson.Gson;
 import dataAccess.AuthDataAccess;
 import dataAccess.DataAccessException;
 import io.javalin.http.Context;
+import javax.sound.midi.SysexMessage;
 import model.AuthData;
 import model.UserData;
 import service.UserService;
@@ -27,6 +28,7 @@ public class UserHandler {
 
   public void login(Context ctx) throws DataAccessException {
     UserData userData = serializer.fromJson(ctx.body(), UserData.class);
+    System.out.println(userData);
     AuthData output = userService.login(userData);
     ctx.status(201);
     String jsonOutput = serializer.toJson(output);
@@ -34,7 +36,7 @@ public class UserHandler {
   }
 
   public void logout(Context ctx) throws DataAccessException {
-    String authToken = ctx.header("authToken");
+    String authToken = ctx.header("authorization");
     userService.logout(authToken);
     ctx.status(201);
   }

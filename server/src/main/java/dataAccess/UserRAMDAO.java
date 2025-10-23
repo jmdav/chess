@@ -9,6 +9,9 @@ public class UserRAMDAO implements UserDataAccess {
 
   @Override
   public UserData getUser(String username) throws DataAccessException {
+    if (userDB.get(username) != null) {
+      System.out.println(userDB.get(username).password());
+    }
     return userDB.get(username);
   };
 

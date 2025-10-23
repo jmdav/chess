@@ -29,11 +29,14 @@ public class UserService {
 
   public AuthData login(UserData data) throws DataAccessException {
     UserData prospectiveUser = userAccess.getUser(data.username());
-    if (prospectiveUser != null) {
-      if (prospectiveUser.password() == data.password())
-        return authAccess.createSession(data.username());
+    System.out.println(prospectiveUser);
+    System.out.println(data);
+    if (prospectiveUser != null &&
+        prospectiveUser.password().equals(data.password())) {
+      return authAccess.createSession(data.username());
+    } else {
+      throw new DataAccessException("Username or password incorrect");
     }
-    throw new DataAccessException("Username or password incorrect");
   }
 
   public void logout(String authToken) throws DataAccessException {

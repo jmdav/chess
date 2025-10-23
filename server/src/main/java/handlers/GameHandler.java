@@ -21,7 +21,7 @@ public class GameHandler {
   }
 
   public void listGames(Context ctx) throws DataAccessException {
-    String authToken = ctx.header("authToken");
+    String authToken = ctx.header("authorization");
     List<GameData> output = gameService.listGames(authToken);
     ctx.status(201);
     String jsonOutput = serializer.toJson(output);
@@ -29,7 +29,7 @@ public class GameHandler {
   }
 
   public void createGame(Context ctx) throws DataAccessException {
-    String authToken = ctx.header("authToken");
+    String authToken = ctx.header("authorization");
     String gameName = serializer.fromJson(ctx.body(), String.class);
     String output = gameService.createGame(authToken, gameName);
     ctx.status(201);
@@ -38,7 +38,7 @@ public class GameHandler {
   }
 
   public void joinGame(Context ctx) throws DataAccessException {
-    String authToken = ctx.header("authToken");
+    String authToken = ctx.header("authorization");
     GameRequestData gameRequest =
         serializer.fromJson(ctx.body(), GameRequestData.class);
     gameService.joinGame(authToken, gameRequest);
