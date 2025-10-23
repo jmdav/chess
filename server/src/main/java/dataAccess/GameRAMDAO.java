@@ -1,11 +1,11 @@
 package dataAccess;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import model.GameData;
 import model.GameID;
+import model.GameList;
 import model.GameRequestData;
 
 public class GameRAMDAO implements GameDataAccess {
@@ -13,10 +13,10 @@ public class GameRAMDAO implements GameDataAccess {
   private Map<Integer, GameData> gameDB = new ConcurrentHashMap<>();
 
   @Override
-  public List<GameData> getGames() throws DataAccessException {
+  public GameList getGames() throws DataAccessException {
     List<GameData> output = new Vector<>();
     gameDB.forEach((ID, data) -> { output.add(data); });
-    return output;
+    return new GameList(output);
   };
 
   @Override

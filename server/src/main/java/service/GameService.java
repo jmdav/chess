@@ -9,6 +9,7 @@ import java.util.List;
 import model.AuthData;
 import model.GameData;
 import model.GameID;
+import model.GameList;
 import model.GameRequestData;
 
 public class GameService {
@@ -26,7 +27,7 @@ public class GameService {
     gameAccess.destroy();
   }
 
-  public List<GameData> listGames(String authToken) throws DataAccessException {
+  public GameList listGames(String authToken) throws DataAccessException {
     AuthData session = authAccess.getSession(authToken);
     if (session != null) {
       return gameAccess.getGames();

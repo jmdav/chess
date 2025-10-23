@@ -7,6 +7,7 @@ import java.util.List;
 import model.AuthData;
 import model.GameData;
 import model.GameID;
+import model.GameList;
 import model.GameRequestData;
 import model.GameStartData;
 import model.UserData;
@@ -24,7 +25,7 @@ public class GameHandler {
 
   public void listGames(Context ctx) {
     String authToken = ctx.header("authorization");
-    List<GameData> output;
+    GameList output;
     try {
       output = gameService.listGames(authToken);
       ctx.status(200);
