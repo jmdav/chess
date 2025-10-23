@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import model.GameData;
+import model.GameRequestData;
 
 public class GameRAMDAO implements GameDataAccess {
 
@@ -24,6 +25,15 @@ public class GameRAMDAO implements GameDataAccess {
     gameDB.put(game.gameID(), game);
     return game.gameID();
   };
+
+  @Override
+  public void joinGame(String username, GameRequestData data)
+      throws DataAccessException {
+    GameData targetGame = gameDB.get(data.gameID());
+    if (targetGame == null) {
+      throw new DataAccessException("Game does not exist");
+    }
+  }
 
   @Override
   public void destroy() throws DataAccessException {

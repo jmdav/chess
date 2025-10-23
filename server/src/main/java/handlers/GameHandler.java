@@ -6,6 +6,7 @@ import io.javalin.http.Context;
 import java.util.List;
 import model.AuthData;
 import model.GameData;
+import model.GameRequestData;
 import model.UserData;
 import service.GameService;
 
@@ -38,10 +39,10 @@ public class GameHandler {
 
   public void joinGame(Context ctx) throws DataAccessException {
     String authToken = ctx.header("authToken");
-    List<GameData> output = gameService.listGames(userData);
-    ctx.status(201);
-    String jsonOutput = serializer.toJson(output);
-    ctx.result(jsonOutput);
+    GameRequestData gameRequest =
+        serializer.fromJson(ctx.body(), GameRequestData.class);
+    gameService.joinGame(authToken, gameRequest);
+    ctx.status(200);
   }
 
   public void destroy(Context ctx) throws DataAccessException {
