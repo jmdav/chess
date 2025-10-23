@@ -19,7 +19,7 @@ public class UserService {
   }
 
   public AuthData register(UserData data) throws DataAccessException {
-    if (data.username() == null) {
+    if (data.username() == null || data.password() == null) {
       throw new DataAccessException(400, "Error: bad request");
     }
     if (userAccess.getUser(data.username()) == null) {
@@ -31,7 +31,7 @@ public class UserService {
   }
 
   public AuthData login(UserData data) throws DataAccessException {
-    if (data.username() != null) {
+    if (data.username() != null && data.password() != null) {
       UserData prospectiveUser = userAccess.getUser(data.username());
       System.out.println(prospectiveUser);
       System.out.println(data);
@@ -50,7 +50,6 @@ public class UserService {
     AuthData session = authAccess.getSession(authToken);
     if (session != null) {
       authAccess.deleteSession(session.authToken());
-      return;
     } else {
       throw new DataAccessException(401, "unauthorized");
     }

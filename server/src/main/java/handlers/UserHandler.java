@@ -18,12 +18,18 @@ public class UserHandler {
     this.userService = userService;
   }
 
-  public void register(Context ctx) throws DataAccessException {
+  public void register(Context ctx) {
     UserData userData = serializer.fromJson(ctx.body(), UserData.class);
-    AuthData output = userService.register(userData);
-    ctx.status(200);
-    String jsonOutput = serializer.toJson(output);
-    ctx.result(jsonOutput);
+    AuthData output;
+    try {
+      output = userService.register(userData);
+      ctx.status(200);
+      String jsonOutput = serializer.toJson(output);
+      ctx.result(jsonOutput);
+    } catch (DataAccessException e) {
+      ctx.status(e.getStatusCode());
+      ctx.result(serializer.toJson(e.getErrorMessage()));
+    }
   }
 
   public void login(Context ctx) {
@@ -37,14 +43,19 @@ public class UserHandler {
       ctx.result(jsonOutput);
     } catch (DataAccessException e) {
       ctx.status(e.getStatusCode());
-      ctx.result(e.getMessage());
+      ctx.result(serializer.toJson(e.getErrorMessage()));
     }
   }
 
-  public void logout(Context ctx) throws DataAccessException {
-    String authToken = ctx.header("authorization");
-    userService.logout(authToken);
-    ctx.status(201);
+  public void logout(Context ctx) {
+    try {
+      String authToken = ctx.header("authorization");
+      userService.logout(authToken);
+      ctx.status(200);
+    } catch (DataAccessException e) {
+      ctx.status(e.getStatusCode());
+      ctx.result(serializer.toJson(e.getErrorMessage()));
+    }
   }
 
   public void destroy(Context ctx) throws DataAccessException {

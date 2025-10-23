@@ -1,17 +1,19 @@
 package dataAccess;
 
+import model.ErrorMessage;
+
 /**
  * Indicates there was an error connecting to the database
  */
 public class DataAccessException extends Exception {
   private final int statusCode;
-  private final String message;
+  private final ErrorMessage message;
 
   public DataAccessException(int statusCode, String message) {
     this.statusCode = statusCode;
-    this.message = message;
+    this.message = new ErrorMessage(message);
   }
 
   public int getStatusCode() { return statusCode; }
-  public String getMessage() { return message; }
+  public ErrorMessage getErrorMessage() { return message; }
 }
