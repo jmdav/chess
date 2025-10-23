@@ -1,7 +1,5 @@
 package dataAccess;
 
-import java.util.List;
-import model.GameData;
 import model.GameID;
 import model.GameList;
 import model.GameRequestData;

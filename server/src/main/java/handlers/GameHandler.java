@@ -3,14 +3,10 @@ import com.google.gson.Gson;
 import dataAccess.AuthDataAccess;
 import dataAccess.DataAccessException;
 import io.javalin.http.Context;
-import java.util.List;
-import model.AuthData;
-import model.GameData;
 import model.GameID;
 import model.GameList;
 import model.GameRequestData;
 import model.GameStartData;
-import model.UserData;
 import service.GameService;
 
 public class GameHandler {

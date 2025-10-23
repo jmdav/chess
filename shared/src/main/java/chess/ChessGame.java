@@ -1,6 +1,5 @@
 package chess;
 
-import java.io.Console;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -55,9 +54,6 @@ public class ChessGame {
     HashSet<ChessMove> moves = new HashSet<ChessMove>();
     ChessPiece targetPiece = board.getPiece(startPosition);
     teamTurn = targetPiece.getTeamColor();
-    if (targetPiece == null) {
-      return null;
-    }
     Collection<ChessMove> possibleMoves =
         targetPiece.pieceMoves(board, startPosition);
     System.out.println("Before elimination: " + possibleMoves);
