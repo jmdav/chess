@@ -206,25 +206,25 @@ public class ChessPiece {
     for (int i = 1; i < 8; i++) {
       status = checker.checkAddSpace(x + i, y, SpaceStatus.KILLOREMPTY);
       if (status != SpaceStatus.EMPTY) {
-        return;
+        break;
       }
     }
     for (int i = 1; i < 8; i++) {
       status = checker.checkAddSpace(x - i, y, SpaceStatus.KILLOREMPTY);
       if (status != SpaceStatus.EMPTY) {
-        return;
+        break;
       }
     }
     for (int i = 1; i < 8; i++) {
       status = checker.checkAddSpace(x, y + i, SpaceStatus.KILLOREMPTY);
       if (status != SpaceStatus.EMPTY) {
-        return;
+        break;
       }
     }
     for (int i = 1; i < 8; i++) {
       status = checker.checkAddSpace(x, y - i, SpaceStatus.KILLOREMPTY);
       if (status != SpaceStatus.EMPTY) {
-        return;
+        break;
       }
     }
   }
@@ -233,25 +233,25 @@ public class ChessPiece {
     for (int i = 1; i < 7; i++) {
       status = checker.checkAddSpace(x + i, y + i, SpaceStatus.KILLOREMPTY);
       if (status != SpaceStatus.EMPTY) {
-        return;
+        break;
       }
     }
     for (int i = 1; i < 7; i++) {
       status = checker.checkAddSpace(x + i, y - i, SpaceStatus.KILLOREMPTY);
       if (status != SpaceStatus.EMPTY) {
-        return;
+        break;
       }
     }
     for (int i = 1; i < 7; i++) {
       status = checker.checkAddSpace(x - i, y + i, SpaceStatus.KILLOREMPTY);
       if (status != SpaceStatus.EMPTY) {
-        return;
+        break;
       }
     }
     for (int i = 1; i < 7; i++) {
       status = checker.checkAddSpace(x - i, y - i, SpaceStatus.KILLOREMPTY);
       if (status != SpaceStatus.EMPTY) {
-        return;
+        break;
       }
     }
   }
