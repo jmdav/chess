@@ -6,17 +6,26 @@ import model.AuthData;
 
 public class AuthRAMDAO implements AuthDataAccess {
 
-  private Map<String, AuthData> userDB = new ConcurrentHashMap<>();
+  private Map<String, AuthData> authDB = new ConcurrentHashMap<>();
 
   @Override
   public AuthData getSession(String token) throws DataAccessException {
-    return userDB.get(token);
+    return authDB.get(token);
   };
 
   @Override
   public AuthData createSession(String username) throws DataAccessException {
     AuthData data = new AuthData(username, UUID.randomUUID().toString());
-    userDB.put(username, data);
+    authDB.put(data.token(), data);
     return data;
   };
+
+  public AuthData deleteSession(String token) throws DataAccessException {
+    return authDB.remove(token);
+  };
+
+  @Override
+  public void destroy() throws DataAccessException {
+    authDB.clear();
+  }
 }

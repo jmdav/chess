@@ -28,29 +28,4 @@ public class ClearTests {
   public void setup() {}
 
   // Clear, is database clear
-
-  @Test
-  @Order(1)
-  @DisplayName("Static Files")
-  public void staticFilesSuccess() {
-    Assertions.assertEquals();
-  }
-
-  @Test
-  @Order(2)
-  @DisplayName("Normal User Login")
-  public void loginSuccess() {
-    Assertions.assertNotNull(loginResult.getAuthToken(),
-                             "Response did not return authentication String");
-  }
-
-  @Test
-  @Order(3)
-  @DisplayName("Normal User Login")
-  public void assertAuthFieldsMissing() {
-    Assertions.assertNull(result.getUsername(),
-                          "Response incorrectly returned username");
-    Assertions.assertNull(result.getAuthToken(),
-                          "Response incorrectly return authentication String");
-  }
 }

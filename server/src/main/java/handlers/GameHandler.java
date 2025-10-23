@@ -6,14 +6,14 @@ import model.AuthData;
 import model.UserData;
 import service.UserService;
 
-public class UserHandler {
+public class GameHandler {
 
   Gson serializer = new Gson();
 
-  private final UserService userService;
+  private final GameService gameService;
 
-  public UserHandler(UserService userService) {
-    this.userService = userService;
+  public GameHandler(GameService gameService) {
+    this.gameService = gameService;
   }
 
   public void register(Context ctx) throws DataAccessException {

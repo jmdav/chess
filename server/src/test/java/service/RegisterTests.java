@@ -1,27 +1,29 @@
 package service;
 
 import chess.ChessGame;
+import dataAccess.DataAccessException;
+import handlers.*;
 import java.net.HttpURLConnection;
 import java.util.*;
+import model.*;
+import model.UserData;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import server.Server;
+import service.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class RegisterTests {
 
-  private static TestUser existingUser;
-  private static TestUser newUser;
-  private String existingAuth;
-
+  public static UserData newUser;
+  private static UserService userService;
   // ### TESTING SETUP/CLEANUP ###
 
   @BeforeAll
   public static void init() {
 
-    existingUser =
-        new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
-    newUser = new TestUser("NewUser", "newUserPassword", "nu@mail.com");
+    newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
+    userService = new UserService();
   }
 
   @BeforeEach
@@ -30,29 +32,25 @@ public class RegisterTests {
   // Create User
   // Make already existing user
 
-  //
   @Test
   @Order(1)
-  @DisplayName("Static Files")
-  public void staticFilesSuccess() {
-    Assertions.assertEquals();
-  }
-
-  @Test
-  @Order(2)
-  @DisplayName("Normal User Login")
-  public void loginSuccess() {
-    Assertions.assertNotNull(loginResult.getAuthToken(),
+  @DisplayName("Normal Login")
+  public void loginSuccess() throws DataAccessException {
+    AuthData registerResult = userService.register(newUser);
+    Assertions.assertEquals(newUser.username(), registerResult.username(),
+                            "Response did not give the same username as user");
+    Assertions.assertNotNull(registerResult.token(),
                              "Response did not return authentication String");
   }
 
   @Test
-  @Order(3)
-  @DisplayName("Normal User Login")
-  public void assertAuthFieldsMissing() {
-    Assertions.assertNull(result.getUsername(),
-                          "Response incorrectly returned username");
-    Assertions.assertNull(result.getAuthToken(),
-                          "Response incorrectly return authentication String");
-  }
+  @Order(2)
+  @DisplayName("User Already Exists")
+  public void loginFail() throws DataAccessException {
+    userService.register(newUser);
+    Assertions.assertThrows(DataAccessException.class,
+                            ()
+                                -> userService.register(newUser),
+                            "Reponse did not respect already created user");
+  };
 }

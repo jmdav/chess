@@ -1,57 +1,52 @@
 package service;
 
 import chess.ChessGame;
+import dataAccess.DataAccessException;
+import handlers.*;
 import java.net.HttpURLConnection;
 import java.util.*;
+import model.*;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import server.Server;
+import service.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LogoutTests {
 
-  private static TestUser existingUser;
-  private static TestUser newUser;
-  private String existingAuth;
-
+  public static UserData newUser;
+  public static AuthData authSpoof;
+  private static UserService userService;
   // ### TESTING SETUP/CLEANUP ###
 
   @BeforeAll
   public static void init() {
 
-    existingUser =
-        new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
-    newUser = new TestUser("NewUser", "newUserPassword", "nu@mail.com");
+    newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
+    authSpoof = new AuthData("fart", "the fart token");
+    userService = new UserService();
   }
 
   @BeforeEach
   public void setup() {}
 
-  // Logout Successfully
-  // Session Does not exist
-
   @Test
   @Order(1)
-  @DisplayName("Static Files")
-  public void staticFilesSuccess() {
-    Assertions.assertEquals();
-  }
+  @DisplayName("Normal Logout")
+  public void logoutSuccess() throws DataAccessException {
+    AuthData registerResult = userService.register(newUser);
+    userService.logout(registerResult);
+    Assertions.assertThrows(
+        DataAccessException.class,
+        () -> userService.logout(registerResult), "Can't logout twice");
+  };
 
   @Test
   @Order(2)
-  @DisplayName("Normal User Login")
-  public void loginSuccess() {
-    Assertions.assertNotNull(loginResult.getAuthToken(),
-                             "Response did not return authentication String");
-  }
-
-  @Test
-  @Order(3)
-  @DisplayName("Normal User Login")
-  public void assertAuthFieldsMissing() {
-    Assertions.assertNull(result.getUsername(),
-                          "Response incorrectly returned username");
-    Assertions.assertNull(result.getAuthToken(),
-                          "Response incorrectly return authentication String");
-  }
+  @DisplayName("No session")
+  public void loginFail() throws DataAccessException {
+    Assertions.assertThrows(
+        DataAccessException.class,
+        () -> userService.logout(authSpoof), "Can't logout if you don't exist");
+  };
 }

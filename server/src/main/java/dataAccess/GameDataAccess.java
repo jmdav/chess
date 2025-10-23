@@ -2,7 +2,7 @@ package dataAccess;
 
 import model.UserData;
 
-public interface UserDataAccess {
+public interface GameDataAccess {
 
   UserData getUser(String username) throws DataAccessException;
 

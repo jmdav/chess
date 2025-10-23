@@ -29,29 +29,4 @@ public class JoinGameTests {
 
   // Make game, join game successfully
   // Game does not exist
-
-  @Test
-  @Order(1)
-  @DisplayName("Static Files")
-  public void staticFilesSuccess() {
-    Assertions.assertEquals();
-  }
-
-  @Test
-  @Order(2)
-  @DisplayName("Normal User Login")
-  public void loginSuccess() {
-    Assertions.assertNotNull(loginResult.getAuthToken(),
-                             "Response did not return authentication String");
-  }
-
-  @Test
-  @Order(3)
-  @DisplayName("Normal User Login")
-  public void assertAuthFieldsMissing() {
-    Assertions.assertNull(result.getUsername(),
-                          "Response incorrectly returned username");
-    Assertions.assertNull(result.getAuthToken(),
-                          "Response incorrectly return authentication String");
-  }
 }
