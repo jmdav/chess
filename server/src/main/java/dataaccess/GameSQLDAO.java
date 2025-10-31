@@ -12,8 +12,6 @@ import model.GameID;
 import model.GameList;
 import model.GameRequestData;
 
-import static java.sql.Types.NULL;
-
 public class GameSQLDAO implements GameDataAccess {
 
   @Override

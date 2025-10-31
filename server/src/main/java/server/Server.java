@@ -36,7 +36,7 @@ public class Server {
 
   public int run(int desiredPort) {
     try {
-      DatabaseManager.destroyDatabase();
+      // DatabaseManager.destroyDatabase();
       DatabaseManager.configureDatabase();
     } catch (DataAccessException e) {
       e.printStackTrace();

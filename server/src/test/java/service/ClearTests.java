@@ -20,12 +20,12 @@ public class ClearTests {
 
   @BeforeAll
   public static void init() {
-    
+
     AuthRAMDAO authBase = new AuthRAMDAO();
     newUser = new UserData("clearUser", "newUserPassword", "nu@a.com");
     gameService = new GameService(authBase);
     userService = new UserService(authBase);
-    
+
   }
 
   @Test
@@ -37,8 +37,7 @@ public class ClearTests {
     gameService.destroy();
     Assertions.assertThrows(
         DataAccessException.class,
-        ()
-            -> gameService.listGames(spoofAuth.authToken()).games(),
+        () -> gameService.listGames(spoofAuth.authToken()).games(),
         "can't list games that have been Exploded");
   }
 }
