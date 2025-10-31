@@ -81,16 +81,33 @@ public class DatabaseManager {
 
     private final String[] createStatements = {
             """
-                    CREATE TABLE IF NOT EXISTS  %s (
-                      `id` int NOT NULL AUTO_INCREMENT,
-                      `name` varchar(256) NOT NULL,
-                      `type` ENUM('CAT', 'DOG', 'FISH', 'FROG', 'ROCK') DEFAULT 'CAT',
-                      `json` TEXT DEFAULT NULL,
-                      PRIMARY KEY (`id`),
-                      INDEX(type),
-                      INDEX(name)
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-                    """.formatted(databaseName),
+                    CREATE TABLE IF NOT EXISTS  user (
+                      `username` varchar(256) NOT NULL,
+                      `password` varchar(256) NOT NULL,
+                      PRIMARY KEY (`username`),
+                      INDEX(username),
+                      INDEX(password)
+                    )
+                    CREATE TABLE IF NOT EXISTS  auth (
+                      `username` varchar(256) NOT NULL,
+                      `authToken` varchar(256) NOT NULL,
+                      PRIMARY KEY (`username`),
+                      INDEX(username),
+                      INDEX(authToken)
+                    )
+                    CREATE TABLE IF NOT EXISTS  games (
+                      `gameID` int NOT NULL AUTO_INCREMENT,
+                      `whiteUsername` varchar(256) DEFAULT NULL,
+                      `blackUsername` varchar(256) DEFAULT NULL,
+                      `gameName` varchar(256) NOT NULL,
+                      `gameData` varchar(256) DEFAULT NULL,
+                      PRIMARY KEY (`gameID`),
+                      INDEX(gameID),
+                      INDEX(whiteUsername),
+                      INDEX(blackUsername)
+                    )
+                       ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+                    """
     };
 
     private void configureDatabase() throws DataAccessException {
