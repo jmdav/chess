@@ -44,9 +44,8 @@ public class GameListTests {
 
     Assertions.assertThrows(
         DataAccessException.class,
-        ()
-            -> gameService.listGames(
-                "I DO NOT HAVE PERMISSION TO ACCESS THE LIST OF GAMES"),
+        () -> gameService.listGames(
+            "I DO NOT HAVE PERMISSION TO ACCESS THE LIST OF GAMES"),
         "he doesn't have permission...");
   };
 };
