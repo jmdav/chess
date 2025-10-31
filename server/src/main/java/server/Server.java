@@ -1,6 +1,7 @@
 package server;
 
-import dataaccess.AuthRAMDAO;
+import dataaccess.AuthDataAccess;
+import dataaccess.AuthSQLDAO;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import handlers.*;
@@ -13,7 +14,7 @@ public class Server {
 
   public Server() {
 
-    AuthRAMDAO authDB = new AuthRAMDAO();
+    AuthDataAccess authDB = new AuthSQLDAO();
     UserService userService = new UserService(authDB);
     UserHandler userHandler = new UserHandler(userService, authDB);
 
@@ -35,6 +36,7 @@ public class Server {
 
   public int run(int desiredPort) {
     try {
+      DatabaseManager.destroyDatabase();
       DatabaseManager.configureDatabase();
     } catch (DataAccessException e) {
       e.printStackTrace();

@@ -1,10 +1,9 @@
 package service;
 
 import dataaccess.AuthDataAccess;
-import dataaccess.AuthRAMDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDataAccess;
-import dataaccess.GameRAMDAO;
+import dataaccess.GameSQLDAO;
 import model.AuthData;
 import model.GameID;
 import model.GameList;
@@ -15,8 +14,8 @@ public class GameService {
   private final GameDataAccess gameAccess;
   private final AuthDataAccess authAccess;
 
-  public GameService(AuthRAMDAO authAccess) {
-    this.gameAccess = new GameRAMDAO();
+  public GameService(AuthDataAccess authAccess) {
+    this.gameAccess = new GameSQLDAO();
     this.authAccess = authAccess;
   }
 

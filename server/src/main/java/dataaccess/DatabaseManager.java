@@ -38,6 +38,18 @@ public class DatabaseManager {
         }
     }
 
+    static public void destroyDatabase() throws DataAccessException {
+        System.out.println("Requesting to destroy database...");
+        var statement = "DROP DATABASE IF EXISTS " + databaseName;
+        try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
+                var preparedStatement = conn.prepareStatement(statement)) {
+            System.out.println("Destroying database...");
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DataAccessException(400, ex.getMessage());
+        }
+    }
+
     /**
      * Create a connection to the database and sets the catalog based upon the
      * properties specified in db.properties. Connections to the database should
@@ -104,7 +116,7 @@ public class DatabaseManager {
                     """,
             """
                     CREATE TABLE IF NOT EXISTS games (
-                      `gameID` int NOT NULL,
+                      `gameID` INT NOT NULL AUTO_INCREMENT,
                       `whiteUsername` varchar(256) DEFAULT NULL,
                       `blackUsername` varchar(256) DEFAULT NULL,
                       `gameName` varchar(256) NOT NULL,

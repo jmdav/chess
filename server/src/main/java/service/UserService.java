@@ -1,7 +1,6 @@
 package service;
 
 import dataaccess.AuthDataAccess;
-import dataaccess.AuthRAMDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDataAccess;
 import dataaccess.UserSQLDAO;
@@ -13,7 +12,7 @@ public class UserService {
   private final UserDataAccess userAccess;
   private final AuthDataAccess authAccess;
 
-  public UserService(AuthRAMDAO authAccess) {
+  public UserService(AuthDataAccess authAccess) {
     this.userAccess = new UserSQLDAO();
     this.authAccess = authAccess;
   }

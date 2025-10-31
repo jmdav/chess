@@ -12,6 +12,8 @@ import model.GameID;
 import model.GameList;
 import model.GameRequestData;
 
+import static java.sql.Types.NULL;
+
 public class GameSQLDAO implements GameDataAccess {
 
   @Override
@@ -57,16 +59,16 @@ public class GameSQLDAO implements GameDataAccess {
   public void joinGame(String username, GameRequestData data)
       throws DataAccessException {
 
-    if (data.gameID() == null) {
+    GameData targetGame = getGameData(data.gameID());
+    if (data.gameID() == null || targetGame == null) {
       throw new DataAccessException(400, "Error: bad request");
     }
 
-    GameData targetGame = getGameData(data.gameID());
-
-    if (targetGame == null || (data.playerColor() != TeamColor.WHITE &&
+    if ((data.playerColor() != TeamColor.WHITE &&
         data.playerColor() != TeamColor.BLACK)) {
       throw new DataAccessException(400, "Error: bad request");
     }
+
     if (data.playerColor() == TeamColor.WHITE) {
       if (targetGame.whiteUsername() != null) {
         throw new DataAccessException(403, "Error: already taken");
@@ -85,8 +87,23 @@ public class GameSQLDAO implements GameDataAccess {
     }
 
     var statement = "UPDATE games SET whiteUsername=?, blackUsername=? WHERE gameID=?";
-    DatabaseManager.executeUpdate(statement, targetGame.whiteUsername(), targetGame.blackUsername(),
-        targetGame.gameID());
+    try (Connection conn = DatabaseManager.getConnection();
+        PreparedStatement ps = conn.prepareStatement(statement)) {
+      if (targetGame.whiteUsername() != null) {
+        ps.setString(1, targetGame.whiteUsername());
+      } else {
+        ps.setNull(1, Types.VARCHAR);
+      }
+      if (targetGame.blackUsername() != null) {
+        ps.setString(2, targetGame.blackUsername());
+      } else {
+        ps.setNull(2, Types.VARCHAR);
+      }
+      ps.setInt(3, targetGame.gameID());
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new DataAccessException(500, String.format("Unable to update game: %s", e.getMessage()));
+    }
 
   }
 
