@@ -4,7 +4,7 @@ import dataaccess.AuthDataAccess;
 import dataaccess.AuthRAMDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDataAccess;
-import dataaccess.UserRAMDAO;
+import dataaccess.UserSQLDAO;
 import model.AuthData;
 import model.UserData;
 
@@ -14,7 +14,7 @@ public class UserService {
   private final AuthDataAccess authAccess;
 
   public UserService(AuthRAMDAO authAccess) {
-    this.userAccess = new UserRAMDAO();
+    this.userAccess = new UserSQLDAO();
     this.authAccess = authAccess;
   }
 

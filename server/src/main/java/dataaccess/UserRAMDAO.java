@@ -1,6 +1,8 @@
 package dataaccess;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import model.UserData;
 
 public class UserRAMDAO implements UserDataAccess {
@@ -9,6 +11,7 @@ public class UserRAMDAO implements UserDataAccess {
 
   @Override
   public UserData getUser(String username) throws DataAccessException {
+
     if (userDB.get(username) != null) {
       System.out.println(userDB.get(username).password());
     }

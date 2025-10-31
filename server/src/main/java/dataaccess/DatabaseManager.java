@@ -81,19 +81,19 @@ public class DatabaseManager {
 
     private final String[] createStatements = {
             """
-                    CREATE TABLE IF NOT EXISTS  user (
+                    CREATE TABLE IF NOT EXISTS  users (
                       `username` varchar(256) NOT NULL,
                       `password` varchar(256) NOT NULL,
+                      `email` varchar(256) DEFAULT NULL,
                       PRIMARY KEY (`username`),
-                      INDEX(username),
-                      INDEX(password)
+                      INDEX(username)
                     )
-                    CREATE TABLE IF NOT EXISTS  auth (
-                      `username` varchar(256) NOT NULL,
+                    CREATE TABLE IF NOT EXISTS  sessions (
                       `authToken` varchar(256) NOT NULL,
-                      PRIMARY KEY (`username`),
-                      INDEX(username),
-                      INDEX(authToken)
+                      `authData` varchar(256) NOT NULL,
+                      PRIMARY KEY (`authToken`),
+                      INDEX(authToken),
+                      INDEX(authData)
                     )
                     CREATE TABLE IF NOT EXISTS  games (
                       `gameID` int NOT NULL AUTO_INCREMENT,
@@ -103,8 +103,7 @@ public class DatabaseManager {
                       `gameData` varchar(256) DEFAULT NULL,
                       PRIMARY KEY (`gameID`),
                       INDEX(gameID),
-                      INDEX(whiteUsername),
-                      INDEX(blackUsername)
+                      INDEX(gameName)
                     )
                        ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
                     """

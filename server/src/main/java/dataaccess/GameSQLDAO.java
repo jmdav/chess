@@ -1,0 +1,71 @@
+package dataaccess;
+
+import chess.ChessGame.TeamColor;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+import model.GameData;
+import model.GameID;
+import model.GameList;
+import model.GameRequestData;
+
+public class GameSQLDAO implements GameDataAccess {
+
+  private Map<Integer, GameData> gameDB = new ConcurrentHashMap<>();
+
+  @Override
+  public GameList getGames() throws DataAccessException {
+    List<GameData> output = new Vector<>();
+    gameDB.forEach((id, data) -> {
+      output.add(data);
+    });
+    return new GameList(output);
+  };
+
+  @Override
+  public GameID createGame(String gameName) throws DataAccessException {
+    GameData game = new GameData(gameDB.size() + 1000, null, null, gameName);
+    gameDB.put(game.gameID(), game);
+    return new GameID(game.gameID());
+  };
+
+  @Override
+  public void joinGame(String username, GameRequestData data)
+      throws DataAccessException {
+
+    if (data.gameID() == null) {
+      throw new DataAccessException(400, "Error: bad request");
+    }
+
+    GameData targetGame = gameDB.get(data.gameID());
+
+    if (targetGame == null || (data.playerColor() != TeamColor.WHITE &&
+        data.playerColor() != TeamColor.BLACK)) {
+      throw new DataAccessException(400, "Error: bad request");
+    }
+    if (data.playerColor() == TeamColor.WHITE) {
+      if (targetGame.whiteUsername() != null) {
+        throw new DataAccessException(403, "Error: already taken");
+      } else {
+        targetGame = new GameData(targetGame.gameID(), username,
+            targetGame.blackUsername(), targetGame.gameName());
+      }
+    }
+    if (data.playerColor() == TeamColor.BLACK) {
+      if (targetGame.blackUsername() != null) {
+        throw new DataAccessException(403, "Error: already taken");
+      } else {
+        targetGame = new GameData(targetGame.gameID(), targetGame.whiteUsername(),
+            username, targetGame.gameName());
+      }
+    }
+    gameDB.remove(data.gameID());
+    gameDB.put(targetGame.gameID(), targetGame);
+  }
+
+  @Override
+  public void destroy() throws DataAccessException {
+    gameDB.clear();
+  }
+}

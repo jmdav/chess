@@ -5,7 +5,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import model.AuthData;
 
-public class AuthRAMDAO implements AuthDataAccess {
+public class AuthSQLDAO implements AuthDataAccess {
 
   private Map<String, AuthData> authDB = new ConcurrentHashMap<>();
 
