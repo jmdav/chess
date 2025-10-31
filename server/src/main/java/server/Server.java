@@ -13,12 +13,6 @@ public class Server {
 
   public Server() {
 
-    try {
-      DatabaseManager.createDatabase();
-    } catch (DataAccessException e) {
-      e.printStackTrace();
-    }
-
     AuthRAMDAO authDB = new AuthRAMDAO();
     UserService userService = new UserService(authDB);
     UserHandler userHandler = new UserHandler(userService, authDB);
@@ -40,6 +34,11 @@ public class Server {
   }
 
   public int run(int desiredPort) {
+    try {
+      DatabaseManager.configureDatabase();
+    } catch (DataAccessException e) {
+      e.printStackTrace();
+    }
     javalin.start(desiredPort);
     return javalin.port();
   }

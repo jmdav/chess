@@ -25,7 +25,8 @@ public class LoginTests {
   }
 
   @BeforeEach
-  public void setup() {}
+  public void setup() {
+  }
 
   @Test
   @Order(1)
@@ -35,7 +36,7 @@ public class LoginTests {
     userService.logout(registerResult.authToken());
     AuthData loginResult = userService.login(newUser);
     Assertions.assertEquals(loginResult.username(), registerResult.username(),
-                            "User logged in");
+        "User logged in");
   };
 
   @Test

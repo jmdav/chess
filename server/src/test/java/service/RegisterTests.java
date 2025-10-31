@@ -21,7 +21,8 @@ public class RegisterTests {
   }
 
   @BeforeEach
-  public void setup() {}
+  public void setup() {
+  }
 
   // Create User
   // Make already existing user
@@ -32,9 +33,9 @@ public class RegisterTests {
   public void loginSuccess() throws DataAccessException {
     AuthData registerResult = userService.register(newUser);
     Assertions.assertEquals(newUser.username(), registerResult.username(),
-                            "Response did not give the same username as user");
+        "Response did not give the same username as user");
     Assertions.assertNotNull(registerResult.authToken(),
-                             "Response did not return authentication String");
+        "Response did not return authentication String");
   }
 
   @Test
@@ -44,8 +45,7 @@ public class RegisterTests {
     userService.destroy();
     userService.register(newUser);
     Assertions.assertThrows(DataAccessException.class,
-                            ()
-                                -> userService.register(newUser),
-                            "Reponse did not respect already created user");
+        () -> userService.register(newUser),
+        "Reponse did not respect already created user");
   };
 }

@@ -1,8 +1,5 @@
 package dataaccess;
 
-import com.google.gson.Gson;
-import model.*;
-
 import java.sql.*;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -14,6 +11,7 @@ public class UserSQLDAO implements UserDataAccess {
   @Override
   public UserData getUser(String username) throws DataAccessException {
     try (Connection conn = DatabaseManager.getConnection()) {
+      System.out.println("Fetching user: " + username);
       var statement = "SELECT username, password, email FROM users WHERE username=?";
       try (PreparedStatement ps = conn.prepareStatement(statement)) {
         ps.setString(1, username);
@@ -44,8 +42,10 @@ public class UserSQLDAO implements UserDataAccess {
   }
 
   private UserData readUser(ResultSet rs) throws SQLException {
-    var json = rs.getString("json");
-    UserData user = new Gson().fromJson(json, UserData.class);
+    UserData user = new UserData(
+        rs.getString("username"),
+        rs.getString("password"),
+        rs.getString("email"));
     return user;
   }
 
