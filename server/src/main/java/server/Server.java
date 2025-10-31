@@ -1,6 +1,8 @@
 package server;
 
 import dataaccess.AuthRAMDAO;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import handlers.*;
 import io.javalin.*;
 import service.*;
@@ -10,6 +12,12 @@ public class Server {
   private final Javalin javalin;
 
   public Server() {
+
+    try {
+      DatabaseManager.createDatabase();
+    } catch (DataAccessException e) {
+      e.printStackTrace();
+    }
 
     AuthRAMDAO authDB = new AuthRAMDAO();
     UserService userService = new UserService(authDB);
@@ -36,5 +44,7 @@ public class Server {
     return javalin.port();
   }
 
-  public void stop() { javalin.stop(); }
+  public void stop() {
+    javalin.stop();
+  }
 }

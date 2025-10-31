@@ -16,16 +16,20 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
+    public DatabaseManager() throws DataAccessException {
+        configureDatabase();
+    }
+
     /**
      * Creates the database if it does not already exist.
      */
     static public void createDatabase() throws DataAccessException {
         var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
         try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
-             var preparedStatement = conn.prepareStatement(statement)) {
+                var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to create database", ex);
+            throw new DataAccessException(400, ex.getMessage());
         }
     }
 
@@ -43,12 +47,12 @@ public class DatabaseManager {
      */
     static Connection getConnection() throws DataAccessException {
         try {
-            //do not wrap the following line with a try-with-resources
+            // do not wrap the following line with a try-with-resources
             var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
             conn.setCatalog(databaseName);
             return conn;
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to get connection", ex);
+            throw new DataAccessException(400, "failed to get connection");
         }
     }
 
@@ -74,4 +78,33 @@ public class DatabaseManager {
         var port = Integer.parseInt(props.getProperty("db.port"));
         connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
+
+    private final String[] createStatements = {
+            """
+                    CREATE TABLE IF NOT EXISTS  %s (
+                      `id` int NOT NULL AUTO_INCREMENT,
+                      `name` varchar(256) NOT NULL,
+                      `type` ENUM('CAT', 'DOG', 'FISH', 'FROG', 'ROCK') DEFAULT 'CAT',
+                      `json` TEXT DEFAULT NULL,
+                      PRIMARY KEY (`id`),
+                      INDEX(type),
+                      INDEX(name)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+                    """.formatted(databaseName),
+    };
+
+    private void configureDatabase() throws DataAccessException {
+        DatabaseManager.createDatabase();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            for (String statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(404,
+                    String.format("Unable to configure database: %s", ex.getMessage()));
+        }
+    }
+
 }
