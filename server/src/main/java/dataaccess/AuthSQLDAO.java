@@ -2,14 +2,10 @@ package dataaccess;
 
 import java.sql.*;
 
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import model.AuthData;
 
 public class AuthSQLDAO implements AuthDataAccess {
-
-  private Map<String, AuthData> authDB = new ConcurrentHashMap<>();
 
   @Override
   public AuthData getSession(String token) throws DataAccessException {
