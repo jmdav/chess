@@ -1,5 +1,7 @@
 package service;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import dataaccess.AuthDataAccess;
 import dataaccess.DataAccessException;
 import dataaccess.UserDataAccess;
@@ -22,7 +24,8 @@ public class UserService {
       throw new DataAccessException(400, "Error: bad request");
     }
     if (userAccess.getUser(data.username()) == null) {
-      userAccess.createUser(data);
+      String passwordHash = BCrypt.hashpw(data.password(), BCrypt.gensalt());
+      userAccess.createUser(new UserData(data.username(), passwordHash, data.email()));
       return authAccess.createSession(data.username());
     } else {
       throw new DataAccessException(403, "Error: already taken");
@@ -35,7 +38,7 @@ public class UserService {
       // System.out.println(prospectiveUser);
       // System.out.println(data);
       if (prospectiveUser != null &&
-          prospectiveUser.password().equals(data.password())) {
+          BCrypt.checkpw(data.password(), prospectiveUser.password())) {
         return authAccess.createSession(data.username());
       } else {
         throw new DataAccessException(401, "Error: unauthorized");

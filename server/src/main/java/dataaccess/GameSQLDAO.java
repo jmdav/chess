@@ -58,6 +58,7 @@ public class GameSQLDAO implements GameDataAccess {
       throws DataAccessException {
 
     GameData targetGame = getGameData(data.gameID());
+
     if (data.gameID() == null || targetGame == null) {
       throw new DataAccessException(400, "Error: bad request");
     }
@@ -111,7 +112,10 @@ public class GameSQLDAO implements GameDataAccess {
     DatabaseManager.executeUpdate(statement);
   }
 
-  public GameData getGameData(int gameID) throws DataAccessException {
+  public GameData getGameData(Integer gameID) throws DataAccessException {
+    if (gameID == null) {
+      return null;
+    }
     try (Connection conn = DatabaseManager.getConnection()) {
       System.out.println("Fetching game data: " + gameID);
       var statement = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games WHERE gameID=?";
