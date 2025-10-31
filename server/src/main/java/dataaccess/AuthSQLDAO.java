@@ -1,5 +1,7 @@
 package dataaccess;
 
+import java.sql.*;
+
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,22 +13,48 @@ public class AuthSQLDAO implements AuthDataAccess {
 
   @Override
   public AuthData getSession(String token) throws DataAccessException {
-    return authDB.get(token);
-  };
+    try (Connection conn = DatabaseManager.getConnection()) {
+      System.out.println("Fetching session: " + token);
+      var statement = "SELECT authToken, username FROM sessions WHERE authToken=?";
+      try (PreparedStatement ps = conn.prepareStatement(statement)) {
+        ps.setString(1, token);
+        try (ResultSet rs = ps.executeQuery()) {
+          if (rs.next()) {
+            return readSession(rs);
+          }
+        }
+      }
+    } catch (Exception e) {
+      throw new DataAccessException(401,
+          String.format("Unable to read data: %s", e.getMessage()));
+    }
+    return null;
+  }
+
+  private AuthData readSession(ResultSet rs) throws SQLException {
+    AuthData session = new AuthData(
+        rs.getString("authToken"),
+        rs.getString("username"));
+    return session;
+  }
 
   @Override
   public AuthData createSession(String username) throws DataAccessException {
-    AuthData data = new AuthData(username, UUID.randomUUID().toString());
-    authDB.put(data.authToken(), data);
-    return data;
+    var statement = "INSERT INTO sessions (authToken, username) VALUES (?, ?)";
+    var authToken = UUID.randomUUID().toString();
+    DatabaseManager.executeUpdate(statement, authToken, username);
+    return new AuthData(authToken, username);
   };
 
   public AuthData deleteSession(String token) throws DataAccessException {
-    return authDB.remove(token);
+    var statement = "DELETE FROM sessions WHERE authToken=?";
+    DatabaseManager.executeUpdate(statement, token);
+    return null;
   };
 
   @Override
   public void destroy() throws DataAccessException {
-    authDB.clear();
+    var statement = "TRUNCATE sessions";
+    DatabaseManager.executeUpdate(statement);
   }
 }

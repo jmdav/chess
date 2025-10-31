@@ -33,8 +33,8 @@ public class UserService {
   public AuthData login(UserData data) throws DataAccessException {
     if (data.username() != null && data.password() != null) {
       UserData prospectiveUser = userAccess.getUser(data.username());
-      System.out.println(prospectiveUser);
-      System.out.println(data);
+      // System.out.println(prospectiveUser);
+      // System.out.println(data);
       if (prospectiveUser != null &&
           prospectiveUser.password().equals(data.password())) {
         return authAccess.createSession(data.username());
