@@ -6,7 +6,6 @@ import java.sql.*;
 import java.util.List;
 import java.util.Vector;
 
-import model.AuthData;
 import model.GameData;
 import model.GameID;
 import model.GameList;
@@ -47,11 +46,11 @@ public class GameSQLDAO implements GameDataAccess {
     return new GameID(gameID);
   };
 
-  public AuthData deleteGame(int gameID) throws DataAccessException {
-    var statement = "DELETE FROM games WHERE gameID=?";
-    DatabaseManager.executeUpdate(statement, gameID);
-    return null;
-  };
+  // public AuthData deleteGame(int gameID) throws DataAccessException {
+  // var statement = "DELETE FROM games WHERE gameID=?";
+  // DatabaseManager.executeUpdate(statement, gameID);
+  // return null;
+  // };
 
   @Override
   public void joinGame(String username, GameRequestData data)
@@ -62,12 +61,12 @@ public class GameSQLDAO implements GameDataAccess {
     if (data.gameID() == null || targetGame == null) {
       throw new DataAccessException(400, "Error: bad request");
     }
-
+    // Check if team color is either white or black
     if ((data.playerColor() != TeamColor.WHITE &&
         data.playerColor() != TeamColor.BLACK)) {
       throw new DataAccessException(400, "Error: bad request");
     }
-
+    // Check if white is already taken
     if (data.playerColor() == TeamColor.WHITE) {
       if (targetGame.whiteUsername() != null) {
         throw new DataAccessException(403, "Error: already taken");
@@ -76,7 +75,8 @@ public class GameSQLDAO implements GameDataAccess {
             targetGame.blackUsername(), targetGame.gameName());
       }
     }
-    if (data.playerColor() == TeamColor.BLACK) {
+    // Check if black is already taken
+    else if (data.playerColor() == TeamColor.BLACK) {
       if (targetGame.blackUsername() != null) {
         throw new DataAccessException(403, "Error: already taken");
       } else {

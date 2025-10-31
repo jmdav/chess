@@ -15,7 +15,6 @@ public class CreateGameTests {
   public static UserData newUser;
   public static AuthData spoofAuth;
   private static UserService userService;
-  
 
   @BeforeAll
   public static void init() {
@@ -24,7 +23,7 @@ public class CreateGameTests {
     AuthRAMDAO authBase = new AuthRAMDAO();
     gameService = new GameService(authBase);
     userService = new UserService(authBase);
-    
+
   }
 
   @Test
@@ -48,8 +47,7 @@ public class CreateGameTests {
 
     Assertions.assertThrows(
         DataAccessException.class,
-        ()
-            -> gameService.joinGame(spoofAuth.authToken(), request),
+        () -> gameService.joinGame(spoofAuth.authToken(), request),
         "can't join game that don't exist");
   };
 };

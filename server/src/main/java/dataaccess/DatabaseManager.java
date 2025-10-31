@@ -38,17 +38,18 @@ public class DatabaseManager {
         }
     }
 
-    static public void destroyDatabase() throws DataAccessException {
-        System.out.println("Requesting to destroy database...");
-        var statement = "DROP DATABASE IF EXISTS " + databaseName;
-        try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
-                var preparedStatement = conn.prepareStatement(statement)) {
-            System.out.println("Destroying database...");
-            preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
-            throw new DataAccessException(400, ex.getMessage());
-        }
-    }
+    // static public void destroyDatabase() throws DataAccessException {
+    // System.out.println("Requesting to destroy database...");
+    // var statement = "DROP DATABASE IF EXISTS " + databaseName;
+    // try (var conn = DriverManager.getConnection(connectionUrl, dbUsername,
+    // dbPassword);
+    // var preparedStatement = conn.prepareStatement(statement)) {
+    // System.out.println("Destroying database...");
+    // preparedStatement.executeUpdate();
+    // } catch (SQLException ex) {
+    // throw new DataAccessException(400, ex.getMessage());
+    // }
+    // }
 
     /**
      * Create a connection to the database and sets the catalog based upon the
@@ -98,7 +99,7 @@ public class DatabaseManager {
         System.out.println("Database properties loaded: " + connectionUrl);
     }
 
-    public static final String[] createStatements = {
+    public static final String[] CreateStatements = {
             """
                     CREATE TABLE IF NOT EXISTS users (
                       `username` varchar(256) NOT NULL,
@@ -131,7 +132,7 @@ public class DatabaseManager {
         System.out.println("Configuring database...");
         DatabaseManager.createDatabase();
         try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
+            for (String statement : CreateStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }
@@ -147,10 +148,11 @@ public class DatabaseManager {
             try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (int i = 0; i < params.length; i++) {
                     Object param = params[i];
-                    if (param instanceof String p)
+                    if (param instanceof String p) {
                         ps.setString(i + 1, p);
-                    else if (param == null)
+                    } else if (param == null) {
                         ps.setNull(i + 1, NULL);
+                    }
                 }
                 ps.executeUpdate();
 
