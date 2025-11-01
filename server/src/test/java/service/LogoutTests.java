@@ -30,6 +30,7 @@ public class LogoutTests {
   @Order(1)
   @DisplayName("Normal Logout")
   public void logoutSuccess() throws DataAccessException {
+    userService.destroy();
     AuthData registerResult = userService.register(newUser);
     userService.logout(registerResult.authToken());
     Assertions.assertThrows(
