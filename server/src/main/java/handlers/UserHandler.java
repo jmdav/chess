@@ -60,6 +60,11 @@ public class UserHandler {
   }
 
   public void destroy(Context ctx) throws DataAccessException {
-    userService.destroy();
+    try {
+      userService.destroy();
+    } catch (DataAccessException e) {
+      ctx.status(e.getStatusCode());
+      ctx.result(serializer.toJson(e.getErrorMessage()));
+    }
   }
 };

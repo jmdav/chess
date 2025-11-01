@@ -130,6 +130,8 @@ public class DatabaseTests {
                 TestResult result = operation.get();
                 Assertions.assertEquals(500, serverFacade.getStatusCode(),
                         "Server response code was not 500 Internal Error");
+                System.out.println("Operation: " + operation.getClass().getSimpleName());
+                System.out.println("Error message: " + result.getMessage());
                 Assertions.assertNotNull(result.getMessage(), "Invalid Request didn't return an error message");
                 Assertions.assertTrue(result.getMessage().toLowerCase(Locale.ROOT).contains("error"),
                         "Error message didn't contain the word \"Error\"");

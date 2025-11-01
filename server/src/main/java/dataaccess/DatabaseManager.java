@@ -69,8 +69,8 @@ public class DatabaseManager {
             var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
             conn.setCatalog(databaseName);
             return conn;
-        } catch (SQLException ex) {
-            throw new DataAccessException(400, "failed to get connection");
+        } catch (Exception ex) {
+            throw new DataAccessException(500, "Error: failed to get connection");
         }
     }
 
@@ -162,10 +162,13 @@ public class DatabaseManager {
                 }
 
                 return 0;
+            } catch (SQLException e) {
+                throw new DataAccessException(500,
+                        String.format("Error: unable to update database: %s, %s", statement, e.getMessage()));
             }
-        } catch (SQLException e) {
-            throw new DataAccessException(402,
-                    String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        } catch (DataAccessException | SQLException e) {
+            throw new DataAccessException(500,
+                    String.format("Error: unable to update database: %s, %s", statement, e.getMessage()));
         }
     }
 

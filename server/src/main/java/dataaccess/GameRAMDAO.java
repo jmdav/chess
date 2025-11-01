@@ -1,4 +1,5 @@
 package dataaccess;
+
 import chess.ChessGame.TeamColor;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,9 @@ public class GameRAMDAO implements GameDataAccess {
   @Override
   public GameList getGames() throws DataAccessException {
     List<GameData> output = new Vector<>();
-    gameDB.forEach((id, data) -> { output.add(data); });
+    gameDB.forEach((id, data) -> {
+      output.add(data);
+    });
     return new GameList(output);
   };
 
@@ -38,25 +41,23 @@ public class GameRAMDAO implements GameDataAccess {
     GameData targetGame = gameDB.get(data.gameID());
 
     if (targetGame == null || (data.playerColor() != TeamColor.WHITE &&
-                               data.playerColor() != TeamColor.BLACK)) {
+        data.playerColor() != TeamColor.BLACK)) {
       throw new DataAccessException(400, "Error: bad request");
     }
     if (data.playerColor() == TeamColor.WHITE) {
       if (targetGame.whiteUsername() != null) {
         throw new DataAccessException(403, "Error: already taken");
       } else {
-        targetGame =
-            new GameData(targetGame.gameID(), username,
-                         targetGame.blackUsername(), targetGame.gameName());
+        targetGame = new GameData(targetGame.gameID(), username,
+            targetGame.blackUsername(), targetGame.gameName());
       }
     }
     if (data.playerColor() == TeamColor.BLACK) {
       if (targetGame.blackUsername() != null) {
         throw new DataAccessException(403, "Error: already taken");
       } else {
-        targetGame =
-            new GameData(targetGame.gameID(), targetGame.whiteUsername(),
-                         username, targetGame.gameName());
+        targetGame = new GameData(targetGame.gameID(), targetGame.whiteUsername(),
+            username, targetGame.gameName());
       }
     }
     gameDB.remove(data.gameID());

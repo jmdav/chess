@@ -23,7 +23,8 @@ public class LogoutTests {
   }
 
   @BeforeEach
-  public void setup() {}
+  public void setup() {
+  }
 
   @Test
   @Order(1)
@@ -33,8 +34,7 @@ public class LogoutTests {
     userService.logout(registerResult.authToken());
     Assertions.assertThrows(
         DataAccessException.class,
-        ()
-            -> userService.logout(registerResult.authToken()),
+        () -> userService.logout(registerResult.authToken()),
         "Can't logout twice");
   };
 
@@ -43,8 +43,7 @@ public class LogoutTests {
   @DisplayName("No session")
   public void loginFail() throws DataAccessException {
     Assertions.assertThrows(DataAccessException.class,
-                            ()
-                                -> userService.logout(authSpoof.authToken()),
-                            "Can't logout if you don't exist");
+        () -> userService.logout(authSpoof.authToken()),
+        "Can't logout if you don't exist");
   };
 }

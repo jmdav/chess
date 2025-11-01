@@ -3,7 +3,7 @@ package service;
 import model.*;
 import org.junit.jupiter.api.*;
 
-import dataaccess.AuthRAMDAO;
+import dataaccess.AuthSQLDAO;
 import dataaccess.DataAccessException;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -21,7 +21,7 @@ public class LoginTests {
     newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
     evilUser = new UserData("NewUser", "the fart password", "nu@mail.com");
     authSpoof = new AuthData("fart", "the fart token");
-    userService = new UserService(new AuthRAMDAO());
+    userService = new UserService(new AuthSQLDAO());
   }
 
   @BeforeEach
