@@ -38,19 +38,6 @@ public class DatabaseManager {
         }
     }
 
-    // static public void destroyDatabase() throws DataAccessException {
-    // System.out.println("Requesting to destroy database...");
-    // var statement = "DROP DATABASE IF EXISTS " + databaseName;
-    // try (var conn = DriverManager.getConnection(connectionUrl, dbUsername,
-    // dbPassword);
-    // var preparedStatement = conn.prepareStatement(statement)) {
-    // System.out.println("Destroying database...");
-    // preparedStatement.executeUpdate();
-    // } catch (SQLException ex) {
-    // throw new DataAccessException(400, ex.getMessage());
-    // }
-    // }
-
     /**
      * Create a connection to the database and sets the catalog based upon the
      * properties specified in db.properties. Connections to the database should
@@ -99,7 +86,7 @@ public class DatabaseManager {
         System.out.println("Database properties loaded: " + connectionUrl);
     }
 
-    public static final String[] CreateStatements = {
+    public static final String[] CREATE_STATEMENTS = {
             """
                     CREATE TABLE IF NOT EXISTS users (
                       `username` varchar(256) NOT NULL,
@@ -132,7 +119,7 @@ public class DatabaseManager {
         System.out.println("Configuring database...");
         DatabaseManager.createDatabase();
         try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : CreateStatements) {
+            for (String statement : CREATE_STATEMENTS) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }

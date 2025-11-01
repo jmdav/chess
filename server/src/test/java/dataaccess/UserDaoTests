@@ -1,4 +1,4 @@
-package service;
+package dataaccess;
 
 import model.AuthData;
 import model.UserData;
@@ -43,6 +43,17 @@ public class UserDaoTests {
 
   @Test
   @Order(3)
+  @DisplayName("User same username")
+  public void createUserSameUsername() throws DataAccessException {
+    UserData createdUser = userDataAccess.createUser(newUser);
+        Assertions.assertThrows(
+        DataAccessException.class,
+        () -> userDataAccess.createUser(newUser));
+  };
+  };
+
+  @Test
+  @Order(4)
   @DisplayName("Normal Get User")
   public void getUserSuccess() throws DataAccessException {
     UserData createdUser = userDataAccess.createUser(newUser);
@@ -52,7 +63,7 @@ public class UserDaoTests {
   };
 
   @Test
-  @Order(4)
+  @Order(5)
   @DisplayName("No username")
   public void loginFailUsername() throws DataAccessException {
     Assertions.assertThrows(

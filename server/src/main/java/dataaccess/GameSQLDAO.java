@@ -46,12 +46,6 @@ public class GameSQLDAO implements GameDataAccess {
     return new GameID(gameID);
   };
 
-  // public AuthData deleteGame(int gameID) throws DataAccessException {
-  // var statement = "DELETE FROM games WHERE gameID=?";
-  // DatabaseManager.executeUpdate(statement, gameID);
-  // return null;
-  // };
-
   @Override
   public void joinGame(String username, GameRequestData data)
       throws DataAccessException {

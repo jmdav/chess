@@ -1,4 +1,4 @@
-package service;
+package dataaccess;
 
 import model.AuthData;
 import model.UserData;
@@ -56,5 +56,37 @@ public class GameDaoTests {
     Assertions.assertThrows(
         DataAccessException.class,
         () -> gameDataAccess.getGameData(23489028), "Can't get game if don't exist");
+  };
+
+  @Test
+  @Order(5)
+  @DisplayName("Normal Get Games")
+  public void getGamesSuccess() throws DataAccessException {
+    GameID createdGame = gameDataAccess.createGame(newGame);
+    GameList createdGames = gameDataAccess.getGames(newGame);
+    Assertions.assertNotNull(createdGames, "Games retrieved successfully");
+  };
+
+  @Test
+  @Order(6)
+  @DisplayName("Games can have same name")
+  public void canMakeManyGames() throws DataAccessException {
+    GameID createdGame = gameDataAccess.createGame(newGame);
+    GameID createdGame2 = gameDataAccess.createGame(newGame);
+    GameList createdGames = gameDataAccess.getGames(newGame);
+    Assertions.assertNotNull(createdGames, "Games retrieved successfully");
+  };
+
+    @Test
+  @Order(7)
+  @DisplayName("Can make many Games")
+  public void canMakeManyGames() throws DataAccessException {
+    GameID createdGame = gameDataAccess.createGame(newGame);
+    GameID createdGame2 = gameDataAccess.createGame(newGame);
+    GameID createdGame3 = gameDataAccess.createGame(newGame);
+    GameID createdGame4 = gameDataAccess.createGame(newGame);
+    GameID createdGame5 = gameDataAccess.createGame(newGame);
+    GameList createdGames = gameDataAccess.getGames(newGame);
+    Assertions.assertNotNull(createdGames, "Games retrieved successfully");
   };
 };

@@ -62,6 +62,7 @@ public class UserHandler {
   public void destroy(Context ctx) throws DataAccessException {
     try {
       userService.destroy();
+      ctx.status(200);
     } catch (DataAccessException e) {
       ctx.status(e.getStatusCode());
       ctx.result(serializer.toJson(e.getErrorMessage()));

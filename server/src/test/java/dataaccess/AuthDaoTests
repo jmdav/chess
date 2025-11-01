@@ -1,4 +1,4 @@
-package service;
+package dataaccess;
 
 import model.AuthData;
 import model.UserData;
@@ -59,5 +59,25 @@ public class AuthDaoTests {
     Assertions.assertThrows(
         DataAccessException.class,
         () -> authBase.getSession("evilUser"), "Can't get session if it doesn't exist");
+  };
+
+  @Test
+  @Order(5)
+  @DisplayName("Delete nonexistent Session")
+  public void deleteSession() throws DataAccessException {
+    Assertions.assertThrows(
+        DataAccessException.class,
+        () -> authBase.deleteSession("evilUser"), "Can't delete session if it doesn't exist");
+  };
+
+  @Test
+  @Order(6)
+  @DisplayName("Delete Session")
+  public void deleteSession() throws DataAccessException {
+    AuthData createdSession = authBase.createSession(newUser.username());
+    authBase.deleteSession(createdSession.authToken());
+    Assertions.assertThrows(
+        DataAccessException.class,
+        () -> authBase.getSession(createdSession.authToken()), "Can't get session if it doesn't exist");
   };
 };
