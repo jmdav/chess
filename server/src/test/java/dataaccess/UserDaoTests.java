@@ -1,11 +1,7 @@
 package dataaccess;
 
-import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-
-import dataaccess.AuthDataAccess;
-import dataaccess.DataAccessException;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserDaoTests {
@@ -45,11 +41,10 @@ public class UserDaoTests {
   @Order(3)
   @DisplayName("User same username")
   public void createUserSameUsername() throws DataAccessException {
-    UserData createdUser = userDataAccess.createUser(newUser);
-        Assertions.assertThrows(
+    userDataAccess.createUser(newUser);
+    Assertions.assertThrows(
         DataAccessException.class,
         () -> userDataAccess.createUser(newUser));
-  };
   };
 
   @Test

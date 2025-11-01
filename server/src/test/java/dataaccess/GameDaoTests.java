@@ -1,24 +1,21 @@
 package dataaccess;
 
-import model.AuthData;
-import model.UserData;
+import model.GameID;
+import model.GameList;
+import model.GameData;
 import org.junit.jupiter.api.*;
-
-import dataaccess.AuthDataAccess;
-import dataaccess.DataAccessException;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class GameDaoTests {
 
   // ### TESTING SETUP/CLEANUP ###
 
-  private static GameDataAccess gameDataAccess;
+  private static GameSQLDAO gameDataAccess;
   // ### TESTING SETUP/CLEANUP ###
 
   @BeforeAll
   public static void init() {
 
-    String newGame = "NewGame";
     gameDataAccess = new GameSQLDAO();
   }
 
@@ -26,7 +23,7 @@ public class GameDaoTests {
   @Order(1)
   @DisplayName("Normal Create Game")
   public void createGameSuccess() throws DataAccessException {
-    GameID createdGame = gameDataAccess.createGame(newGame);
+    GameID createdGame = gameDataAccess.createGame("new game");
     Assertions.assertNotNull(createdGame, "Game created successfully");
   };
 
@@ -43,9 +40,9 @@ public class GameDaoTests {
   @Order(3)
   @DisplayName("Normal Get Game")
   public void getUserSuccess() throws DataAccessException {
-    GameID createdGame = gameDataAccess.createGame(newGame);
+    GameID createdGame = gameDataAccess.createGame("new game");
     GameData foundGame = gameDataAccess.getGameData(createdGame.gameID());
-    Assertions.assertEquals(foundGame.gameID, createdGame.gameID(),
+    Assertions.assertEquals(foundGame.gameID(), createdGame.gameID(),
         "Game retrieved successfully");
   };
 
@@ -62,31 +59,31 @@ public class GameDaoTests {
   @Order(5)
   @DisplayName("Normal Get Games")
   public void getGamesSuccess() throws DataAccessException {
-    GameID createdGame = gameDataAccess.createGame(newGame);
-    GameList createdGames = gameDataAccess.getGames(newGame);
+    gameDataAccess.createGame("new game");
+    GameList createdGames = gameDataAccess.getGames();
     Assertions.assertNotNull(createdGames, "Games retrieved successfully");
   };
 
   @Test
   @Order(6)
   @DisplayName("Games can have same name")
-  public void canMakeManyGames() throws DataAccessException {
-    GameID createdGame = gameDataAccess.createGame(newGame);
-    GameID createdGame2 = gameDataAccess.createGame(newGame);
-    GameList createdGames = gameDataAccess.getGames(newGame);
+  public void canDuplicateName() throws DataAccessException {
+    gameDataAccess.createGame("new game");
+    gameDataAccess.createGame("new game");
+    GameList createdGames = gameDataAccess.getGames();
     Assertions.assertNotNull(createdGames, "Games retrieved successfully");
   };
 
-    @Test
+  @Test
   @Order(7)
   @DisplayName("Can make many Games")
   public void canMakeManyGames() throws DataAccessException {
-    GameID createdGame = gameDataAccess.createGame(newGame);
-    GameID createdGame2 = gameDataAccess.createGame(newGame);
-    GameID createdGame3 = gameDataAccess.createGame(newGame);
-    GameID createdGame4 = gameDataAccess.createGame(newGame);
-    GameID createdGame5 = gameDataAccess.createGame(newGame);
-    GameList createdGames = gameDataAccess.getGames(newGame);
+    gameDataAccess.createGame("new game");
+    gameDataAccess.createGame("new game");
+    gameDataAccess.createGame("new game");
+    gameDataAccess.createGame("new game");
+    gameDataAccess.createGame("new game");
+    GameList createdGames = gameDataAccess.getGames();
     Assertions.assertNotNull(createdGames, "Games retrieved successfully");
   };
 };
