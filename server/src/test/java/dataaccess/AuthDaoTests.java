@@ -66,4 +66,15 @@ public class AuthDaoTests {
     Assertions.assertNull(
         authBase.getSession(createdSession.authToken()), "Can't get session if it doesn't exist");
   };
+
+  @Test
+  @Order(7)
+  @DisplayName("Create 2 Sessions")
+  public void createTwoSessions() throws DataAccessException {
+    authBase.destroy();
+    AuthData createdAuth = authBase.createSession(newUser.username());
+    AuthData createdAuthTwo = authBase.createSession(newUser.username() + "2");
+    Assertions.assertNotEquals(createdAuth.username(), createdAuthTwo.username(),
+        "Sessions created successfully");
+  };
 };
