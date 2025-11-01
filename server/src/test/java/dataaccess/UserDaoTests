@@ -8,44 +8,55 @@ import dataaccess.AuthDataAccess;
 import dataaccess.DataAccessException;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class GameListTests {
+public class UserDaoTests {
 
   // ### TESTING SETUP/CLEANUP ###
 
   public static UserData newUser;
-  public static AuthData spoofAuth;
-  private static UserService userService;
-  private static GameService gameService;
+  private static UserDataAccess userDataAccess;
   // ### TESTING SETUP/CLEANUP ###
 
   @BeforeAll
   public static void init() {
 
     newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
-    AuthDataAccess authBase = new AuthSQLDAO();
-    userService = new UserService(authBase);
-    gameService = new GameService(authBase);
+    userDataAccess = new UserSQLDAO();
   }
 
   @Test
   @Order(1)
-  @DisplayName("Normal List")
-  public void getList() throws DataAccessException {
-    spoofAuth = userService.register(newUser);
-    gameService.createGame(spoofAuth.authToken(), "test");
-    Assertions.assertNotNull(
-        gameService.listGames(spoofAuth.authToken()).games());
+  @DisplayName("Normal Create User")
+  public void loginSuccess() throws DataAccessException {
+    UserData createdUser = userDataAccess.createUser(newUser);
+    Assertions.assertEquals(createdUser.username(), newUser.username(),
+        "User created successfully");
   };
 
   @Test
   @Order(2)
-  @DisplayName("No permission")
-  public void noPermission() throws DataAccessException {
-
+  @DisplayName("Null User")
+  public void createUserNull() throws DataAccessException {
     Assertions.assertThrows(
         DataAccessException.class,
-        () -> gameService.listGames(
-            "I DO NOT HAVE PERMISSION TO ACCESS THE LIST OF GAMES"),
-        "he doesn't have permission...");
+        () -> userDataAccess.createUser(null));
+  };
+
+  @Test
+  @Order(3)
+  @DisplayName("Normal Get User")
+  public void getUserSuccess() throws DataAccessException {
+    UserData createdUser = userDataAccess.createUser(newUser);
+    UserData foundUser = userDataAccess.getUser(newUser.username());
+    Assertions.assertEquals(createdUser.username(), foundUser.username(),
+        "User retrieved successfully");
+  };
+
+  @Test
+  @Order(4)
+  @DisplayName("No username")
+  public void loginFailUsername() throws DataAccessException {
+    Assertions.assertThrows(
+        DataAccessException.class,
+        () -> userDataAccess.getUser("evilUser"), "Can't get user if don't exist");
   };
 };
