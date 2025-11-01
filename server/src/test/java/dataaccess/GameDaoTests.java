@@ -50,9 +50,7 @@ public class GameDaoTests {
   @Order(4)
   @DisplayName("No game")
   public void getGameFail() throws DataAccessException {
-    Assertions.assertThrows(
-        DataAccessException.class,
-        () -> gameDataAccess.getGameData(23489028), "Can't get game if don't exist");
+    Assertions.assertNull(gameDataAccess.getGameData(23489028), "Can't get game if don't exist");
   };
 
   @Test
