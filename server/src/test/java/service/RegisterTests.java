@@ -4,6 +4,7 @@ import model.*;
 import org.junit.jupiter.api.*;
 
 import dataaccess.AuthRAMDAO;
+import dataaccess.AuthSQLDAO;
 import dataaccess.DataAccessException;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -17,7 +18,7 @@ public class RegisterTests {
   public static void init() {
 
     newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
-    userService = new UserService(new AuthRAMDAO());
+    userService = new UserService(new AuthSQLDAO());
   }
 
   @BeforeEach
@@ -31,7 +32,10 @@ public class RegisterTests {
   @Order(1)
   @DisplayName("Normal Login")
   public void loginSuccess() throws DataAccessException {
+    userService.destroy();
     AuthData registerResult = userService.register(newUser);
+    System.out.println(registerResult.toString());
+    System.out.println(newUser.toString());
     Assertions.assertEquals(newUser.username(), registerResult.username(),
         "Response did not give the same username as user");
     Assertions.assertNotNull(registerResult.authToken(),

@@ -25,7 +25,7 @@ public class GameSQLDAO implements GameDataAccess {
       }
       return new GameList(output);
     } catch (Exception e) {
-      throw new DataAccessException(401,
+      throw new DataAccessException(500,
           String.format("Unable to read data: %s", e.getMessage()));
     }
   }
@@ -45,12 +45,6 @@ public class GameSQLDAO implements GameDataAccess {
     var gameID = DatabaseManager.executeUpdate(statement, gameName);
     return new GameID(gameID);
   };
-
-  // public AuthData deleteGame(int gameID) throws DataAccessException {
-  // var statement = "DELETE FROM games WHERE gameID=?";
-  // DatabaseManager.executeUpdate(statement, gameID);
-  // return null;
-  // };
 
   @Override
   public void joinGame(String username, GameRequestData data)
@@ -128,8 +122,8 @@ public class GameSQLDAO implements GameDataAccess {
         }
       }
     } catch (Exception e) {
-      throw new DataAccessException(401,
-          String.format("Unable to read data: %s", e.getMessage()));
+      throw new DataAccessException(500,
+          String.format("Error: Unable to read data: %s", e.getMessage()));
     }
     return null;
   }
