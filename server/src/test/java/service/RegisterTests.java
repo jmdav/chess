@@ -3,7 +3,6 @@ package service;
 import model.*;
 import org.junit.jupiter.api.*;
 
-import dataaccess.AuthRAMDAO;
 import dataaccess.AuthSQLDAO;
 import dataaccess.DataAccessException;
 
