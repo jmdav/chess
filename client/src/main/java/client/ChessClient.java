@@ -10,8 +10,10 @@ public class ChessClient {
   private String out;
   private String in;
 
-  public void run() {
+  public void run(String serverUrl) throws ResponseException {
     SessionData session = new SessionData(null, null);
+    ServerFacade server = new ServerFacade(serverUrl);
+    InputHandler input = new InputHandler(server);
     Scanner scanner = new Scanner(System.in);
     System.out.println("♕ Welcome to 240 chess. Type Help to get started. ♕");
 
@@ -24,15 +26,15 @@ public class ChessClient {
         switch (state) {
 
         case SIGNEDOUT:
-          out = InputHandler.parseSignedOut(session, in);
+          out = input.parseSignedOut(session, in);
           break;
 
         case SIGNEDIN:
-          out = InputHandler.parseSignedIn(session, in);
+          out = input.parseSignedIn(session, in);
           break;
 
         case INGAME:
-          out = InputHandler.parseInGame(session, in);
+          out = input.parseInGame(session, in);
           break;
 
         case QUIT:

@@ -4,9 +4,11 @@ import client.errors.ResponseException;
 
 public class InputHandler {
 
-  public static ServerFacade server;
+  ServerFacade server;
 
-  public static String parseSignedOut(SessionData data, String in)
+  public InputHandler(ServerFacade server) { this.server = server; }
+
+  public String parseSignedOut(SessionData data, String in)
       throws ResponseException {
     String out = "";
     String[] tokens = tokenize(in);
@@ -53,7 +55,7 @@ public class InputHandler {
     return out;
   }
 
-  public static String parseSignedIn(SessionData data, String in)
+  public String parseSignedIn(SessionData data, String in)
       throws ResponseException {
     String out = "";
     String[] tokens = tokenize(in);
@@ -82,7 +84,7 @@ public class InputHandler {
       if (tokens.length < 3)
         throw new ResponseException(
             "Error: insufficient arguments. Expected <gameName>");
-      server.createGame(data, tokens[1];
+      server.createGame(data, tokens[1]);
       out = "User " + tokens[1] + " logged in successfully.";
       // somehow set status
       break;
@@ -96,14 +98,16 @@ public class InputHandler {
     case "joingame":
       // somehow set status
       if (tokens.length < 3)
-        throw new ResponseException("Error: insufficient arguments. Expected <gameID> <color>");
+        throw new ResponseException(
+            "Error: insufficient arguments. Expected <gameID> <color>");
       out = server.joinGame(data, tokens[1], tokens[2]);
       break;
 
     case "o":
     case "observegame":
       if (tokens.length < 2)
-        throw new ResponseException("Error: insufficient arguments. Expected <gameID>");
+        throw new ResponseException(
+            "Error: insufficient arguments. Expected <gameID>");
       out = server.observeGame(data, tokens[1]);
       // somehow set status
       break;
@@ -114,12 +118,12 @@ public class InputHandler {
     return out;
   }
 
-  public static String parseInGame(SessionData data, String in)
+  public String parseInGame(SessionData data, String in)
       throws ResponseException {
     return "Not yet implemented.";
   }
 
-  private static String[] tokenize(String in) {
+  private String[] tokenize(String in) {
     String[] out = in.toLowerCase().split(" ");
     out[0] = out[0].toLowerCase();
     return out;

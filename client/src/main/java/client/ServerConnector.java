@@ -7,25 +7,22 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Locale;
 
 public class ServerConnector {
 
   private static final HttpClient httpClient = HttpClient.newHttpClient();
 
-  String urlString;
-  String host;
-  int port;
+  String serverUrl;
   String path;
 
-  public ServerConnector(String host, int port) {
-    this.host = host;
-    this.port = port;
+  public ServerConnector(String serverUrl) throws ResponseException {
+    this.serverUrl = serverUrl;
+    this.path = "";
+    get("/");
   }
 
   public String get(String path) throws ResponseException {
-    String urlString =
-        String.format(Locale.getDefault(), "http://%s:%d%s", host, port, path);
+    String urlString = serverUrl + path;
     try {
       HttpRequest request = HttpRequest.newBuilder()
                                 .uri(new URI(urlString))
@@ -51,8 +48,7 @@ public class ServerConnector {
   }
 
   public String post(String path, String data) throws ResponseException {
-    String urlString =
-        String.format(Locale.getDefault(), "http://%s:%d%s", host, port, path);
+    String urlString = serverUrl + path;
     try {
       HttpRequest request =
           HttpRequest.newBuilder()

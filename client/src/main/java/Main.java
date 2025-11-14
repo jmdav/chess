@@ -8,10 +8,10 @@ public class Main {
     }
     System.out.println(serverUrl);
     try {
-      new ChessClient().run();
+      new ChessClient().run(serverUrl);
 
     } catch (Throwable ex) {
-      System.out.printf("Unable to start server: %s%n", ex.getMessage());
+      System.out.println("Unable to connect to server");
     }
   }
 }
