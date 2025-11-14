@@ -21,15 +21,26 @@ public class ServerConnector {
     get("/");
   }
 
-  public String get(String path) throws ResponseException {
-    String urlString = serverUrl + path;
-    try {
-      HttpRequest request = HttpRequest.newBuilder()
-                                .uri(new URI(urlString))
-                                .timeout(java.time.Duration.ofMillis(5000))
-                                .GET()
-                                .build();
+  private String httpRequest(String path, String method, String data)
+      throws ResponseException {
 
+    String urlString = serverUrl + path;
+
+    try {
+      HttpRequest.Builder builder =
+          HttpRequest.newBuilder()
+              .uri(new URI(urlString))
+              .timeout(java.time.Duration.ofMillis(5000));
+
+      if (data != null) {
+        builder.method(method.toUpperCase(),
+                       HttpRequest.BodyPublishers.ofString(data));
+
+      } else {
+        builder.method(method.toUpperCase(),
+                       HttpRequest.BodyPublishers.noBody());
+      }
+      HttpRequest request = builder.build();
       HttpResponse<String> httpResponse =
           httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
@@ -47,31 +58,15 @@ public class ServerConnector {
     }
   }
 
+  public String get(String path) throws ResponseException {
+    return httpRequest(path, "GET", null);
+  }
+
   public String post(String path, String data) throws ResponseException {
-    String urlString = serverUrl + path;
-    try {
-      HttpRequest request =
-          HttpRequest.newBuilder()
-              .uri(new URI(urlString))
-              .timeout(java.time.Duration.ofMillis(5000))
-              .POST(HttpRequest.BodyPublishers.ofString(data))
-              .header("Content-Type", "text/plain; charset=UTF-8")
-              .build();
+    return httpRequest(path, "POST", data);
+  }
 
-      HttpResponse<String> httpResponse =
-          httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-      if (httpResponse.statusCode() >= 200 && httpResponse.statusCode() < 300) {
-        return httpResponse.body();
-      } else {
-        throw new ResponseException(httpResponse.body());
-      }
-    } catch (URISyntaxException e) {
-      throw new ResponseException("Error: Invalid URL");
-    } catch (IOException e) {
-      throw new ResponseException("Error: Server failed to respond");
-    } catch (InterruptedException e) {
-      throw new ResponseException("Error: Server failed to respond");
-    }
+  public String delete(String path)throws ResponseException {
+    return httpRequest(path, "DELETE", null);
   }
 }

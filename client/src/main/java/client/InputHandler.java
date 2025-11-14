@@ -29,8 +29,8 @@ public class InputHandler {
       if (tokens.length < 4)
         throw new ResponseException("Error: insufficient arguments. Expected "
                                     + "<username> <password> <email>");
-      server.register(data, tokens[1], tokens[2], tokens[3]);
-      out = "User " + tokens[1] + " registered successfully.";
+      data = server.register(data, tokens[1], tokens[2], tokens[3]);
+      out = "User " + data.username() + " registered successfully.";
       break;
 
     case "l":
@@ -38,8 +38,8 @@ public class InputHandler {
       if (tokens.length < 3)
         throw new ResponseException(
             "Error: insufficient arguments. Expected <username> <password>");
-      server.login(data, tokens[1], tokens[2]);
-      out = "User " + tokens[1] + " logged in successfully.";
+      data = server.login(data, tokens[1], tokens[2]);
+      out = "User " + data.username() + " logged in successfully.";
       // somehow set status
       break;
 
