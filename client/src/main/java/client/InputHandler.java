@@ -1,12 +1,15 @@
 package client;
 
+import client.errors.ResponseException;
+
 public class InputHandler {
 
   public static ServerFacade server;
 
-  public static String parseSignedOut(SessionData data, String in) {
+  public static String parseSignedOut(SessionData data, String in)
+      throws ResponseException {
     String out = "";
-    String[] tokens = in.toLowerCase().split(" ");
+    String[] tokens = tokenize(in);
 
     switch (tokens[0]) {
 
@@ -16,17 +19,23 @@ public class InputHandler {
       out = "[h]elp - Display list of possible commands \n"
             + "[r]egister <username> <password> <email> - Register new user\n"
             + "[l]ogin <username> <password> - Login existing user\n"
-            + "[q]uit - Quit program\n";
+            + "[q]uit - Quit program";
       break;
 
     case "r":
     case "register":
+      if (tokens.length < 4)
+        throw new ResponseException("Error: insufficient arguments. Expected "
+                                    + "<username> <password> <email>");
       server.register(data, tokens[1], tokens[2], tokens[3]);
       out = "User " + tokens[1] + " registered successfully.";
       break;
 
     case "l":
     case "login":
+      if (tokens.length < 3)
+        throw new ResponseException(
+            "Error: insufficient arguments. Expected <username> <password>");
       server.login(data, tokens[1], tokens[2]);
       out = "User " + tokens[1] + " logged in successfully.";
       // somehow set status
@@ -37,13 +46,17 @@ public class InputHandler {
       // somehow set status
       out = "Quitting program...";
       break;
+
+    default:
+      out = "Error: Invalid command. Type 'Help' for a list of commands.";
     }
     return out;
   }
 
-  public static String parseSignedIn(SessionData data, String in) {
+  public static String parseSignedIn(SessionData data, String in)
+      throws ResponseException {
     String out = "";
-    String[] tokens = in.toLowerCase().split(" ");
+    String[] tokens = tokenize(in);
 
     switch (tokens[0]) {
 
@@ -55,7 +68,7 @@ public class InputHandler {
             + "[c]reategame <name> - Create new chess game\n"
             + "list[g]ames - Get a list of all current games\n"
             + "[j]oingame <number> <color> - Join game by listed number\n"
-            + "[o]bservegame <number> - Observe game by listed number\n";
+            + "[o]bservegame <number> - Observe game by listed number";
       break;
 
     case "l":
@@ -66,7 +79,10 @@ public class InputHandler {
 
     case "c":
     case "creategame":
-      server.login(data, tokens[1], tokens[2]);
+      if (tokens.length < 3)
+        throw new ResponseException(
+            "Error: insufficient arguments. Expected <gameName>");
+      server.createGame(data, tokens[1];
       out = "User " + tokens[1] + " logged in successfully.";
       // somehow set status
       break;
@@ -79,18 +95,33 @@ public class InputHandler {
     case "j":
     case "joingame":
       // somehow set status
+      if (tokens.length < 3)
+        throw new ResponseException("Error: insufficient arguments. Expected <gameID> <color>");
       out = server.joinGame(data, tokens[1], tokens[2]);
       break;
 
     case "o":
     case "observegame":
-      // somehow set status
+      if (tokens.length < 2)
+        throw new ResponseException("Error: insufficient arguments. Expected <gameID>");
       out = server.observeGame(data, tokens[1]);
+      // somehow set status
       break;
+
+    default:
+      out = "Error: Invalid command. Type 'Help' for a list of commands.";
     }
     return out;
   }
-  public static String parseInGame(SessionData data, String in) {
+
+  public static String parseInGame(SessionData data, String in)
+      throws ResponseException {
     return "Not yet implemented.";
+  }
+
+  private static String[] tokenize(String in) {
+    String[] out = in.toLowerCase().split(" ");
+    out[0] = out[0].toLowerCase();
+    return out;
   }
 }

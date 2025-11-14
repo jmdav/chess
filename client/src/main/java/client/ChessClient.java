@@ -1,5 +1,6 @@
 package client;
 
+import client.errors.ResponseException;
 import java.util.Scanner;
 
 public class ChessClient {
@@ -10,7 +11,7 @@ public class ChessClient {
   private String in;
 
   public void run() {
-    SessionData session = new SessionData();
+    SessionData session = new SessionData(null, null);
     Scanner scanner = new Scanner(System.in);
     System.out.println("♕ Welcome to 240 chess. Type Help to get started. ♕");
 
@@ -19,23 +20,27 @@ public class ChessClient {
       System.out.print((username == null ? "" : "[" + username + "]") +
                        (" > "));
       in = scanner.nextLine();
+      try {
+        switch (state) {
 
-      switch (state) {
+        case SIGNEDOUT:
+          out = InputHandler.parseSignedOut(session, in);
+          break;
 
-      case SIGNEDOUT:
-        out = InputHandler.parseSignedOut(session, in);
-        break;
+        case SIGNEDIN:
+          out = InputHandler.parseSignedIn(session, in);
+          break;
 
-      case SIGNEDIN:
-        out = InputHandler.parseSignedIn(session, in);
-        break;
+        case INGAME:
+          out = InputHandler.parseInGame(session, in);
+          break;
 
-      case INGAME:
-        out = InputHandler.parseInGame(session, in);
-        break;
+        case QUIT:
+          break;
+        }
 
-      case QUIT:
-        break;
+      } catch (ResponseException exception) {
+        out = exception.getErrorMessage();
       }
 
       System.out.println(out);
