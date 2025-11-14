@@ -1,5 +1,8 @@
 package client;
 
+import static org.junit.jupiter.api.DynamicTest.stream;
+
+import chess.ChessGame;
 import client.errors.ResponseException;
 import java.util.List;
 import model.GameData;
@@ -44,13 +47,12 @@ public class InputHandler {
             "Error: insufficient arguments. Expected <username> <password>");
       data = server.login(data, tokens[1], tokens[2]);
       out = "User " + data.username() + " logged in successfully.";
-      // somehow set status
       break;
 
     case "q":
     case "quit":
-      // somehow set status
       out = "Quitting program...";
+      data = new SessionData(null, null, State.QUIT);
       break;
 
     default:
@@ -89,8 +91,8 @@ public class InputHandler {
       if (tokens.length < 2)
         throw new ResponseException(
             "Error: insufficient arguments. Expected <gameName>");
-      GameData newGame = server.createGame(data, tokens[1]);
-      out = "Game " + newGame.gameName() + " created successfully.";
+      server.createGame(data, tokens[1]);
+      out = "Game " + tokens[1] + " created successfully.";
       break;
 
     case "g":
@@ -99,7 +101,7 @@ public class InputHandler {
       GameData g;
       for (int i = 0; i < games.size(); i++) {
         g = games.get(i);
-        System.out.println(i + ") " + g.gameName() +
+        System.out.println((i + 1) + ") " + g.gameName() +
                            " // Black: " + g.blackUsername() +
                            " | White: " + g.whiteUsername());
       }
@@ -109,9 +111,31 @@ public class InputHandler {
     case "joingame":
       // somehow set status
       if (tokens.length < 3)
+        throw new ResponseException("Error: insufficient arguments. Expected "
+                                    + "<gameID> <color (W or B)>");
+      ChessGame.TeamColor color;
+      Integer gameID;
+      try {
+        gameID = Integer.parseInt(tokens[1]);
+        System.out.println(gameID);
+      } catch (NumberFormatException e) {
         throw new ResponseException(
-            "Error: insufficient arguments. Expected <gameID> <color>");
-      out = server.joinGame(data, tokens[1], tokens[2]);
+            "Error: invalid game ID. Expected <gameID> <color (W or B)>");
+      }
+      switch (tokens[2].toLowerCase()) {
+      case "w":
+        color = ChessGame.TeamColor.WHITE;
+        break;
+      case "b":
+        color = ChessGame.TeamColor.BLACK;
+        break;
+      default:
+        throw new ResponseException(
+            "Error: invalid color. Expected <gameID> <color (W or B)>");
+      }
+      server.joinGame(data, gameID, color);
+      out = "Game " + tokens[1] + " joined as " + tokens[2];
+      data = new SessionData(data.authToken(), data.username(), State.INGAME);
       break;
 
     case "o":
@@ -131,6 +155,8 @@ public class InputHandler {
 
   public HandlerResponse parseInGame(SessionData data, String in)
       throws ResponseException {
+    data = new SessionData(data.authToken(), data.username(), State.SIGNEDIN);
+    out = "Not yet implemented.";
     return new HandlerResponse(data, out);
   }
 

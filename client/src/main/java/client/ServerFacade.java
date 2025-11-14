@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import client.errors.ResponseException;
 import com.google.gson.Gson;
 import java.util.List;
@@ -50,9 +51,11 @@ public class ServerFacade {
     return games.games();
   }
 
-  public String joinGame(SessionData data, String gameID, String color)
-      throws ResponseException {
-    return "your bacon";
+  public void joinGame(SessionData data, Integer gameID,
+                       ChessGame.TeamColor color) throws ResponseException {
+    GameRequestData gameRequest = new GameRequestData(color, gameID);
+    request = serializer.toJson(gameRequest);
+    server.put("/game", request, data.authToken());
   }
 
   public String observeGame(SessionData data, String gameID)
@@ -60,12 +63,12 @@ public class ServerFacade {
     return "their bacon";
   }
 
-  public GameData createGame(SessionData data, String gameName)
+  public GameID createGame(SessionData data, String gameName)
       throws ResponseException {
     GameStartData newGame = new GameStartData(gameName);
     request = serializer.toJson(newGame);
     response = server.post("/game", request, data.authToken());
-    GameData createdGame = serializer.fromJson(response, GameData.class);
+    GameID createdGame = serializer.fromJson(response, GameID.class);
     return createdGame;
   }
 }

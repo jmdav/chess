@@ -9,9 +9,9 @@ public class Main {
     System.out.println(serverUrl);
     try {
       new ChessClient().run(serverUrl);
-
     } catch (Throwable ex) {
       System.out.println("Unable to connect to server");
+      System.out.println(ex.getMessage());
     }
   }
 }

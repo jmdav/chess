@@ -1,7 +1,6 @@
 package handlers;
 
 import com.google.gson.Gson;
-
 import dataaccess.AuthDataAccess;
 import dataaccess.DataAccessException;
 import io.javalin.http.Context;
@@ -37,7 +36,8 @@ public class GameHandler {
 
   public void createGame(Context ctx) {
     String authToken = ctx.header("authorization");
-    String gameName = serializer.fromJson(ctx.body(), GameStartData.class).gameName();
+    String gameName =
+        serializer.fromJson(ctx.body(), GameStartData.class).gameName();
     GameID output;
     try {
       output = gameService.createGame(authToken, gameName);
@@ -51,7 +51,8 @@ public class GameHandler {
 
   public void joinGame(Context ctx) {
     String authToken = ctx.header("authorization");
-    GameRequestData gameRequest = serializer.fromJson(ctx.body(), GameRequestData.class);
+    GameRequestData gameRequest =
+        serializer.fromJson(ctx.body(), GameRequestData.class);
     try {
       gameService.joinGame(authToken, gameRequest);
       ctx.status(200);

@@ -82,4 +82,9 @@ public class ServerConnector {
       throws ResponseException {
     return httpRequest(path, "DELETE", null, authorization);
   }
+
+  public String put(String path, String data, String authorization)
+      throws ResponseException {
+    return httpRequest(path, "PUT", null, authorization);
+  }
 }
