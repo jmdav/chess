@@ -6,9 +6,9 @@ public class Main {
     if (args.length == 1) {
       serverUrl = args[0];
     }
-
+    System.out.println(serverUrl);
     try {
-      // new ChessClient(serverUrl).run();
+      new ChessClient().run();
 
     } catch (Throwable ex) {
       System.out.printf("Unable to start server: %s%n", ex.getMessage());

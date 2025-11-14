@@ -7,7 +7,7 @@ package ui;
 public class EscapeSequences {
 
   private static final String UNICODE_ESCAPE = "\u001b";
-  private static final String ANSI_ESCAPE = "\033";
+  // private static final String ANSI_ESCAPE = "\033";
 
   public static final String ERASE_SCREEN =
       UNICODE_ESCAPE + "[H" + UNICODE_ESCAPE + "[2J";
@@ -29,8 +29,9 @@ public class EscapeSequences {
   public static final String SET_TEXT_COLOR_BLACK = SET_TEXT_COLOR + "0m";
   public static final String SET_TEXT_COLOR_LIGHT_GREY =
       SET_TEXT_COLOR + "242m";
-  public static final String SET_TEXT_COLOR_DARK_GREY = SET_TEXT_COLOR + ("23" +
-                                                                          "5m");
+  public static final String SET_TEXT_COLOR_DARK_GREY =
+      SET_TEXT_COLOR + ("23"
+                        + "5m");
   public static final String SET_TEXT_COLOR_RED = SET_TEXT_COLOR + "160m";
   public static final String SET_TEXT_COLOR_GREEN = SET_TEXT_COLOR + "46m";
   public static final String SET_TEXT_COLOR_YELLOW = SET_TEXT_COLOR + "226m";

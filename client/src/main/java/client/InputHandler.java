@@ -4,7 +4,7 @@ public class InputHandler {
 
   public static ServerFacade server;
 
-  public static String parseSignedOut(String in, SessionData data) {
+  public static String parseSignedOut(SessionData data, String in) {
     String out = "";
     String[] tokens = in.toLowerCase().split(" ");
 
@@ -41,7 +41,7 @@ public class InputHandler {
     return out;
   }
 
-  public static String parseSignedIn(String in, SessionData data) {
+  public static String parseSignedIn(SessionData data, String in) {
     String out = "";
     String[] tokens = in.toLowerCase().split(" ");
 
@@ -90,5 +90,7 @@ public class InputHandler {
     }
     return out;
   }
-  public static String parseInGame(String in) { return "Not yet implemented."; }
+  public static String parseInGame(SessionData data, String in) {
+    return "Not yet implemented.";
+  }
 }

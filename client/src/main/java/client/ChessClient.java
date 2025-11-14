@@ -9,8 +9,8 @@ public class ChessClient {
   private String out;
   private String in;
 
-  public void main(String[] args) {
-
+  public void run() {
+    SessionData session = new SessionData();
     Scanner scanner = new Scanner(System.in);
     System.out.println("♕ Welcome to 240 chess. Type Help to get started. ♕");
 
@@ -18,20 +18,20 @@ public class ChessClient {
 
       System.out.print((username == null ? "" : "[" + username + "]") +
                        (" > "));
-      String in = scanner.nextLine();
+      in = scanner.nextLine();
 
       switch (state) {
 
       case SIGNEDOUT:
-        out = InputHandler.parseSignedOut(in);
+        out = InputHandler.parseSignedOut(session, in);
         break;
 
       case SIGNEDIN:
-        out = InputHandler.parseSignedIn(in);
+        out = InputHandler.parseSignedIn(session, in);
         break;
 
       case INGAME:
-        out = InputHandler.parseInGame(in);
+        out = InputHandler.parseInGame(session, in);
         break;
 
       case QUIT:
