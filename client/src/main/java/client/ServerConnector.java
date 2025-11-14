@@ -85,6 +85,6 @@ public class ServerConnector {
 
   public String put(String path, String data, String authorization)
       throws ResponseException {
-    return httpRequest(path, "PUT", null, authorization);
+    return httpRequest(path, "PUT", data, authorization);
   }
 }

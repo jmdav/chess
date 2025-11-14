@@ -117,7 +117,6 @@ public class InputHandler {
       Integer gameID;
       try {
         gameID = Integer.parseInt(tokens[1]);
-        System.out.println(gameID);
       } catch (NumberFormatException e) {
         throw new ResponseException(
             "Error: invalid game ID. Expected <gameID> <color (W or B)>");
@@ -134,7 +133,7 @@ public class InputHandler {
             "Error: invalid color. Expected <gameID> <color (W or B)>");
       }
       server.joinGame(data, gameID, color);
-      out = "Game " + tokens[1] + " joined as " + tokens[2];
+      out = "Game " + tokens[1] + " joined as " + color;
       data = new SessionData(data.authToken(), data.username(), State.INGAME);
       break;
 
