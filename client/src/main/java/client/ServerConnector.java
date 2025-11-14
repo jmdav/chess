@@ -1,6 +1,9 @@
 package client;
 
+import client.errors.ResponseException;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -20,43 +23,59 @@ public class ServerConnector {
     this.port = port;
   }
 
-  public String get(String path) {
+  public String get(String path) throws ResponseException {
     String urlString =
         String.format(Locale.getDefault(), "http://%s:%d%s", host, port, path);
+    try {
+      HttpRequest request = HttpRequest.newBuilder()
+                                .uri(new URI(urlString))
+                                .timeout(java.time.Duration.ofMillis(5000))
+                                .GET()
+                                .build();
 
-    HttpRequest request = HttpRequest.newBuilder()
-                              .uri(new URI(urlString))
-                              .timeout(java.time.Duration.ofMillis(5000))
-                              .GET()
-                              .build();
+      HttpResponse<String> httpResponse =
+          httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-    HttpResponse<String> httpResponse =
-        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-    if (httpResponse.statusCode() >= 200 && httpResponse.statusCode() < 300) {
-      return httpResponse.body();
-    } else {
-      System.out.println("Error: received status code " +
-                         httpResponse.statusCode());
+      if (httpResponse.statusCode() >= 200 && httpResponse.statusCode() < 300) {
+        return httpResponse.body();
+      } else {
+        throw new ResponseException(httpResponse.body());
+      }
+    } catch (URISyntaxException e) {
+      throw new ResponseException("Error: Invalid URL");
+    } catch (IOException e) {
+      throw new ResponseException("Error: Server failed to respond");
+    } catch (InterruptedException e) {
+      throw new ResponseException("Error: Server failed to respond");
     }
   }
 
-  public String register(SessionData data, String username, String password,
-                         String email) {
-    return "you exist";
-  }
-  public String login(SessionData data, String username, String password) {
-    return "welcome you";
-  }
-  public String logout(SessionData data) { return "no more you"; }
-  public String listGames(SessionData data) { return "unlimited bacon"; }
-  public String joinGame(SessionData data, String gameID, String color) {
-    return "your bacon";
-  }
-  public String observeGame(SessionData data, String gameID) {
-    return "their bacon";
-  }
-  public String createGame(SessionData data, String gameName) {
-    return "it's gamer time";
+  public String post(String path, String data) throws ResponseException {
+    String urlString =
+        String.format(Locale.getDefault(), "http://%s:%d%s", host, port, path);
+    try {
+      HttpRequest request =
+          HttpRequest.newBuilder()
+              .uri(new URI(urlString))
+              .timeout(java.time.Duration.ofMillis(5000))
+              .POST(HttpRequest.BodyPublishers.ofString(data))
+              .header("Content-Type", "text/plain; charset=UTF-8")
+              .build();
+
+      HttpResponse<String> httpResponse =
+          httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+      if (httpResponse.statusCode() >= 200 && httpResponse.statusCode() < 300) {
+        return httpResponse.body();
+      } else {
+        throw new ResponseException(httpResponse.body());
+      }
+    } catch (URISyntaxException e) {
+      throw new ResponseException("Error: Invalid URL");
+    } catch (IOException e) {
+      throw new ResponseException("Error: Server failed to respond");
+    } catch (InterruptedException e) {
+      throw new ResponseException("Error: Server failed to respond");
+    }
   }
 }
