@@ -2,6 +2,7 @@ package client;
 
 import client.errors.ResponseException;
 import com.google.gson.Gson;
+import java.util.List;
 import model.*;
 
 public class ServerFacade {
@@ -10,60 +11,61 @@ public class ServerFacade {
   Gson serializer;
   String request;
   String response;
-  ServerResponse output;
 
   public ServerFacade(String serverUrl) throws ResponseException {
     server = new ServerConnector(serverUrl);
     serializer = new Gson();
   }
 
-  public ServerResponse register(SessionData data, String username,
-                                 String password, String email)
+  public SessionData register(SessionData data, String username,
+                              String password, String email)
       throws ResponseException {
     UserData newUser = new UserData(username, password, email);
     request = serializer.toJson(newUser);
-    response = server.post("/user", request);
+    response = server.post("/user", request, null);
     AuthData newSession = serializer.fromJson(response, AuthData.class);
-    output = new ServerResponse(
-        new SessionData(newSession.authToken(), newSession.username(),
-                        State.SIGNEDIN),
-        "User " + newSession.username() + " registered successfully.");
+    SessionData output = new SessionData(newSession.authToken(),
+                                         newSession.username(), State.SIGNEDIN);
     return output;
   }
 
-  public ServerResponse login(SessionData data, String username,
-                              String password) throws ResponseException {
+  public SessionData login(SessionData data, String username, String password)
+      throws ResponseException {
     UserData newUser = new UserData(username, password, null);
     request = serializer.toJson(newUser);
-    response = server.post("/session", request);
+    response = server.post("/session", request, null);
     AuthData newSession = serializer.fromJson(response, AuthData.class);
-    output = new ServerResponse(
-        new SessionData(newSession.authToken(), newSession.username(),
-                        State.SIGNEDIN),
-        "User " + newSession.username() + " logged in successfully.");
+    SessionData output = new SessionData(newSession.authToken(),
+                                         newSession.username(), State.SIGNEDIN);
     return output;
   }
 
-  public ServerResponse logout(SessionData data) throws ResponseException {
-    return "no more you";
+  public String logout(SessionData data) throws ResponseException {
+    return server.delete("/session", data.authToken());
   }
 
-  public ServerResponse listGames(SessionData data) throws ResponseException {
-    return "unlimited bacon";
+  public List<GameData> listGames(SessionData data) throws ResponseException {
+    response = server.get("/game", data.authToken());
+    GameList games = serializer.fromJson(response, GameList.class);
+    return games.games();
   }
 
-  public ServerResponse joinGame(SessionData data, String gameID, String color)
+  public String joinGame(SessionData data, String gameID, String color)
       throws ResponseException {
     return "your bacon";
   }
 
-  public ServerResponse observeGame(SessionData data, String gameID)
+  public String observeGame(SessionData data, String gameID)
       throws ResponseException {
     return "their bacon";
   }
 
-  public ServerResponse createGame(SessionData data, String gameName)
+  public GameData createGame(SessionData data, String gameName)
       throws ResponseException {
-    return "it's gamer time";
+    GameStartData newGame = new GameStartData(gameName);
+    request = serializer.toJson(newGame);
+    response = server.post("/game", request, data.authToken());
+    GameData createdGame = serializer.fromJson(response, GameData.class);
+    return createdGame;
   }
 }

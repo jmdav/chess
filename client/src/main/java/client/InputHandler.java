@@ -1,18 +1,22 @@
 package client;
 
 import client.errors.ResponseException;
+import java.util.List;
+import model.GameData;
 
 public class InputHandler {
 
   ServerFacade server;
+  String out = "";
+  List<GameData> games;
 
   public InputHandler(ServerFacade server) { this.server = server; }
 
-  public String parseSignedOut(SessionData data, String in)
+  public HandlerResponse parseSignedOut(SessionData data, String in)
       throws ResponseException {
-    String out = "";
-    String[] tokens = tokenize(in);
 
+    String[] tokens = tokenize(in);
+    out = "";
     switch (tokens[0]) {
 
     case "?":
@@ -52,12 +56,12 @@ public class InputHandler {
     default:
       out = "Error: Invalid command. Type 'Help' for a list of commands.";
     }
-    return out;
+    return new HandlerResponse(data, out);
   }
 
-  public String parseSignedIn(SessionData data, String in)
+  public HandlerResponse parseSignedIn(SessionData data, String in)
       throws ResponseException {
-    String out = "";
+    out = "";
     String[] tokens = tokenize(in);
 
     switch (tokens[0]) {
@@ -77,21 +81,28 @@ public class InputHandler {
     case "logout":
       server.logout(data);
       out = "Logged out successfully.";
+      data = new SessionData(null, null, State.SIGNEDOUT);
       break;
 
     case "c":
     case "creategame":
-      if (tokens.length < 3)
+      if (tokens.length < 2)
         throw new ResponseException(
             "Error: insufficient arguments. Expected <gameName>");
-      server.createGame(data, tokens[1]);
-      out = "User " + tokens[1] + " logged in successfully.";
-      // somehow set status
+      GameData newGame = server.createGame(data, tokens[1]);
+      out = "Game " + newGame.gameName() + " created successfully.";
       break;
 
     case "g":
     case "listgames":
-      out = server.listGames(data);
+      games = server.listGames(data);
+      GameData g;
+      for (int i = 0; i < games.size(); i++) {
+        g = games.get(i);
+        System.out.println(i + ") " + g.gameName() +
+                           " // Black: " + g.blackUsername() +
+                           " | White: " + g.whiteUsername());
+      }
       break;
 
     case "j":
@@ -115,12 +126,12 @@ public class InputHandler {
     default:
       out = "Error: Invalid command. Type 'Help' for a list of commands.";
     }
-    return out;
+    return new HandlerResponse(data, out);
   }
 
-  public String parseInGame(SessionData data, String in)
+  public HandlerResponse parseInGame(SessionData data, String in)
       throws ResponseException {
-    return "Not yet implemented.";
+    return new HandlerResponse(data, out);
   }
 
   private String[] tokenize(String in) {

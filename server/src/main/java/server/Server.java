@@ -45,7 +45,5 @@ public class Server {
     return javalin.port();
   }
 
-  public void stop() {
-    javalin.stop();
-  }
+  public void stop() { javalin.stop(); }
 }

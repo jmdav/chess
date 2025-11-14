@@ -5,36 +5,35 @@ import java.util.Scanner;
 
 public class ChessClient {
 
-  private State state = State.SIGNEDOUT;
-  private String username;
-  private String out;
+  private HandlerResponse response;
   private String in;
 
   public void run(String serverUrl) throws ResponseException {
-    SessionData session = new SessionData(null, null);
+    SessionData session = new SessionData(null, null, State.SIGNEDOUT);
     ServerFacade server = new ServerFacade(serverUrl);
     InputHandler input = new InputHandler(server);
     Scanner scanner = new Scanner(System.in);
     System.out.println("♕ Welcome to 240 chess. Type Help to get started. ♕");
 
-    while (state != State.QUIT) {
+    while (session.state() != State.QUIT) {
 
-      System.out.print((username == null ? "" : "[" + username + "]") +
-                       (" > "));
+      System.out.print(
+          (session.username() == null ? "" : "[" + session.username() + "]") +
+          (" > "));
       in = scanner.nextLine();
       try {
-        switch (state) {
+        switch (session.state()) {
 
         case SIGNEDOUT:
-          out = input.parseSignedOut(session, in);
+          response = input.parseSignedOut(session, in);
           break;
 
         case SIGNEDIN:
-          out = input.parseSignedIn(session, in);
+          response = input.parseSignedIn(session, in);
           break;
 
         case INGAME:
-          out = input.parseInGame(session, in);
+          response = input.parseInGame(session, in);
           break;
 
         case QUIT:
@@ -42,10 +41,10 @@ public class ChessClient {
         }
 
       } catch (ResponseException exception) {
-        out = exception.getErrorMessage();
+        response = new HandlerResponse(session, exception.getErrorMessage());
       }
-
-      System.out.println(out);
+      session = response.data();
+      System.out.println(response.output());
     }
 
     scanner.close();
