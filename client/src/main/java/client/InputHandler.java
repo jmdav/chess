@@ -13,10 +13,10 @@ public class InputHandler {
     case "?":
     case "h":
     case "help":
-      out = "[h]elp - Displays list of possible commands \n"
-            + "[r]egister <username> <password> <email> - register new user\n"
-            + "[l]ogin <username> <password> - login existing user\n"
-            + "[q]uit - exit program\n";
+      out = "[h]elp - Display list of possible commands \n"
+            + "[r]egister <username> <password> <email> - Register new user\n"
+            + "[l]ogin <username> <password> - Login existing user\n"
+            + "[q]uit - Quit program\n";
       break;
 
     case "r":
@@ -51,28 +51,41 @@ public class InputHandler {
     case "h":
     case "help":
       out = "[h]elp - Displays list of possible commands \n"
-            + "[r]egister <username> <password> <email> - register new user\n"
-            + "[l]ogin <username> <password> - login existing user\n"
-            + "[q]uit - exit program\n";
-      break;
-
-    case "r":
-    case "register":
-      server.register(data, tokens[1], tokens[2], tokens[3]);
-      out = "User " + tokens[1] + " registered successfully.";
+            + "[l]ogout - Log out current user\n"
+            + "[c]reategame <name> - Create new chess game\n"
+            + "list[g]ames - Get a list of all current games\n"
+            + "[j]oingame <number> <color> - Join game by listed number\n"
+            + "[o]bservegame <number> - Observe game by listed number\n";
       break;
 
     case "l":
-    case "login":
+    case "logout":
+      server.logout(data);
+      out = "Logged out successfully.";
+      break;
+
+    case "c":
+    case "creategame":
       server.login(data, tokens[1], tokens[2]);
       out = "User " + tokens[1] + " logged in successfully.";
       // somehow set status
       break;
 
-    case "q":
-    case "quit":
+    case "g":
+    case "listgames":
+      out = server.listGames(data);
+      break;
+
+    case "j":
+    case "joingame":
       // somehow set status
-      out = "Quitting program...";
+      out = server.joinGame(data, tokens[1], tokens[2]);
+      break;
+
+    case "o":
+    case "observegame":
+      // somehow set status
+      out = server.observeGame(data, tokens[1]);
       break;
     }
     return out;
