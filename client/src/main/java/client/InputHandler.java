@@ -1,9 +1,12 @@
 package client;
 
+import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessGame.TeamColor;
 import client.errors.ResponseException;
 import java.util.List;
 import model.GameData;
+import ui.BoardRender;
 
 public class InputHandler {
 
@@ -132,6 +135,9 @@ public class InputHandler {
       }
       server.joinGame(data, gameID, color);
       out = "Game " + tokens[1] + " joined as " + color;
+      ChessBoard board = new ChessBoard();
+      board.resetBoard();
+      BoardRender.render(board, color);
       data = new SessionData(data.authToken(), data.username(), State.INGAME);
       break;
 
@@ -141,7 +147,11 @@ public class InputHandler {
         throw new ResponseException(
             "Error: insufficient arguments. Expected <gameID>");
       out = server.observeGame(data, tokens[1]);
-      // somehow set status
+      ChessBoard board2 = new ChessBoard();
+      board2.resetBoard();
+      BoardRender.render(board2, TeamColor.WHITE);
+      data = new SessionData(data.authToken(), data.username(), State.INGAME);
+
       break;
 
     default:
@@ -153,7 +163,8 @@ public class InputHandler {
   public HandlerResponse parseInGame(SessionData data, String in)
       throws ResponseException {
     data = new SessionData(data.authToken(), data.username(), State.SIGNEDIN);
-    out = "Not yet implemented.";
+
+    out = "Leaving game...";
     return new HandlerResponse(data, out);
   }
 

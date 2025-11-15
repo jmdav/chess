@@ -60,7 +60,7 @@ public class ServerFacade {
 
   public String observeGame(SessionData data, String gameID)
       throws ResponseException {
-    return "their bacon";
+    return "Not Yet Implemented";
   }
 
   public GameID createGame(SessionData data, String gameName)
