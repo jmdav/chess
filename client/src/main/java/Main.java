@@ -15,3 +15,5 @@ public class Main {
     }
   }
 }
+
+// list of no games says no games

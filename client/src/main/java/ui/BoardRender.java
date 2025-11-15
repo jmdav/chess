@@ -55,24 +55,6 @@ public class BoardRender {
 
   private static void drawChessBoard(PrintStream out, TeamColor color) {
     bgcolor = TeamColor.BLACK;
-    for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-
-      drawColumn(out, pieces, boardCol, color);
-
-      if (boardCol < BOARD_SIZE_IN_SQUARES - 1) {
-        // Draw horizontal row separator.
-        setBlack(out);
-      }
-    }
-  }
-
-  private static void drawColumn(PrintStream out, ChessPiece[][] pieces,
-                                 int col, TeamColor color) {
-    setContextColors(out);
-    out.print(color == TeamColor.WHITE ? " " + col + " "
-                                       : " " + (9 - col) + " ");
-    alternateColor(out);
-
     int start;
     int end;
     int step;
@@ -87,6 +69,36 @@ public class BoardRender {
     }
 
     for (int i = start; i != end; i += step) {
+
+      drawColumn(out, pieces, i, color);
+
+      if (i < BOARD_SIZE_IN_SQUARES - 1) {
+        // Draw horizontal row separator.
+        setBlack(out);
+      }
+    }
+  }
+
+  private static void drawColumn(PrintStream out, ChessPiece[][] pieces,
+                                 int col, TeamColor color) {
+    setContextColors(out);
+    out.print(" " + (col + 1) + " ");
+    alternateColor(out);
+
+    int colstart;
+    int colend;
+    int colstep;
+    if (color == TeamColor.WHITE) {
+      colstart = 0;
+      colend = BOARD_SIZE_IN_SQUARES;
+      colstep = 1;
+    } else {
+      colstart = BOARD_SIZE_IN_SQUARES - 1;
+      colend = -1;
+      colstep = -1;
+    }
+
+    for (int i = colstart; i != colend; i += colstep) {
       alternateColor(out);
       ChessPiece piece = pieces[i][col];
 
@@ -125,7 +137,7 @@ public class BoardRender {
       }
     }
     setContextColors(out);
-    out.print(" " + col + " ");
+    out.print(" " + (col + 1) + " ");
     out.println();
   }
 

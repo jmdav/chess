@@ -58,9 +58,9 @@ public class ServerFacade {
     server.put("/game", request, data.authToken());
   }
 
-  public String observeGame(SessionData data, String gameID)
+  public String observeGame(SessionData data, Integer gameID)
       throws ResponseException {
-    return "Not Yet Implemented";
+    return "Observing game " + gameID;
   }
 
   public GameID createGame(SessionData data, String gameName)

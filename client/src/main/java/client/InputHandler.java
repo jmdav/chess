@@ -119,13 +119,7 @@ public class InputHandler {
                                     + "<gameID> <color (W or B)>");
       }
       ChessGame.TeamColor color;
-      Integer gameID;
-      try {
-        gameID = Integer.parseInt(tokens[1]);
-      } catch (NumberFormatException e) {
-        throw new ResponseException(
-            "Error: invalid game ID. Expected <gameID> <color (W or B)>");
-      }
+      Integer gameID = listToGameID(tokens[1]);
       switch (tokens[2].toLowerCase()) {
       case "w":
         color = ChessGame.TeamColor.WHITE;
@@ -151,7 +145,8 @@ public class InputHandler {
         throw new ResponseException(
             "Error: insufficient arguments. Expected <gameID>");
       }
-      out = server.observeGame(data, tokens[1]);
+      Integer observeGameID = listToGameID(tokens[1]);
+      out = server.observeGame(data, observeGameID);
       ChessBoard board2 = new ChessBoard();
       board2.resetBoard();
       BoardRender.render(board2, TeamColor.WHITE);
@@ -177,5 +172,21 @@ public class InputHandler {
     String[] out = in.toLowerCase().split(" ");
     out[0] = out[0].toLowerCase();
     return out;
+  }
+
+  private Integer listToGameID(String in) throws ResponseException {
+    Integer gameID;
+    try {
+      gameID = Integer.parseInt(in);
+    } catch (NumberFormatException e) {
+      throw new ResponseException(
+          "Error: invalid game ID. Expected <gameID> <color (W or B)>");
+    }
+    try {
+      gameID = games.get(gameID - 1).gameID();
+    } catch (IndexOutOfBoundsException e) {
+      throw new ResponseException("Error: Game does not exist.");
+    }
+    return gameID;
   }
 }
