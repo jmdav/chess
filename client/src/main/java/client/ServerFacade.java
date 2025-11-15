@@ -71,4 +71,6 @@ public class ServerFacade {
     GameID createdGame = serializer.fromJson(response, GameID.class);
     return createdGame;
   }
+
+  public void destroy() throws ResponseException { server.delete("/db", null); }
 }
