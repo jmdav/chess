@@ -13,29 +13,31 @@ public class BoardRender {
   // Board dimensions.
   private static final int BOARD_SIZE_IN_SQUARES = 8;
   private static ChessPiece[][] pieces;
-  private static TeamColor color;
+  private static TeamColor bgcolor;
 
   public static void render(ChessBoard board, TeamColor color) {
     var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
     pieces = board.getBoard();
     out.print(ERASE_SCREEN);
 
-    drawHeaders(out);
-    drawChessBoard(out);
-    drawHeaders(out);
+    drawHeaders(out, color);
+    drawChessBoard(out, color);
+    drawHeaders(out, color);
 
     out.print(SET_BG_COLOR_BLACK);
     out.print(SET_TEXT_COLOR_WHITE);
   }
 
-  private static void drawHeaders(PrintStream out) {
-
-    setBlack(out);
+  private static void drawHeaders(PrintStream out, TeamColor color) {
 
     String[] headers = {"   ", " A ", " B ", " C ", " D ",
                         " E ", " F ", " G ", " H ", "   "};
     for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES + 2; ++boardCol) {
-      drawHeader(out, headers[boardCol]);
+      if (color == TeamColor.WHITE) {
+        drawHeader(out, headers[boardCol]);
+      } else {
+        drawHeader(out, headers[9 - boardCol]);
+      }
     }
 
     out.println();
@@ -51,11 +53,11 @@ public class BoardRender {
     out.print(EMPTY.repeat(suffixLength));
   }
 
-  private static void drawChessBoard(PrintStream out) {
-    color = TeamColor.WHITE;
+  private static void drawChessBoard(PrintStream out, TeamColor color) {
+    bgcolor = TeamColor.BLACK;
     for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
 
-      drawColumn(out, pieces, boardCol);
+      drawColumn(out, pieces, boardCol, color);
 
       if (boardCol < BOARD_SIZE_IN_SQUARES - 1) {
         // Draw horizontal row separator.
@@ -65,11 +67,26 @@ public class BoardRender {
   }
 
   private static void drawColumn(PrintStream out, ChessPiece[][] pieces,
-                                 int col) {
+                                 int col, TeamColor color) {
     setContextColors(out);
-    out.print(" " + col + " ");
+    out.print(color == TeamColor.WHITE ? " " + col + " "
+                                       : " " + (9 - col) + " ");
     alternateColor(out);
-    for (int i = 0; i < BOARD_SIZE_IN_SQUARES; i++) {
+
+    int start;
+    int end;
+    int step;
+    if (color == TeamColor.BLACK) {
+      start = 0;
+      end = BOARD_SIZE_IN_SQUARES;
+      step = 1;
+    } else {
+      start = BOARD_SIZE_IN_SQUARES - 1;
+      end = -1;
+      step = -1;
+    }
+
+    for (int i = start; i != end; i += step) {
       alternateColor(out);
       ChessPiece piece = pieces[i][col];
 
@@ -134,12 +151,12 @@ public class BoardRender {
   }
 
   private static void alternateColor(PrintStream out) {
-    if (color == TeamColor.WHITE) {
+    if (bgcolor == TeamColor.WHITE) {
       setWhiteBG(out);
-      color = TeamColor.BLACK;
+      bgcolor = TeamColor.BLACK;
     } else {
       setBlackBG(out);
-      color = TeamColor.WHITE;
+      bgcolor = TeamColor.WHITE;
     }
   }
 }
