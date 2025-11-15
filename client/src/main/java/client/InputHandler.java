@@ -34,18 +34,20 @@ public class InputHandler {
 
     case "r":
     case "register":
-      if (tokens.length < 4)
+      if (tokens.length < 4) {
         throw new ResponseException("Error: insufficient arguments. Expected "
                                     + "<username> <password> <email>");
+      }
       data = server.register(data, tokens[1], tokens[2], tokens[3]);
       out = "User " + data.username() + " registered successfully.";
       break;
 
     case "l":
     case "login":
-      if (tokens.length < 3)
+      if (tokens.length < 3) {
         throw new ResponseException(
             "Error: insufficient arguments. Expected <username> <password>");
+      }
       data = server.login(data, tokens[1], tokens[2]);
       out = "User " + data.username() + " logged in successfully.";
       break;
@@ -89,9 +91,10 @@ public class InputHandler {
 
     case "c":
     case "creategame":
-      if (tokens.length < 2)
+      if (tokens.length < 2) {
         throw new ResponseException(
             "Error: insufficient arguments. Expected <gameName>");
+      }
       server.createGame(data, tokens[1]);
       out = "Game " + tokens[1] + " created successfully.";
       break;
@@ -111,9 +114,10 @@ public class InputHandler {
     case "j":
     case "joingame":
       // somehow set status
-      if (tokens.length < 3)
+      if (tokens.length < 3) {
         throw new ResponseException("Error: insufficient arguments. Expected "
                                     + "<gameID> <color (W or B)>");
+      }
       ChessGame.TeamColor color;
       Integer gameID;
       try {
@@ -143,9 +147,10 @@ public class InputHandler {
 
     case "o":
     case "observegame":
-      if (tokens.length < 2)
+      if (tokens.length < 2) {
         throw new ResponseException(
             "Error: insufficient arguments. Expected <gameID>");
+      }
       out = server.observeGame(data, tokens[1]);
       ChessBoard board2 = new ChessBoard();
       board2.resetBoard();

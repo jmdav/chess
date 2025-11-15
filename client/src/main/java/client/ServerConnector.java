@@ -12,7 +12,7 @@ import model.ErrorMessage;
 
 public class ServerConnector {
 
-  private static final HttpClient httpClient = HttpClient.newHttpClient();
+  private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
 
   Gson serializer;
   String serverUrl;
@@ -50,7 +50,7 @@ public class ServerConnector {
       }
       HttpRequest request = builder.build();
       HttpResponse<String> httpResponse =
-          httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+          HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
       if (httpResponse.statusCode() >= 200 && httpResponse.statusCode() < 300) {
         return httpResponse.body();
