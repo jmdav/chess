@@ -49,6 +49,8 @@ public class ChessBoard {
     return piece;
   }
 
+  public ChessPiece[][] getBoard() { return boardArray; }
+
   public int length() { return boardArray.length; }
 
   /**

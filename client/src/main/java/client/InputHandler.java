@@ -1,7 +1,5 @@
 package client;
 
-import static org.junit.jupiter.api.DynamicTest.stream;
-
 import chess.ChessGame;
 import client.errors.ResponseException;
 import java.util.List;
