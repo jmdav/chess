@@ -3,7 +3,7 @@ package server.websocket;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 public class ConnectionManager {
   public final ConcurrentHashMap<Session, Session> connections =

@@ -6,6 +6,7 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import handlers.*;
 import io.javalin.*;
+import server.websocket.WebSocketHandler;
 import service.*;
 
 public class Server {
@@ -20,6 +21,7 @@ public class Server {
 
     GameService gameService = new GameService(authDB);
     GameHandler gameHandler = new GameHandler(gameService, authDB);
+    WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     javalin = Javalin.create(config -> config.staticFiles.add("web"));
     javalin.post("/user", userHandler::register);
@@ -28,6 +30,11 @@ public class Server {
     javalin.get("/game", gameHandler::listGames);
     javalin.post("/game", gameHandler::createGame);
     javalin.put("/game", gameHandler::joinGame);
+    javalin.ws("/ws", ws -> {
+      ws.onConnect(webSocketHandler);
+      ws.onMessage(webSocketHandler);
+      ws.onClose(webSocketHandler);
+    });
     javalin.delete("/db", ctx -> {
       gameHandler.destroy(ctx);
       userHandler.destroy(ctx);
