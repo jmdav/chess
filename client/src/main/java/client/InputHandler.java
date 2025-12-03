@@ -119,6 +119,9 @@ public class InputHandler {
                                     + "<gameID> <color (W or B)>");
       }
       ChessGame.TeamColor color;
+      if (games == null) {
+        games = server.listGames(data);
+      }
       Integer gameID = listToGameID(tokens[1]);
       switch (tokens[2].toLowerCase()) {
       case "w":
@@ -162,9 +165,98 @@ public class InputHandler {
 
   public HandlerResponse parseInGame(SessionData data, String in)
       throws ResponseException {
-    data = new SessionData(data.authToken(), data.username(), State.SIGNEDIN);
+    out = "";
+    String[] tokens = tokenize(in);
 
-    out = "Leaving game...";
+    switch (tokens[0]) {
+
+    case "?":
+    case "h":
+    case "help":
+      out = "[h]elp - Displays list of possible commands \n"
+            + "[d]raw - Draw chess board\n"
+            + "[l]eave game - Leave game\n"
+            + "[m]ove <start> <end> - Make move\n"
+            + "[r]esign - Accept defeat\n"
+            + "[h]ighlight - Highlight all legal moves";
+      break;
+
+    case "d":
+    case "draw":
+      // BoardRender.render(board, color);
+      break;
+
+    case "c":
+    case "creategame":
+      if (tokens.length < 2) {
+        throw new ResponseException(
+            "Error: insufficient arguments. Expected <gameName>");
+      }
+      server.createGame(data, tokens[1]);
+      out = "Game " + tokens[1] + " created successfully.";
+      break;
+
+    case "g":
+    case "listgames":
+      games = server.listGames(data);
+      GameData g;
+      for (int i = 0; i < games.size(); i++) {
+        g = games.get(i);
+        System.out.println((i + 1) + ") " + g.gameName() +
+                           " // Black: " + g.blackUsername() +
+                           " | White: " + g.whiteUsername());
+      }
+      break;
+
+    case "j":
+    case "joingame":
+      // somehow set status
+      if (tokens.length < 3) {
+        throw new ResponseException("Error: insufficient arguments. Expected "
+                                    + "<gameID> <color (W or B)>");
+      }
+      ChessGame.TeamColor color;
+      if (games == null) {
+        games = server.listGames(data);
+      }
+      Integer gameID = listToGameID(tokens[1]);
+      switch (tokens[2].toLowerCase()) {
+      case "w":
+        color = ChessGame.TeamColor.WHITE;
+        break;
+      case "b":
+        color = ChessGame.TeamColor.BLACK;
+        break;
+      default:
+        throw new ResponseException(
+            "Error: invalid color. Expected <gameID> <color (W or B)>");
+      }
+      server.joinGame(data, gameID, color);
+      out = "Game " + tokens[1] + " joined as " + color;
+      ChessBoard board = new ChessBoard();
+      board.resetBoard();
+      BoardRender.render(board, color);
+      data = new SessionData(data.authToken(), data.username(), State.INGAME);
+      break;
+
+    case "o":
+    case "observegame":
+      if (tokens.length < 2) {
+        throw new ResponseException(
+            "Error: insufficient arguments. Expected <gameID>");
+      }
+      Integer observeGameID = listToGameID(tokens[1]);
+      out = server.observeGame(data, observeGameID);
+      ChessBoard board2 = new ChessBoard();
+      board2.resetBoard();
+      BoardRender.render(board2, TeamColor.WHITE);
+      data = new SessionData(data.authToken(), data.username(), State.INGAME);
+
+      break;
+
+    default:
+      out = "Error: Invalid command. Type 'Help' for a list of commands.";
+    }
     return new HandlerResponse(data, out);
   }
 

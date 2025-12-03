@@ -23,9 +23,7 @@ public class BoardRender {
     drawHeaders(out, color);
     drawChessBoard(out, color);
     drawHeaders(out, color);
-
-    out.print(SET_BG_COLOR_BLACK);
-    out.print(SET_TEXT_COLOR_WHITE);
+    resetText(out);
   }
 
   private static void drawHeaders(PrintStream out, TeamColor color) {
@@ -147,6 +145,11 @@ public class BoardRender {
 
   private static void setBlackBG(PrintStream out) {
     out.print(SET_BG_COLOR_DARK_GREY);
+  }
+
+  private static void resetText(PrintStream out) {
+    out.print(RESET_BG_COLOR);
+    out.print(RESET_TEXT_COLOR);
   }
 
   private static void setBlack(PrintStream out) {
