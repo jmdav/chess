@@ -62,6 +62,19 @@ public class GameHandler {
     }
   }
 
+  public void leaveGame(Context ctx) {
+    String authToken = ctx.header("authorization");
+    GameRequestData gameRequest =
+        serializer.fromJson(ctx.body(), GameRequestData.class);
+    try {
+      gameService.leaveGame(authToken, gameRequest);
+      ctx.status(200);
+    } catch (DataAccessException e) {
+      ctx.status(e.getStatusCode());
+      ctx.result(serializer.toJson(e.getErrorMessage()));
+    }
+  }
+
   public void destroy(Context ctx) throws DataAccessException {
     try {
       gameService.destroy();

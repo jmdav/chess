@@ -13,7 +13,7 @@ public class ConnectionManager {
 
   public void remove(Session session) { connections.remove(session); }
 
-  public void broadcast(Session excludeSession, Notification notification)
+  public void broadcast(Session excludeSession, ServerMessage notification)
       throws IOException {
     String msg = notification.toString();
     for (Session c : connections.values()) {

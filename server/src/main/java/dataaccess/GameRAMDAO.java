@@ -16,9 +16,7 @@ public class GameRAMDAO implements GameDataAccess {
   @Override
   public GameList getGames() throws DataAccessException {
     List<GameData> output = new Vector<>();
-    gameDB.forEach((id, data) -> {
-      output.add(data);
-    });
+    gameDB.forEach((id, data) -> { output.add(data); });
     return new GameList(output);
   };
 
@@ -30,7 +28,7 @@ public class GameRAMDAO implements GameDataAccess {
   };
 
   @Override
-  public void joinGame(String username, GameRequestData data)
+  public void updateGame(String username, GameRequestData data)
       throws DataAccessException {
 
     if (data.gameID() == null) {
@@ -38,7 +36,6 @@ public class GameRAMDAO implements GameDataAccess {
     }
 
     // function completely removed to stop code quality trigger
-
   }
 
   @Override

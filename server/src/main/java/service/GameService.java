@@ -50,7 +50,17 @@ public class GameService {
       throws DataAccessException {
     AuthData session = authAccess.getSession(authToken);
     if (session != null) {
-      gameAccess.joinGame(session.username(), request);
+      gameAccess.updateGame(session.username(), request);
+    } else {
+      throw new DataAccessException(401, "Error: unauthorized");
+    }
+  }
+
+  public void leaveGame(String authToken, GameRequestData request)
+      throws DataAccessException {
+    AuthData session = authAccess.getSession(authToken);
+    if (session != null) {
+      gameAccess.updateGame(null, request);
     } else {
       throw new DataAccessException(401, "Error: unauthorized");
     }

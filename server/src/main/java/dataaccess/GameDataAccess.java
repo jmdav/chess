@@ -10,7 +10,7 @@ public interface GameDataAccess {
 
   GameID createGame(String gameName) throws DataAccessException;
 
-  void joinGame(String username, GameRequestData data)
+  void updateGame(String username, GameRequestData data)
       throws DataAccessException;
 
   void destroy() throws DataAccessException;

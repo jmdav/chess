@@ -1,11 +1,9 @@
 package dataaccess;
 
 import chess.ChessGame.TeamColor;
-
 import java.sql.*;
 import java.util.List;
 import java.util.Vector;
-
 import model.GameData;
 import model.GameID;
 import model.GameList;
@@ -15,27 +13,26 @@ public class GameSQLDAO implements GameDataAccess {
 
   @Override
   public GameList getGames() throws DataAccessException {
-    var statement = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games";
+    var statement =
+        "SELECT gameID, whiteUsername, blackUsername, gameName FROM games";
     List<GameData> output = new Vector<>();
     try (Connection conn = DatabaseManager.getConnection();
-        PreparedStatement ps = conn.prepareStatement(statement);
-        ResultSet rs = ps.executeQuery()) {
+         PreparedStatement ps = conn.prepareStatement(statement);
+         ResultSet rs = ps.executeQuery()) {
       while (rs.next()) {
         output.add(readGame(rs));
       }
       return new GameList(output);
     } catch (Exception e) {
-      throw new DataAccessException(500,
-          String.format("Unable to read data: %s", e.getMessage()));
+      throw new DataAccessException(
+          500, String.format("Unable to read data: %s", e.getMessage()));
     }
   }
 
   private GameData readGame(ResultSet rs) throws SQLException {
-    GameData game = new GameData(
-        rs.getInt("gameID"),
-        rs.getString("whiteUsername"),
-        rs.getString("blackUsername"),
-        rs.getString("gameName"));
+    GameData game =
+        new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"),
+                     rs.getString("blackUsername"), rs.getString("gameName"));
     return game;
   }
 
@@ -47,7 +44,7 @@ public class GameSQLDAO implements GameDataAccess {
   };
 
   @Override
-  public void joinGame(String username, GameRequestData data)
+  public void updateGame(String username, GameRequestData data)
       throws DataAccessException {
 
     GameData targetGame = getGameData(data.gameID());
@@ -57,7 +54,7 @@ public class GameSQLDAO implements GameDataAccess {
     }
     // Check if team color is either white or black
     if ((data.playerColor() != TeamColor.WHITE &&
-        data.playerColor() != TeamColor.BLACK)) {
+         data.playerColor() != TeamColor.BLACK)) {
       throw new DataAccessException(400, "Error: bad request");
     }
     // Check if white is already taken
@@ -65,8 +62,9 @@ public class GameSQLDAO implements GameDataAccess {
       if (targetGame.whiteUsername() != null) {
         throw new DataAccessException(403, "Error: already taken");
       } else {
-        targetGame = new GameData(targetGame.gameID(), username,
-            targetGame.blackUsername(), targetGame.gameName());
+        targetGame =
+            new GameData(targetGame.gameID(), username,
+                         targetGame.blackUsername(), targetGame.gameName());
       }
     }
     // Check if black is already taken
@@ -74,14 +72,16 @@ public class GameSQLDAO implements GameDataAccess {
       if (targetGame.blackUsername() != null) {
         throw new DataAccessException(403, "Error: already taken");
       } else {
-        targetGame = new GameData(targetGame.gameID(), targetGame.whiteUsername(),
-            username, targetGame.gameName());
+        targetGame =
+            new GameData(targetGame.gameID(), targetGame.whiteUsername(),
+                         username, targetGame.gameName());
       }
     }
 
-    var statement = "UPDATE games SET whiteUsername=?, blackUsername=? WHERE gameID=?";
+    var statement =
+        "UPDATE games SET whiteUsername=?, blackUsername=? WHERE gameID=?";
     try (Connection conn = DatabaseManager.getConnection();
-        PreparedStatement ps = conn.prepareStatement(statement)) {
+         PreparedStatement ps = conn.prepareStatement(statement)) {
       if (targetGame.whiteUsername() != null) {
         ps.setString(1, targetGame.whiteUsername());
       } else {
@@ -95,9 +95,9 @@ public class GameSQLDAO implements GameDataAccess {
       ps.setInt(3, targetGame.gameID());
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new DataAccessException(500, String.format("Unable to update game: %s", e.getMessage()));
+      throw new DataAccessException(
+          500, String.format("Unable to update game: %s", e.getMessage()));
     }
-
   }
 
   @Override
@@ -112,7 +112,8 @@ public class GameSQLDAO implements GameDataAccess {
     }
     try (Connection conn = DatabaseManager.getConnection()) {
       System.out.println("Fetching game data: " + gameID);
-      var statement = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games WHERE gameID=?";
+      var statement = "SELECT gameID, whiteUsername, blackUsername, gameName "
+                      + "FROM games WHERE gameID=?";
       try (PreparedStatement ps = conn.prepareStatement(statement)) {
         ps.setInt(1, gameID);
         try (ResultSet rs = ps.executeQuery()) {
@@ -122,8 +123,8 @@ public class GameSQLDAO implements GameDataAccess {
         }
       }
     } catch (Exception e) {
-      throw new DataAccessException(500,
-          String.format("Error: Unable to read data: %s", e.getMessage()));
+      throw new DataAccessException(
+          500, String.format("Error: Unable to read data: %s", e.getMessage()));
     }
     return null;
   }

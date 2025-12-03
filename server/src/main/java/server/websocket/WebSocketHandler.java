@@ -9,7 +9,9 @@ import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import java.io.IOException;
+import javax.management.Notification;
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.commands.UserGameCommand;
 import websocket.messages.*;
 
 public class WebSocketHandler
@@ -26,10 +28,13 @@ public class WebSocketHandler
   @Override
   public void handleMessage(WsMessageContext ctx) {
     try {
-      Action action = new Gson().fromJson(ctx.message(), Action.class);
-      switch (action.type()) {
-                  case ENTER -> enter(action.visitorName(), ctx.session);
-                  case EXIT -> exit(action.visitorName(), ctx.session);
+      UserGameCommand action =
+          new Gson().fromJson(ctx.message(), UserGameCommand.class);
+      switch (action.getCommandType()) {
+                  case CONNECT -> join(action.visitorName(), ctx.session);
+                  case MAKE_MOVE -> exit(action.visitorName(), ctx.session);
+                  case RESIGN -> System.out.println("player resigned...");
+                  case LEAVE -> System.out.println("player left...");
               }
           } catch (IOException ex) {
               ex.printStackTrace();
@@ -41,16 +46,16 @@ public class WebSocketHandler
       System.out.println("Websocket closed");
     }
 
-    private void enter(String visitorName, Session session) throws IOException {
+    private void join(String userName, Session session) throws IOException {
       connections.add(session);
-      var message = String.format("%s is in the shop", visitorName);
-      var notification = new Notification(Notification.Type.ARRIVAL, message);
+      var message = String.format("%s has joined the game as %s", userName);
+      var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
       connections.broadcast(session, notification);
     }
 
     private void exit(String visitorName, Session session) throws IOException {
       var message = String.format("%s left the shop", visitorName);
-      var notification = new Notification(Notification.Type.DEPARTURE, message);
+      var notification = new ServerMessage(ServerMessage.ServerMessageType.DEPARTURE, message);
       connections.broadcast(session, notification);
       connections.remove(session);
     }
@@ -59,7 +64,7 @@ public class WebSocketHandler
         throws ResponseException {
       try {
         var message = String.format("%s says %s", petName, sound);
-        var notification = new Notification(Notification.Type.NOISE, message);
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOISE, message);
         connections.broadcast(null, notification);
       } catch (Exception ex) {
         throw new ResponseException(ResponseException.Code.ServerError,
