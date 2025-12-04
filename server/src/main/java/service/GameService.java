@@ -1,10 +1,12 @@
 package service;
 
+import chess.ChessGame.TeamColor;
 import dataaccess.AuthDataAccess;
 import dataaccess.DataAccessException;
 import dataaccess.GameDataAccess;
 import dataaccess.GameSQLDAO;
 import model.AuthData;
+import model.GameData;
 import model.GameID;
 import model.GameList;
 import model.GameRequestData;
@@ -30,6 +32,28 @@ public class GameService {
       return gameAccess.getGames();
     } else {
       throw new DataAccessException(401, "Error: unauthorized");
+    }
+  }
+
+  public GameData getGameById(Integer gameID) throws DataAccessException {
+    GameList gameList = gameAccess.getGames();
+    GameData gameData = gameList.games().get(gameID - 1);
+    if (gameData != null) {
+      return gameData;
+    } else {
+      throw new DataAccessException(404, "Error: game not found");
+    }
+  }
+
+  public TeamColor getColorByUsername(GameData gameData, String username) {
+    if (gameData.whiteUsername() != null &&
+        gameData.whiteUsername().equals(username)) {
+      return TeamColor.WHITE;
+    } else if (gameData.blackUsername() != null &&
+        gameData.blackUsername().equals(username)) {
+      return TeamColor.BLACK;
+    } else {
+      return null;
     }
   }
 

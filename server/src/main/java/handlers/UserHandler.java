@@ -20,6 +20,7 @@ public class UserHandler {
   }
 
   public void register(Context ctx) {
+    System.out.println("Registering user...");
     UserData userData = serializer.fromJson(ctx.body(), UserData.class);
     AuthData output;
     try {
@@ -34,6 +35,7 @@ public class UserHandler {
   }
 
   public void login(Context ctx) {
+    System.out.println("Logging in user...");
     UserData userData = serializer.fromJson(ctx.body(), UserData.class);
     System.out.println(userData);
     AuthData output;

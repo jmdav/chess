@@ -21,7 +21,7 @@ public class Server {
 
     GameService gameService = new GameService(authDB);
     GameHandler gameHandler = new GameHandler(gameService, authDB);
-    WebSocketHandler webSocketHandler = new WebSocketHandler();
+    WebSocketHandler webSocketHandler = new WebSocketHandler(gameService, userService);
 
     javalin = Javalin.create(config -> config.staticFiles.add("web"));
     javalin.post("/user", userHandler::register);
@@ -52,5 +52,7 @@ public class Server {
     return javalin.port();
   }
 
-  public void stop() { javalin.stop(); }
+  public void stop() {
+    javalin.stop();
+  }
 }

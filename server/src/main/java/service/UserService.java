@@ -32,11 +32,18 @@ public class UserService {
     }
   }
 
+  public AuthData getSession(String authToken) throws DataAccessException {
+    AuthData session = authAccess.getSession(authToken);
+    if (session != null) {
+      return session;
+    } else {
+      throw new DataAccessException(401, "Error: unauthorized");
+    }
+  }
+
   public AuthData login(UserData data) throws DataAccessException {
     if (data.username() != null && data.password() != null) {
       UserData prospectiveUser = userAccess.getUser(data.username());
-      // System.out.println(prospectiveUser);
-      // System.out.println(data);
       if (prospectiveUser != null &&
           BCrypt.checkpw(data.password(), prospectiveUser.password())) {
         return authAccess.createSession(data.username());
