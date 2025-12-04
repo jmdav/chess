@@ -1,7 +1,5 @@
 package websocket.messages;
 
-import java.util.Objects;
-
 /**
  * Represents a Message the server can send through a WebSocket
  * <p>
@@ -17,23 +15,4 @@ public class LoadGameMessage extends ServerMessage {
     super(ServerMessageType.LOAD_GAME);
   }
 
-  public ServerMessageType getServerMessageType() {
-    return this.serverMessageType;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof ServerMessage that)) {
-      return false;
-    }
-    return getServerMessageType() == that.getServerMessageType();
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getServerMessageType());
-  }
 }

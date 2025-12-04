@@ -1,6 +1,8 @@
 package server.websocket;
 
 import com.google.gson.Gson;
+
+import handlers.GameHandler;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
 import io.javalin.websocket.WsConnectContext;
@@ -29,10 +31,10 @@ public class WebSocketHandler
     try {
       UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
       switch (action.getCommandType()) {
-        case CONNECT -> System.out.println("player conncected...");
+        case CONNECT -> join(action.getAuthToken(), ctx.session);
         case MAKE_MOVE -> System.out.println("player made a move...");
         case RESIGN -> System.out.println("player resigned...");
-        case LEAVE -> System.out.println("player left...");
+        case LEAVE -> exit(action.getAuthToken(), ctx.session);
       }
     } catch (Exception ex) {
       ex.printStackTrace();
@@ -44,15 +46,15 @@ public class WebSocketHandler
     System.out.println("Websocket closed");
   }
 
-  private void join(String userName, Session session) throws IOException {
+  private void join(String authToken, Session session) throws IOException {
     connections.add(session);
-    var message = String.format("%s has joined the game as %s", userName);
+    var message = String.format("%s has joined the game as %s", authToken);
     var notification = new NotificationMessage(message);
     connections.broadcast(session, notification);
   }
 
-  private void exit(String userName, Session session) throws IOException {
-    var message = String.format("%s left the game", userName);
+  private void exit(String authToken, Session session) throws IOException {
+    var message = String.format("%s left the game", authToken);
     var notification = new NotificationMessage(message);
     connections.broadcast(session, notification);
     connections.remove(session);
