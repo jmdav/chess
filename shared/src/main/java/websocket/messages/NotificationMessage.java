@@ -21,4 +21,8 @@ public class NotificationMessage extends ServerMessage {
     return new Gson().toJson(this);
   }
 
+  public String getMessage() {
+    return this.message;
+  }
+
 }
