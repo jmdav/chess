@@ -48,15 +48,16 @@ public class WebSocketHandler
 
   private void join(String authToken, Session session) throws IOException {
     connections.add(session);
-    var message = String.format("%s has joined the game as %s", authToken);
+    var message = String.format("%s has joined the game as %s", authToken, authToken);
+    System.out.println(message);
     var notification = new NotificationMessage(message);
-    connections.broadcast(session, notification);
+    connections.broadcast(null, notification);
   }
 
   private void exit(String authToken, Session session) throws IOException {
     var message = String.format("%s left the game", authToken);
     var notification = new NotificationMessage(message);
-    connections.broadcast(session, notification);
+    connections.broadcast(null, notification);
     connections.remove(session);
   }
 

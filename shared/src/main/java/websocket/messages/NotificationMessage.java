@@ -1,5 +1,7 @@
 package websocket.messages;
 
+import com.google.gson.Gson;
+
 /**
  * Represents a Message the server can send through a WebSocket
  * <p>
@@ -13,6 +15,10 @@ public class NotificationMessage extends ServerMessage {
   public NotificationMessage(String message) {
     super(ServerMessageType.NOTIFICATION);
     this.message = message;
+  }
+
+  public String toString() {
+    return new Gson().toJson(this);
   }
 
 }

@@ -12,7 +12,9 @@ import java.util.Objects;
 public class ServerMessage {
   ServerMessageType serverMessageType;
 
-  public enum ServerMessageType { LOAD_GAME, ERROR, NOTIFICATION }
+  public enum ServerMessageType {
+    LOAD_GAME, ERROR, NOTIFICATION
+  }
 
   public ServerMessage(ServerMessageType type) {
     this.serverMessageType = type;
@@ -37,4 +39,5 @@ public class ServerMessage {
   public int hashCode() {
     return Objects.hash(getServerMessageType());
   }
+
 }
