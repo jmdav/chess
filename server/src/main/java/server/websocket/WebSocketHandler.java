@@ -2,6 +2,8 @@ package server.websocket;
 
 import com.google.gson.Gson;
 
+import chess.ChessGame;
+import chess.InvalidMoveException;
 import chess.ChessGame.TeamColor;
 import dataaccess.DataAccessException;
 import io.javalin.websocket.WsCloseContext;
@@ -13,6 +15,8 @@ import io.javalin.websocket.WsMessageHandler;
 import model.AuthData;
 
 import java.io.IOException;
+
+import org.eclipse.jetty.io.ssl.ALPNProcessor.Server;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
@@ -95,11 +99,21 @@ public class WebSocketHandler
       throws IOException, DataAccessException {
 
     AuthData sessionData = userService.getSession(authToken);
+    ChessGame game = gameService.getGameById(gameID).game();
     TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
-    var message = String.format("%s (%s) has made a move: %s",
+    try {
+      game.makeMove(moveData);
+    } catch (InvalidMoveException e) {
+      connections.send(session, new NotificationMessage("Error: Invalid move"));
+      return;
+    }
+    ServerMessage message = new NotificationMessage(String.format("%s (%s) has made a move: %s",
         sessionData.username(),
         color.toString().toLowerCase(),
-        moveData.toString());
+        moveData.toString()));
+
+    connections.broadcast(null, new LoadGameMessage(gameService.getGameById(gameID).game()));
+    connections.broadcast(null, message);
   }
 
 }

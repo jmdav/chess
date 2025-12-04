@@ -15,7 +15,7 @@ public class ChessMove {
   private final ChessPiece.PieceType promotionPiece;
 
   public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
-                   ChessPiece.PieceType promotionPiece) {
+      ChessPiece.PieceType promotionPiece) {
 
     this.startPosition = startPosition;
     this.endPosition = endPosition;
@@ -26,13 +26,17 @@ public class ChessMove {
    * @return ChessPosition of starting location
    */
 
-  public ChessPosition getStartPosition() { return startPosition; }
+  public ChessPosition getStartPosition() {
+    return startPosition;
+  }
 
   /**
    * @return ChessPosition of ending location
    */
 
-  public ChessPosition getEndPosition() { return endPosition; }
+  public ChessPosition getEndPosition() {
+    return endPosition;
+  }
 
   /**
    * Gets the type of piece to promote a pawn to if pawn promotion is part of
@@ -41,14 +45,16 @@ public class ChessMove {
    * @return Type of piece to promote a pawn to, or null if no promotion
    */
 
-  public ChessPiece.PieceType getPromotionPiece() { return promotionPiece; }
+  public ChessPiece.PieceType getPromotionPiece() {
+    return promotionPiece;
+  }
 
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ChessMove chessMove = (ChessMove)o;
+    ChessMove chessMove = (ChessMove) o;
     return Objects.equals(startPosition, chessMove.startPosition) &&
         Objects.equals(endPosition, chessMove.endPosition) &&
         promotionPiece == chessMove.promotionPiece;
@@ -61,6 +67,8 @@ public class ChessMove {
 
   @Override
   public String toString() {
-    return endPosition.toString();
+    return startPosition.toString() + " to " +
+        endPosition.toString() +
+        (promotionPiece != null ? ", promoting to " + promotionPiece : "");
   }
 }

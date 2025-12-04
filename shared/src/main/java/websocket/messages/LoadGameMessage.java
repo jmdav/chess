@@ -13,8 +13,6 @@ import chess.ChessGame;
 
 public class LoadGameMessage extends ServerMessage {
 
-  ServerMessageType serverMessageType;
-
   private final ChessGame game;
 
   public LoadGameMessage(ChessGame game) {
