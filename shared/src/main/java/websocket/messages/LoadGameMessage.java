@@ -1,5 +1,9 @@
 package websocket.messages;
 
+import com.google.gson.Gson;
+
+import chess.ChessGame;
+
 /**
  * Represents a Message the server can send through a WebSocket
  * <p>
@@ -11,8 +15,19 @@ public class LoadGameMessage extends ServerMessage {
 
   ServerMessageType serverMessageType;
 
-  public LoadGameMessage() {
+  private final ChessGame game;
+
+  public LoadGameMessage(ChessGame game) {
     super(ServerMessageType.LOAD_GAME);
+    this.game = game;
+  }
+
+  public String toString() {
+    return new Gson().toJson(this);
+  }
+
+  public ChessGame getGame() {
+    return this.game;
   }
 
 }

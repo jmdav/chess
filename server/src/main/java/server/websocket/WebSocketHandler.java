@@ -45,9 +45,9 @@ public class WebSocketHandler
       UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
       switch (action.getCommandType()) {
         case CONNECT -> join(action.getAuthToken(), action.getGameID(), ctx.session);
-        case MAKE_MOVE -> System.out.println("player made a move...");
+        case MAKE_MOVE -> processMove(action.getAuthToken(), action.getGameID(), action.getMoveData(), ctx.session);
         case RESIGN -> System.out.println("player resigned...");
-        case LEAVE -> exit(action.getAuthToken(), ctx.session);
+        case LEAVE -> exit(action.getAuthToken(), action.getGameID(), ctx.session);
       }
     } catch (Exception ex) {
       ex.printStackTrace();
@@ -61,19 +61,45 @@ public class WebSocketHandler
 
   private void join(String authToken, Integer gameID, Session session) throws IOException, DataAccessException {
     connections.add(session);
+    connections.send(session, new LoadGameMessage(gameService.getGameById(gameID).game()));
     AuthData sessionData = userService.getSession(authToken);
     TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
-    var message = String.format("%s has joined the game as %s", sessionData.username(), color);
+    var message = "";
+    if (color != null) {
+      message = String.format("%s has joined the game as %s.", sessionData.username(),
+          color.toString().toLowerCase());
+    } else {
+      message = String.format("%s has joined the game as an observer.", sessionData.username());
+    }
     System.out.println(message);
     var notification = new NotificationMessage(message);
-    connections.broadcast(null, notification);
+    connections.broadcast(session, notification);
   }
 
-  private void exit(String authToken, Session session) throws IOException {
-    var message = String.format("%s left the game", authToken);
+  private void exit(String authToken, Integer gameID, Session session) throws IOException, DataAccessException {
+    AuthData sessionData = userService.getSession(authToken);
+    TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
+    var message = "";
+    if (color != null) {
+      message = String.format("%s (%s) has left the game.", sessionData.username(),
+          color.toString().toLowerCase());
+    } else {
+      message = String.format("%s (observer) has left the game.", sessionData.username());
+    }
     var notification = new NotificationMessage(message);
-    connections.broadcast(null, notification);
+    connections.broadcast(session, notification);
     connections.remove(session);
+  }
+
+  private void processMove(String authToken, Integer gameID, chess.ChessMove moveData, Session session)
+      throws IOException, DataAccessException {
+
+    AuthData sessionData = userService.getSession(authToken);
+    TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
+    var message = String.format("%s (%s) has made a move: %s",
+        sessionData.username(),
+        color.toString().toLowerCase(),
+        moveData.toString());
   }
 
 }

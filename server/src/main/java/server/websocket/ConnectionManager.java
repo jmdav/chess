@@ -16,6 +16,14 @@ public class ConnectionManager {
     connections.remove(session);
   }
 
+  public void send(Session session, ServerMessage message)
+      throws IOException {
+    if (session.isOpen()) {
+      String msg = message.toString();
+      session.getRemote().sendString(msg);
+    }
+  }
+
   public void broadcast(Session excludeSession, ServerMessage notification)
       throws IOException {
     String msg = notification.toString();

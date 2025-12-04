@@ -17,7 +17,9 @@ public class ChessBoard {
 
   private ChessPiece[][] boardArray;
 
-  public ChessBoard() { boardArray = new ChessPiece[8][8]; }
+  public ChessBoard() {
+    boardArray = new ChessPiece[8][8];
+  }
 
   public ChessBoard(ChessBoard copy) {
     boardArray = new ChessPiece[8][8];
@@ -49,16 +51,20 @@ public class ChessBoard {
     return piece;
   }
 
-  public ChessPiece[][] getBoard() { return boardArray; }
+  public ChessPiece[][] getBoard() {
+    return boardArray;
+  }
 
-  public int length() { return boardArray.length; }
+  public int length() {
+    return boardArray.length;
+  }
 
   /**
    * Gets a chess piece on the chessboard
    *
    * @param position The position to get the piece from
    * @return Either the piece at the position, or null if no piece is at that
-   * position
+   *         position
    */
 
   public ChessPiece getPiece(ChessPosition position) {
@@ -86,12 +92,13 @@ public class ChessBoard {
     }
   }
 
-  public void resetBoard() {
+  public ChessBoard resetBoard() {
     // Place bottom row
     placeComplexRow(0, TeamColor.WHITE);
     placePawns(1, TeamColor.WHITE);
     placePawns(6, TeamColor.BLACK);
     placeComplexRow(7, TeamColor.BLACK);
+    return this;
   }
 
   @Override
@@ -108,7 +115,7 @@ public class ChessBoard {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ChessBoard that = (ChessBoard)o;
+    ChessBoard that = (ChessBoard) o;
     return Objects.deepEquals(boardArray, that.boardArray);
   }
 

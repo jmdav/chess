@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+
+import chess.ChessGame;
 import model.GameData;
 import model.GameID;
 import model.GameList;
@@ -16,13 +18,15 @@ public class GameRAMDAO implements GameDataAccess {
   @Override
   public GameList getGames() throws DataAccessException {
     List<GameData> output = new Vector<>();
-    gameDB.forEach((id, data) -> { output.add(data); });
+    gameDB.forEach((id, data) -> {
+      output.add(data);
+    });
     return new GameList(output);
   };
 
   @Override
   public GameID createGame(String gameName) throws DataAccessException {
-    GameData game = new GameData(gameDB.size() + 1000, null, null, gameName);
+    GameData game = new GameData(gameDB.size() + 1000, null, null, gameName, new ChessGame());
     gameDB.put(game.gameID(), game);
     return new GameID(game.gameID());
   };
