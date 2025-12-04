@@ -10,12 +10,11 @@ import java.util.Objects;
  */
 
 public class LoadGameMessage extends ServerMessage {
+
   ServerMessageType serverMessageType;
 
-  public enum ServerMessageType { LOAD_GAME, ERROR, NOTIFICATION }
-
-  public ServerMessage(ServerMessageType type) {
-    this.serverMessageType = type;
+  public LoadGameMessage() {
+    super(ServerMessageType.LOAD_GAME);
   }
 
   public ServerMessageType getServerMessageType() {
