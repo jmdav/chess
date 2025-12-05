@@ -10,7 +10,9 @@ public interface GameDataAccess {
 
   GameID createGame(String gameName) throws DataAccessException;
 
-  void updateGame(String username, GameRequestData data)
+  void updateGame(Integer gameID, chess.ChessGame newGame) throws DataAccessException;
+
+  void joinGame(String username, GameRequestData data)
       throws DataAccessException;
 
   void destroy() throws DataAccessException;

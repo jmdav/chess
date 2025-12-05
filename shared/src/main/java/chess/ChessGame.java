@@ -15,6 +15,7 @@ public class ChessGame {
 
   TeamColor teamTurn;
   ChessBoard board;
+  boolean activeGame = true;
 
   public ChessGame() {
     teamTurn = TeamColor.WHITE;
@@ -28,6 +29,15 @@ public class ChessGame {
 
   public TeamColor getTeamTurn() {
     return teamTurn;
+  }
+
+  public boolean isActiveGame() {
+    return activeGame;
+  }
+
+  public boolean endGame() {
+    activeGame = false;
+    return activeGame;
   }
 
   /**
@@ -150,8 +160,8 @@ public class ChessGame {
         }
       }
     }
-    System.out.println(allDangerSpaces);
-    System.out.println(kingPos);
+    // System.out.println(allDangerSpaces);
+    // System.out.println(kingPos);
     for (ChessPosition dangerSpace : allDangerSpaces) {
       if (dangerSpace.equals(kingPos)) {
         // System.out.println("that's not good!");

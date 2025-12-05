@@ -5,6 +5,9 @@ import chess.ChessGame.TeamColor;
 import java.sql.*;
 import java.util.List;
 import java.util.Vector;
+
+import com.google.gson.Gson;
+
 import model.GameData;
 import model.GameID;
 import model.GameList;
@@ -14,7 +17,7 @@ public class GameSQLDAO implements GameDataAccess {
 
   @Override
   public GameList getGames() throws DataAccessException {
-    var statement = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games";
+    var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, chessGame FROM games";
     List<GameData> output = new Vector<>();
     try (Connection conn = DatabaseManager.getConnection();
         PreparedStatement ps = conn.prepareStatement(statement);
@@ -30,20 +33,43 @@ public class GameSQLDAO implements GameDataAccess {
   }
 
   private GameData readGame(ResultSet rs) throws SQLException {
-    GameData game = new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"),
-        rs.getString("blackUsername"), rs.getString("gameName"), new ChessGame());
-    return game;
+    ChessGame game = new Gson().fromJson(rs.getString("chessGame"), ChessGame.class);
+    GameData output = new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"),
+        rs.getString("blackUsername"), rs.getString("gameName"), game);
+    return output;
+  }
+
+  public void updateGame(Integer gameID, ChessGame newGame) throws DataAccessException {
+    var statement = "UPDATE games SET chessGame=? WHERE gameID=?";
+    try (Connection conn = DatabaseManager.getConnection();
+        PreparedStatement ps = conn.prepareStatement(statement)) {
+      ps.setString(1, new Gson().toJson(newGame));
+      ps.setInt(2, gameID);
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new DataAccessException(
+          500, String.format("Unable to update game: %s", e.getMessage()));
+    }
   }
 
   @Override
   public GameID createGame(String gameName) throws DataAccessException {
-    var statement = "INSERT INTO games (gameName) VALUES (?)";
-    var gameID = DatabaseManager.executeUpdate(statement, gameName);
-    return new GameID(gameID);
-  };
+    var statement = "INSERT INTO games (gameName, chessGame) VALUES (?, ?)";
+    String gameJson = new Gson().toJson(new ChessGame());
+    try (Connection conn = DatabaseManager.getConnection();
+        PreparedStatement ps = conn.prepareStatement(statement)) {
+      ps.setString(1, gameName);
+      ps.setString(2, gameJson);
+      int gameID = ps.executeUpdate();
+      return new GameID(gameID);
+    } catch (SQLException e) {
+      throw new DataAccessException(
+          500, String.format("Unable to create game: %s", e.getMessage()));
+    }
+  }
 
   @Override
-  public void updateGame(String username, GameRequestData data)
+  public void joinGame(String username, GameRequestData data)
       throws DataAccessException {
 
     GameData targetGame = getGameData(data.gameID());
@@ -108,7 +134,7 @@ public class GameSQLDAO implements GameDataAccess {
     }
     try (Connection conn = DatabaseManager.getConnection()) {
       System.out.println("Fetching game data: " + gameID);
-      var statement = "SELECT gameID, whiteUsername, blackUsername, gameName "
+      var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, chessGame "
           + "FROM games WHERE gameID=?";
       try (PreparedStatement ps = conn.prepareStatement(statement)) {
         ps.setInt(1, gameID);

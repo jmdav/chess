@@ -35,6 +35,10 @@ public class GameService {
     }
   }
 
+  public void updateGameData(Integer gameID, chess.ChessGame game) throws DataAccessException {
+    gameAccess.updateGame(gameID, game);
+  }
+
   public GameData getGameById(Integer gameID) throws IndexOutOfBoundsException, DataAccessException {
     GameList gameList = gameAccess.getGames();
     GameData gameData;
@@ -79,7 +83,7 @@ public class GameService {
       throws DataAccessException {
     AuthData session = authAccess.getSession(authToken);
     if (session != null) {
-      gameAccess.updateGame(session.username(), request);
+      gameAccess.joinGame(session.username(), request);
     } else {
       throw new DataAccessException(401, "Error: unauthorized");
     }
@@ -89,7 +93,7 @@ public class GameService {
       throws DataAccessException {
     AuthData session = authAccess.getSession(authToken);
     if (session != null) {
-      gameAccess.updateGame(null, request);
+      gameAccess.joinGame(null, request);
     } else {
       throw new DataAccessException(401, "Error: unauthorized");
     }

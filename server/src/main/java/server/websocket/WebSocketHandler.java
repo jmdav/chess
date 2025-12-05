@@ -105,41 +105,56 @@ public class WebSocketHandler
   }
 
   private void processMove(String authToken, Integer gameID, chess.ChessMove moveData, Session session)
-      throws IOException, DataAccessException {
+      throws IOException {
 
-    AuthData sessionData = userService.getSession(authToken);
-    ChessGame game = gameService.getGameById(gameID).game();
-    TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
     try {
-      System.out.println("Processing move: " + moveData.toString());
-      game.makeMove(moveData);
-    } catch (InvalidMoveException e) {
-      connections.send(session, new ErrorMessage("Error: Invalid move"));
-      return;
-    }
-    ServerMessage message = new NotificationMessage(String.format("%s (%s) has made a move: %s",
-        sessionData.username(),
-        color.toString().toLowerCase(),
-        moveData.toString()));
+      AuthData sessionData = userService.getSession(authToken);
+      ChessGame game = gameService.getGameById(gameID).game();
+      TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
+      if (color != game.getTeamTurn()) {
+        connections.send(session, new ErrorMessage("Error: Not active player"));
+        return;
+      }
+      if (game.isActiveGame() == false) {
+        connections.send(session, new ErrorMessage("Error: Game has ended"));
+        return;
+      }
+      try {
+        game.makeMove(moveData);
+        gameService.updateGameData(gameID, game);
+      } catch (InvalidMoveException e) {
+        connections.send(session, new ErrorMessage("Error: Invalid move"));
+        return;
+      }
+      ServerMessage message = new NotificationMessage(String.format("%s (%s) has made a move: %s",
+          sessionData.username(),
+          color.toString().toLowerCase(),
+          moveData.toString()));
 
-    connections.broadcast(null, new LoadGameMessage(gameService.getGameById(gameID).game()));
-    connections.broadcast(null, message);
-    String checkMessage = "";
+      connections.broadcast(null, new LoadGameMessage(gameService.getGameById(gameID).game()));
+      connections.broadcast(session, message);
+      String checkMessage = "";
 
-    if (game.isInCheckmate(TeamColor.WHITE)) {
-      checkMessage = "White is in checkmate. Black wins!";
-    } else if (game.isInCheckmate(TeamColor.BLACK)) {
-      checkMessage = "Black is in checkmate. White wins!";
-    } else if (game.isInStalemate(TeamColor.WHITE) || game.isInStalemate(TeamColor.BLACK)) {
-      checkMessage = "Game is in stalemate. Game is a draw!";
-    } else if (game.isInCheck(TeamColor.WHITE)) {
-      checkMessage = "White is in check.";
-    } else if (game.isInCheck(TeamColor.BLACK)) {
-      checkMessage = "Black is in check.";
-    }
+      if (game.isInCheckmate(TeamColor.WHITE)) {
+        checkMessage = "White is in checkmate. Black wins!";
+        game.endGame();
+      } else if (game.isInCheckmate(TeamColor.BLACK)) {
+        checkMessage = "Black is in checkmate. White wins!";
+        game.endGame();
+      } else if (game.isInStalemate(TeamColor.WHITE) || game.isInStalemate(TeamColor.BLACK)) {
+        checkMessage = "Game is in stalemate. Game is a draw!";
+        game.endGame();
+      } else if (game.isInCheck(TeamColor.WHITE)) {
+        checkMessage = "White is in check.";
+      } else if (game.isInCheck(TeamColor.BLACK)) {
+        checkMessage = "Black is in check.";
+      }
 
-    if (!checkMessage.isEmpty()) {
-      connections.broadcast(null, new NotificationMessage(checkMessage));
+      if (!checkMessage.isEmpty()) {
+        connections.broadcast(null, new NotificationMessage(checkMessage));
+      }
+    } catch (DataAccessException e) {
+      connections.send(session, new ErrorMessage("Error:" + e.getMessage()));
     }
   }
 
