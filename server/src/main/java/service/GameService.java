@@ -35,13 +35,18 @@ public class GameService {
     }
   }
 
-  public GameData getGameById(Integer gameID) throws DataAccessException {
+  public GameData getGameById(Integer gameID) throws IndexOutOfBoundsException, DataAccessException {
     GameList gameList = gameAccess.getGames();
-    GameData gameData = gameList.games().get(gameID - 1);
+    GameData gameData;
+    try {
+      gameData = gameList.games().get(gameID - 1);
+    } catch (IndexOutOfBoundsException e) {
+      throw new IndexOutOfBoundsException();
+    }
     if (gameData != null) {
       return gameData;
     } else {
-      throw new DataAccessException(404, "Error: game not found");
+      throw new IndexOutOfBoundsException();
     }
   }
 

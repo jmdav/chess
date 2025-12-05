@@ -16,7 +16,6 @@ import model.AuthData;
 
 import java.io.IOException;
 
-import org.eclipse.jetty.io.ssl.ALPNProcessor.Server;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
@@ -49,7 +48,7 @@ public class WebSocketHandler
       UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
       switch (action.getCommandType()) {
         case CONNECT -> join(action.getAuthToken(), action.getGameID(), ctx.session);
-        case MAKE_MOVE -> processMove(action.getAuthToken(), action.getGameID(), action.getMoveData(), ctx.session);
+        case MAKE_MOVE -> processMove(action.getAuthToken(), action.getGameID(), action.getMove(), ctx.session);
         case RESIGN -> System.out.println("player resigned...");
         case LEAVE -> exit(action.getAuthToken(), action.getGameID(), ctx.session);
       }
@@ -63,36 +62,46 @@ public class WebSocketHandler
     System.out.println("Websocket closed");
   }
 
-  private void join(String authToken, Integer gameID, Session session) throws IOException, DataAccessException {
-    connections.add(session);
-    connections.send(session, new LoadGameMessage(gameService.getGameById(gameID).game()));
-    AuthData sessionData = userService.getSession(authToken);
-    TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
-    var message = "";
-    if (color != null) {
-      message = String.format("%s has joined the game as %s.", sessionData.username(),
-          color.toString().toLowerCase());
-    } else {
-      message = String.format("%s has joined the game as an observer.", sessionData.username());
+  private void join(String authToken, Integer gameID, Session session) throws IOException {
+    try {
+      AuthData sessionData = userService.getSession(authToken);
+      TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
+      var message = "";
+      if (color != null) {
+        message = String.format("%s has joined the game as %s.", sessionData.username(),
+            color.toString().toLowerCase());
+      } else {
+        message = String.format("%s has joined the game as an observer.", sessionData.username());
+      }
+      connections.add(session);
+      connections.send(session, new LoadGameMessage(gameService.getGameById(gameID).game()));
+      System.out.println(message);
+      var notification = new NotificationMessage(message);
+      connections.broadcast(session, notification);
+    } catch (IndexOutOfBoundsException e) {
+      connections.send(session, new ErrorMessage("Error: Game not found"));
+    } catch (DataAccessException e) {
+      connections.send(session, new ErrorMessage("Error: Unauthorized"));
     }
-    System.out.println(message);
-    var notification = new NotificationMessage(message);
-    connections.broadcast(session, notification);
   }
 
-  private void exit(String authToken, Integer gameID, Session session) throws IOException, DataAccessException {
-    AuthData sessionData = userService.getSession(authToken);
-    TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
-    var message = "";
-    if (color != null) {
-      message = String.format("%s (%s) has left the game.", sessionData.username(),
-          color.toString().toLowerCase());
-    } else {
-      message = String.format("%s (observer) has left the game.", sessionData.username());
+  private void exit(String authToken, Integer gameID, Session session) throws IOException {
+    try {
+      AuthData sessionData = userService.getSession(authToken);
+      TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
+      var message = "";
+      if (color != null) {
+        message = String.format("%s (%s) has left the game.", sessionData.username(),
+            color.toString().toLowerCase());
+      } else {
+        message = String.format("%s (observer) has left the game.", sessionData.username());
+      }
+      var notification = new NotificationMessage(message);
+      connections.broadcast(session, notification);
+      connections.remove(session);
+    } catch (DataAccessException e) {
+      connections.send(session, new ErrorMessage("Error: Unauthorized"));
     }
-    var notification = new NotificationMessage(message);
-    connections.broadcast(session, notification);
-    connections.remove(session);
   }
 
   private void processMove(String authToken, Integer gameID, chess.ChessMove moveData, Session session)
@@ -102,9 +111,10 @@ public class WebSocketHandler
     ChessGame game = gameService.getGameById(gameID).game();
     TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
     try {
+      System.out.println("Processing move: " + moveData.toString());
       game.makeMove(moveData);
     } catch (InvalidMoveException e) {
-      connections.send(session, new NotificationMessage("Error: Invalid move"));
+      connections.send(session, new ErrorMessage("Error: Invalid move"));
       return;
     }
     ServerMessage message = new NotificationMessage(String.format("%s (%s) has made a move: %s",
@@ -114,6 +124,23 @@ public class WebSocketHandler
 
     connections.broadcast(null, new LoadGameMessage(gameService.getGameById(gameID).game()));
     connections.broadcast(null, message);
+    String checkMessage = "";
+
+    if (game.isInCheckmate(TeamColor.WHITE)) {
+      checkMessage = "White is in checkmate. Black wins!";
+    } else if (game.isInCheckmate(TeamColor.BLACK)) {
+      checkMessage = "Black is in checkmate. White wins!";
+    } else if (game.isInStalemate(TeamColor.WHITE) || game.isInStalemate(TeamColor.BLACK)) {
+      checkMessage = "Game is in stalemate. Game is a draw!";
+    } else if (game.isInCheck(TeamColor.WHITE)) {
+      checkMessage = "White is in check.";
+    } else if (game.isInCheck(TeamColor.BLACK)) {
+      checkMessage = "Black is in check.";
+    }
+
+    if (!checkMessage.isEmpty()) {
+      connections.broadcast(null, new NotificationMessage(checkMessage));
+    }
   }
 
 }
