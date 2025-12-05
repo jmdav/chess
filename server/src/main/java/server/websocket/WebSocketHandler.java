@@ -13,6 +13,7 @@ import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import model.AuthData;
+import model.GameRequestData;
 
 import java.io.IOException;
 
@@ -49,7 +50,7 @@ public class WebSocketHandler
       switch (action.getCommandType()) {
         case CONNECT -> join(action.getAuthToken(), action.getGameID(), ctx.session);
         case MAKE_MOVE -> processMove(action.getAuthToken(), action.getGameID(), action.getMove(), ctx.session);
-        case RESIGN -> System.out.println("player resigned...");
+        case RESIGN -> resign(action.getAuthToken(), action.getGameID(), ctx.session);
         case LEAVE -> exit(action.getAuthToken(), action.getGameID(), ctx.session);
       }
     } catch (Exception ex) {
@@ -91,6 +92,7 @@ public class WebSocketHandler
       TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
       var message = "";
       if (color != null) {
+        gameService.leaveGame(authToken, new GameRequestData(color, gameID));
         message = String.format("%s (%s) has left the game.", sessionData.username(),
             color.toString().toLowerCase());
       } else {
@@ -99,6 +101,35 @@ public class WebSocketHandler
       var notification = new NotificationMessage(message);
       connections.broadcast(session, notification);
       connections.remove(session);
+    } catch (DataAccessException e) {
+      connections.send(session, new ErrorMessage("Error: Unauthorized"));
+    }
+  }
+
+  private void resign(String authToken, Integer gameID, Session session) throws IOException {
+    try {
+      ChessGame game = gameService.getGameById(gameID).game();
+      AuthData sessionData = userService.getSession(authToken);
+      TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
+      var message = "";
+      if (game.isActiveGame() == false) {
+        connections.send(session, new ErrorMessage("Error: Game has already ended."));
+        return;
+      }
+      if (color != null) {
+        message = String.format("%s (%s) has resigned.", sessionData.username(),
+            color.toString().toLowerCase());
+        game.endGame();
+      } else {
+        connections.send(session, new ErrorMessage("Error: Observers cannot resign. Try [L]eave"));
+        return;
+      }
+      var notification = new NotificationMessage(message);
+      gameService.updateGameData(gameID, game);
+      connections.broadcast(null, notification);
+      // connections.broadcast(null, new
+      // LoadGameMessage(gameService.getGameById(gameID).game()));
+
     } catch (DataAccessException e) {
       connections.send(session, new ErrorMessage("Error: Unauthorized"));
     }
@@ -120,21 +151,21 @@ public class WebSocketHandler
         return;
       }
       try {
+        System.out.println("Pre move: " + game.getTeamTurn());
         game.makeMove(moveData);
-        gameService.updateGameData(gameID, game);
+        System.out.println("Post move: " + game.getTeamTurn());
       } catch (InvalidMoveException e) {
         connections.send(session, new ErrorMessage("Error: Invalid move"));
         return;
       }
+      System.out.println("Pre announce: " + game.getTeamTurn());
       ServerMessage message = new NotificationMessage(String.format("%s (%s) has made a move: %s",
           sessionData.username(),
           color.toString().toLowerCase(),
           moveData.toString()));
 
-      connections.broadcast(null, new LoadGameMessage(gameService.getGameById(gameID).game()));
-      connections.broadcast(session, message);
       String checkMessage = "";
-
+      System.out.println("Pre checkmate: " + game.getTeamTurn());
       if (game.isInCheckmate(TeamColor.WHITE)) {
         checkMessage = "White is in checkmate. Black wins!";
         game.endGame();
@@ -149,10 +180,16 @@ public class WebSocketHandler
       } else if (game.isInCheck(TeamColor.BLACK)) {
         checkMessage = "Black is in check.";
       }
+      System.out.println("Pre update: " + game.getTeamTurn());
+      gameService.updateGameData(gameID, game);
+      System.out.println("Post update: " + game.getTeamTurn());
+      connections.broadcast(null, new LoadGameMessage(game));
+      connections.broadcast(session, message);
 
       if (!checkMessage.isEmpty()) {
         connections.broadcast(null, new NotificationMessage(checkMessage));
       }
+
     } catch (DataAccessException e) {
       connections.send(session, new ErrorMessage("Error:" + e.getMessage()));
     }

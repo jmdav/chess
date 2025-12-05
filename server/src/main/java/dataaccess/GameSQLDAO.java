@@ -46,6 +46,8 @@ public class GameSQLDAO implements GameDataAccess {
       ps.setString(1, new Gson().toJson(newGame));
       ps.setInt(2, gameID);
       ps.executeUpdate();
+      // System.out.println("Game data updated: " + gameID + "\n" +
+      // newGame.toString());
     } catch (SQLException e) {
       throw new DataAccessException(
           500, String.format("Unable to update game: %s", e.getMessage()));
@@ -57,11 +59,18 @@ public class GameSQLDAO implements GameDataAccess {
     var statement = "INSERT INTO games (gameName, chessGame) VALUES (?, ?)";
     String gameJson = new Gson().toJson(new ChessGame());
     try (Connection conn = DatabaseManager.getConnection();
-        PreparedStatement ps = conn.prepareStatement(statement)) {
+        PreparedStatement ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
       ps.setString(1, gameName);
       ps.setString(2, gameJson);
-      int gameID = ps.executeUpdate();
-      return new GameID(gameID);
+      ps.executeUpdate();
+      try (ResultSet rs = ps.getGeneratedKeys()) {
+        if (rs.next()) {
+          int gameID = rs.getInt(1);
+          return new GameID(gameID);
+        } else {
+          throw new DataAccessException(500, "Unable to retrieve generated game ID.");
+        }
+      }
     } catch (SQLException e) {
       throw new DataAccessException(
           500, String.format("Unable to create game: %s", e.getMessage()));
@@ -84,7 +93,7 @@ public class GameSQLDAO implements GameDataAccess {
     }
     // Check if white is already taken
     if (data.playerColor() == TeamColor.WHITE) {
-      if (targetGame.whiteUsername() != null) {
+      if (targetGame.whiteUsername() != null && username != null) {
         throw new DataAccessException(403, "Error: already taken");
       } else {
         targetGame = new GameData(targetGame.gameID(), username,
@@ -92,8 +101,9 @@ public class GameSQLDAO implements GameDataAccess {
       }
     }
     // Check if black is already taken
-    else if (data.playerColor() == TeamColor.BLACK) {
-      if (targetGame.blackUsername() != null) {
+    else if (data.playerColor() == TeamColor.BLACK && username != null) {
+      if (targetGame.blackUsername() != null &&
+          targetGame.blackUsername().equals(username) == false) {
         throw new DataAccessException(403, "Error: already taken");
       } else {
         targetGame = new GameData(targetGame.gameID(), targetGame.whiteUsername(),

@@ -69,7 +69,6 @@ public class ChessGame {
 
     HashSet<ChessMove> moves = new HashSet<ChessMove>();
     ChessPiece targetPiece = board.getPiece(startPosition);
-    teamTurn = targetPiece.getTeamColor();
     Collection<ChessMove> possibleMoves = targetPiece.pieceMoves(board, startPosition);
     // System.out.println("Before elimination: " + possibleMoves);
     for (ChessMove move : possibleMoves) {
@@ -112,12 +111,8 @@ public class ChessGame {
         }
 
         board.addPiece(move.getEndPosition(), piece);
-
-        if (teamTurn == TeamColor.WHITE) {
-          teamTurn = TeamColor.BLACK;
-        } else {
-          teamTurn = TeamColor.WHITE;
-        }
+        this.teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+        System.out.println(teamTurn);
         return;
       }
     }
@@ -247,5 +242,12 @@ public class ChessGame {
   @Override
   public int hashCode() {
     return Objects.hash(teamTurn, board);
+  }
+
+  @Override
+  public String toString() {
+    return "ChessGame{" +
+        "teamTurn=" + teamTurn +
+        ", board=\n" + board.toString();
   }
 }
