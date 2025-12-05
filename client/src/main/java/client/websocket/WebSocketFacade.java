@@ -34,7 +34,7 @@ public class WebSocketFacade extends Endpoint {
                     System.out.println("Websocket message received");
                     try {
                         ServerMessage servermsg = new Gson().fromJson(message, ServerMessage.class);
-                        switch (servermsg.getCommandType()) {
+                        switch (servermsg.getServerMessageType()) {
                             case LOAD_GAME -> load_game(servermsg.getGame());
                             case ERROR -> notificationHandler.handleMessage(servermsg);
                             case NOTIFICATION -> notificationHandler.handleMessage(servermsg);
@@ -56,6 +56,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void load_game(ChessGame game) throws ResponseException {
         notificationHandler.updateGame(game);
+        System.out.println("Game loaded from server." + game.toString());
     }
 
     public void join(String authToken, Integer gameID) throws ResponseException {

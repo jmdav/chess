@@ -13,8 +13,6 @@ import chess.ChessGame;
 
 public class LoadGameMessage extends ServerMessage {
 
-  private final ChessGame game;
-
   public LoadGameMessage(ChessGame game) {
     super(ServerMessageType.LOAD_GAME);
     this.game = game;
@@ -26,10 +24,6 @@ public class LoadGameMessage extends ServerMessage {
 
   public ChessGame getGame() {
     return this.game;
-  }
-
-  public String getMessage() {
-    return message;
   }
 
 }

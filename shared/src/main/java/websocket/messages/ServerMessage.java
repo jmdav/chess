@@ -15,8 +15,6 @@ public class ServerMessage {
 
   ChessGame game;
 
-  String message;
-
   ServerMessageType serverMessageType;
 
   public enum ServerMessageType {
@@ -49,14 +47,6 @@ public class ServerMessage {
 
   public ChessGame getGame() {
     return game;
-  }
-
-  public ServerMessageType getCommandType() {
-    return serverMessageType;
-  }
-
-  public String getMessage() {
-    return this.message;
   }
 
 }

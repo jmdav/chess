@@ -11,13 +11,19 @@ import com.google.gson.Gson;
 
 public class ErrorMessage extends ServerMessage {
 
+  String errorMessage;
+
   public ErrorMessage(String message) {
     super(ServerMessageType.ERROR);
-    this.message = message;
+    this.errorMessage = message;
   }
 
   public String toString() {
     return new Gson().toJson(this);
+  }
+
+  public String getErrorMessage() {
+    return errorMessage;
   }
 
 }

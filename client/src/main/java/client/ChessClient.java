@@ -3,7 +3,7 @@ package client;
 import client.errors.ResponseException;
 import client.websocket.ServerMessageHandler;
 import client.websocket.WebSocketFacade;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 import java.util.Scanner;
 
@@ -59,7 +59,15 @@ public class ChessClient implements ServerMessageHandler {
 
   @Override
   public void handleMessage(ServerMessage notification) {
-    System.out.println(notification.getMessage());
+    switch (notification.getServerMessageType()) {
+      case ERROR ->
+        System.out.println("Error from server: " + ((ErrorMessage) notification).getErrorMessage());
+      case NOTIFICATION ->
+        System.out.println(
+            "Notification from server: " + ((NotificationMessage) notification).getMessage());
+      case LOAD_GAME ->
+        input.updateGame(((LoadGameMessage) notification).getGame());
+    }
     printCaret();
   }
 
