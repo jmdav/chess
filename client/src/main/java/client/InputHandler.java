@@ -2,7 +2,6 @@ package client;
 
 import chess.ChessGame;
 import chess.ChessGame.TeamColor;
-import chess.ChessPosition;
 import client.errors.ResponseException;
 import client.websocket.WebSocketFacade;
 import java.util.List;
@@ -24,9 +23,6 @@ public class InputHandler {
     this.server = server;
     this.socket = socket;
     this.game = new ChessGame();
-    BoardRender.render(game.getBoard(), color,
-                       game.getValidMoves(new ChessPosition(2, 2)),
-                       new ChessPosition(2, 2));
   }
 
   public HandlerResponse parseSignedOut(SessionData data, String in)
@@ -118,6 +114,7 @@ public class InputHandler {
       GameData g;
       for (int i = 0; i < games.size(); i++) {
         g = games.get(i);
+        System.out.println();
         System.out.println((i + 1) + ") " + g.gameName() +
                            " // Black: " + g.blackUsername() +
                            " | White: " + g.whiteUsername());
@@ -232,7 +229,8 @@ public class InputHandler {
 
     case "r":
     case "resign":
-      System.out.println("Are you sure? y/n");
+      System.out.println("\nAre you sure? [y]/[n]");
+      socket.printCaret();
       Scanner scanner = new Scanner(System.in);
       in = scanner.nextLine();
       if (!in.trim().toLowerCase().equals("y")) {

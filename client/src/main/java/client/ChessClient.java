@@ -49,7 +49,9 @@ public class ChessClient implements ServerMessageHandler {
         response = new HandlerResponse(session, exception.getErrorMessage());
       }
       session = response.data();
-      System.out.println(response.output());
+      if (response.output().length() > 1) {
+        System.out.println("\n" + response.output());
+      }
     }
 
     scanner.close();
@@ -75,6 +77,7 @@ public class ChessClient implements ServerMessageHandler {
 
   public void printCaret() {
     System.out.print(
+        "\n" +
         (session.username() == null ? "" : "[" + session.username() + "]") +
         (" > "));
   }
