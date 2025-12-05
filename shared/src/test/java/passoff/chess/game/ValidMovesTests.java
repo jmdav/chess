@@ -21,27 +21,26 @@ public class ValidMovesTests {
         var game = new ChessGame();
         game.setTeamTurn(ChessGame.TeamColor.BLACK);
         game.setBoard(TestUtilities.loadBoard("""
-                    | | | | | | | | |
-                    | | | | | | | | |
-                    | |B| | | | | | |
-                    | | | | | |K| | |
-                    | | |n| | | | | |
-                    | | | | | | | | |
-                    | | | |q| |k| | |
-                    | | | | | | | | |
-                    """));
+                | | | | | | | | |
+                | | | | | | | | |
+                | |B| | | | | | |
+                | | | | | |K| | |
+                | | |n| | | | | |
+                | | | | | | | | |
+                | | | |q| |k| | |
+                | | | | | | | | |
+                """));
 
         // Knight moves
         ChessPosition knightPosition = new ChessPosition(4, 3);
-        var validMoves = TestUtilities.loadMoves(knightPosition, new int[][]{{3, 5}, {6, 2}});
+        var validMoves = TestUtilities.loadMoves(knightPosition, new int[][] { { 3, 5 }, { 6, 2 } });
         assertMoves(game, validMoves, knightPosition);
 
         // Queen Moves
         ChessPosition queenPosition = new ChessPosition(2, 4);
-        validMoves = TestUtilities.loadMoves(queenPosition, new int[][]{{3, 5}, {4, 4}});
+        validMoves = TestUtilities.loadMoves(queenPosition, new int[][] { { 3, 5 }, { 4, 4 } });
         assertMoves(game, validMoves, queenPosition);
     }
-
 
     @Test
     @DisplayName("Piece Partially Trapped")
@@ -49,19 +48,19 @@ public class ValidMovesTests {
 
         var game = new ChessGame();
         game.setBoard(TestUtilities.loadBoard("""
-                    | | | | | | | | |
-                    | | | | | | | | |
-                    | | | | | | | | |
-                    |k|r| | | |R| |K|
-                    | | | | | | | | |
-                    | | | | | | | | |
-                    | | | | | | | | |
-                    | | | | | | | | |
-                    """));
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                |k|r| | | |R| |K|
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                """));
 
         ChessPosition rookPosition = new ChessPosition(5, 6);
-        var validMoves = TestUtilities.loadMoves(rookPosition, new int[][]{
-                {5, 7}, {5, 5}, {5, 4}, {5, 3}, {5, 2}
+        var validMoves = TestUtilities.loadMoves(rookPosition, new int[][] {
+                { 5, 7 }, { 5, 5 }, { 5, 4 }, { 5, 3 }, { 5, 2 }
         });
 
         assertMoves(game, validMoves, rookPosition);
@@ -73,20 +72,20 @@ public class ValidMovesTests {
 
         var game = new ChessGame();
         game.setBoard(TestUtilities.loadBoard("""
-                    |K| | | | | | |Q|
-                    | | | | | | | | |
-                    | | | | | | | | |
-                    | | | | | | | | |
-                    | | | |r| | | | |
-                    | | | | | | | | |
-                    | |k| | | | | | |
-                    | | | | | | | | |
-                    """));
+                |K| | | | | | |Q|
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | |r| | | | |
+                | | | | | | | | |
+                | |k| | | | | | |
+                | | | | | | | | |
+                """));
 
         ChessPosition position = new ChessPosition(4, 4);
+        System.out.println("Generated moves: " + game.validMoves(position));
         Assertions.assertTrue(game.validMoves(position).isEmpty(), TRAPPED_PIECE_MOVES);
     }
-
 
     @Test
     @DisplayName("Pieces Cannot Eliminate Check")
@@ -95,17 +94,17 @@ public class ValidMovesTests {
         var game = new ChessGame();
         game.setTeamTurn(ChessGame.TeamColor.BLACK);
         game.setBoard(TestUtilities.loadBoard("""
-                    |R| | | | | | | |
-                    | | | |k| | | |b|
-                    | | | | |P| | | |
-                    |K| |Q|n| | | | |
-                    | | | | | | | | |
-                    | | | | | | | |r|
-                    | | | | | |p| | |
-                    | |q| | | | | | |
-                    """));
+                |R| | | | | | | |
+                | | | |k| | | |b|
+                | | | | |P| | | |
+                |K| |Q|n| | | | |
+                | | | | | | | | |
+                | | | | | | | |r|
+                | | | | | |p| | |
+                | |q| | | | | | |
+                """));
 
-        //get positions
+        // get positions
         ChessPosition kingPosition = new ChessPosition(7, 4);
         ChessPosition pawnPosition = new ChessPosition(2, 6);
         ChessPosition bishopPosition = new ChessPosition(7, 8);
@@ -113,12 +112,11 @@ public class ValidMovesTests {
         ChessPosition knightPosition = new ChessPosition(5, 4);
         ChessPosition rookPosition = new ChessPosition(3, 8);
 
-
-        var validMoves = TestUtilities.loadMoves(kingPosition, new int[][]{{6, 5}});
+        var validMoves = TestUtilities.loadMoves(kingPosition, new int[][] { { 6, 5 } });
 
         assertMoves(game, validMoves, kingPosition);
 
-        //make sure teams other pieces are not allowed to move
+        // make sure teams other pieces are not allowed to move
         Assertions.assertTrue(game.validMoves(pawnPosition).isEmpty(), TRAPPED_PIECE_MOVES);
         Assertions.assertTrue(game.validMoves(bishopPosition).isEmpty(), TRAPPED_PIECE_MOVES);
         Assertions.assertTrue(game.validMoves(queenPosition).isEmpty(), TRAPPED_PIECE_MOVES);
@@ -126,26 +124,25 @@ public class ValidMovesTests {
         Assertions.assertTrue(game.validMoves(rookPosition).isEmpty(), TRAPPED_PIECE_MOVES);
     }
 
-
     @Test
     @DisplayName("King Cannot Move Into Check")
     public void noPutSelfInDanger() {
 
         var game = new ChessGame();
         game.setBoard(TestUtilities.loadBoard("""
-                    | | | | | | | | |
-                    | | | | | | | | |
-                    | | | | | | | | |
-                    | | | | | | | | |
-                    | | | | | |k| | |
-                    | | | | | | | | |
-                    | | | | | |K| | |
-                    | | | | | | | | |
-                    """));
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | |k| | |
+                | | | | | | | | |
+                | | | | | |K| | |
+                | | | | | | | | |
+                """));
 
         ChessPosition position = new ChessPosition(2, 6);
-        var validMoves = TestUtilities.loadMoves(position, new int[][]{
-                {1, 5}, {1, 6}, {1, 7}, {2, 5}, {2, 7},
+        var validMoves = TestUtilities.loadMoves(position, new int[][] {
+                { 1, 5 }, { 1, 6 }, { 1, 7 }, { 2, 5 }, { 2, 7 },
         });
         assertMoves(game, validMoves, position);
     }
@@ -158,8 +155,8 @@ public class ValidMovesTests {
         game.setTeamTurn(ChessGame.TeamColor.BLACK);
 
         ChessPosition position = new ChessPosition(2, 5);
-        var validMoves = TestUtilities.loadMoves(position, new int[][]{
-                {3, 5}, {4, 5}
+        var validMoves = TestUtilities.loadMoves(position, new int[][] {
+                { 3, 5 }, { 4, 5 }
         });
         assertMoves(game, validMoves, position);
     }

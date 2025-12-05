@@ -69,11 +69,12 @@ public class ChessGame {
 
     HashSet<ChessMove> moves = new HashSet<ChessMove>();
     ChessPiece targetPiece = board.getPiece(startPosition);
+    TeamColor targetColor = board.getPiece(startPosition).getTeamColor();
     Collection<ChessMove> possibleMoves = targetPiece.pieceMoves(board, startPosition);
     // System.out.println("Before elimination: " + possibleMoves);
     for (ChessMove move : possibleMoves) {
       ChessBoard hypothetical = new ChessBoard(board);
-      if (!doesMovePlaceInCheck(move, hypothetical)) {
+      if (!doesMovePlaceInCheck(targetColor, move, hypothetical)) {
         moves.add(move);
       }
     }
@@ -88,10 +89,10 @@ public class ChessGame {
    * @throws InvalidMoveException if move is invalid
    */
 
-  public boolean doesMovePlaceInCheck(ChessMove move, ChessBoard targetBoard) {
+  public boolean doesMovePlaceInCheck(TeamColor teamColor, ChessMove move, ChessBoard targetBoard) {
     ChessPiece piece = targetBoard.popPiece(move.getStartPosition());
     targetBoard.addPiece(move.getEndPosition(), piece);
-    return isInCheck(teamTurn, targetBoard);
+    return isInCheck(teamColor, targetBoard);
   }
 
   public void makeMove(ChessMove move) throws InvalidMoveException {
