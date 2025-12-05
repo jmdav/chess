@@ -1,13 +1,11 @@
 package client;
 
+import chess.ChessGame;
 import client.errors.ResponseException;
 import client.websocket.ServerMessageHandler;
 import client.websocket.WebSocketFacade;
-import websocket.messages.*;
-
 import java.util.Scanner;
-
-import chess.ChessGame;
+import websocket.messages.*;
 
 public class ChessClient implements ServerMessageHandler {
 
@@ -31,20 +29,20 @@ public class ChessClient implements ServerMessageHandler {
       try {
         switch (session.state()) {
 
-          case SIGNEDOUT:
-            response = input.parseSignedOut(session, in);
-            break;
+        case SIGNEDOUT:
+          response = input.parseSignedOut(session, in);
+          break;
 
-          case SIGNEDIN:
-            response = input.parseSignedIn(session, in);
-            break;
+        case SIGNEDIN:
+          response = input.parseSignedIn(session, in);
+          break;
 
-          case INGAME:
-            response = input.parseInGame(session, in);
-            break;
+        case INGAME:
+          response = input.parseInGame(session, in);
+          break;
 
-          case QUIT:
-            break;
+        case QUIT:
+          break;
         }
 
       } catch (ResponseException exception) {
@@ -59,27 +57,27 @@ public class ChessClient implements ServerMessageHandler {
 
   @Override
   public void handleMessage(ServerMessage notification) {
-    System.out.println("\n--- Notification from server ---");
     switch (notification.getServerMessageType()) {
-      case ERROR ->
-        System.out.println("Error from server: " + ((ErrorMessage) notification).getErrorMessage());
-      case NOTIFICATION ->
-        System.out.println(
-            "Notification from server: " + ((NotificationMessage) notification).getMessage());
-      case LOAD_GAME ->
-        input.updateGame(((LoadGameMessage) notification).getGame());
+    case ERROR:
+      System.out.println("Error from server: " +
+                         ((ErrorMessage)notification).getErrorMessage());
+      printCaret();
+      break;
+    case NOTIFICATION:
+      System.out.println("Notification from server: " +
+                         ((NotificationMessage)notification).getMessage());
+      printCaret();
+      break;
+    case LOAD_GAME:
+      input.updateGame(((LoadGameMessage)notification).getGame());
     }
-    printCaret();
   }
 
   public void printCaret() {
     System.out.print(
         (session.username() == null ? "" : "[" + session.username() + "]") +
-            (" > "));
+        (" > "));
   }
 
-  public void updateGame(ChessGame game) {
-    input.updateGame(game);
-  }
-
+  public void updateGame(ChessGame game) { input.updateGame(game); }
 }

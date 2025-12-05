@@ -23,29 +23,27 @@ public class WebSocketFacade extends Endpoint {
       URI socketURI = new URI(url + "/ws");
       this.notificationHandler = notificationHandler;
 
-      System.out.println("Connecting to WebSocket at: " + socketURI);
+      // System.out.println("Connecting to WebSocket at: " + socketURI);
       WebSocketContainer container = ContainerProvider.getWebSocketContainer();
       this.session = container.connectToServer(this, socketURI);
-      System.out.println("WebSocket connected, adding message handler...");
+      // System.out.println("WebSocket connected, adding message handler...");
 
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
         @Override
         public void onMessage(String message) {
-          System.out.println("Websocket message received");
           try {
             ServerMessage servermsg =
                 new Gson().fromJson(message, ServerMessage.class);
             switch (servermsg.getServerMessageType()) {
                             case LOAD_GAME -> load_game(servermsg.getGame());
-                            case ERROR -> notificationHandler.handleMessage(servermsg);
-                            case NOTIFICATION -> notificationHandler.handleMessage(servermsg);
+                            case ERROR -> notificationHandler.handleMessage(new Gson().fromJson(message, ErrorMessage.class));
+                            case NOTIFICATION -> notificationHandler.handleMessage(new Gson().fromJson(message, NotificationMessage.class));
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 }
             });
-            System.out.println("Message handler registered successfully");
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new ResponseException(ex.getMessage());
         }
@@ -54,12 +52,10 @@ public class WebSocketFacade extends Endpoint {
     // Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
-        System.out.println("WebSocket connection opened!");
     }
 
     public void load_game(ChessGame game) throws ResponseException {
         notificationHandler.updateGame(game);
-        System.out.println("Game loaded from server." + game.toString());
     }
 
     public void join(String authToken, Integer gameID) throws ResponseException {
@@ -73,8 +69,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void make_move(String authToken, Integer gameID, chess.ChessMove move) throws ResponseException {
         try {
-            System.out.println(authToken);
-            System.out.println(gameID);
+            System.out.println(move);
             var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
@@ -98,6 +93,10 @@ public class WebSocketFacade extends Endpoint {
         } catch (IOException ex) {
             throw new ResponseException(ex.getMessage());
         }
+    }
+
+    public void printCaret(){
+        notificationHandler.printCaret();
     }
 
 }

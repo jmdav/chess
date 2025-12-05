@@ -7,7 +7,6 @@ import chess.ChessGame.TeamColor;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
-
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -23,8 +22,9 @@ public class BoardRender {
     render(board, color, null, null);
   }
 
-  public static void render(ChessBoard board, TeamColor color, Collection<chess.ChessMove> highlights,
-      ChessPosition highlightOrigin) {
+  public static void render(ChessBoard board, TeamColor color,
+                            Collection<chess.ChessMove> highlights,
+                            ChessPosition highlightOrigin) {
     var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
     pieces = board.getBoard();
     out.print(ERASE_SCREEN);
@@ -36,8 +36,8 @@ public class BoardRender {
 
   private static void drawHeaders(PrintStream out, TeamColor color) {
 
-    String[] headers = { "   ", " A ", " B ", " C ", " D ",
-        " E ", " F ", " G ", " H ", "   " };
+    String[] headers = {"   ", " A ", " B ", " C ", " D ",
+                        " E ", " F ", " G ", " H ", "   "};
     for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES + 2; ++boardCol) {
       if (color == TeamColor.WHITE) {
         drawHeader(out, headers[boardCol]);
@@ -59,8 +59,9 @@ public class BoardRender {
     out.print(EMPTY.repeat(suffixLength));
   }
 
-  private static void drawChessBoard(PrintStream out, TeamColor color, Collection<chess.ChessMove> highlights,
-      ChessPosition highlightOrigin) {
+  private static void drawChessBoard(PrintStream out, TeamColor color,
+                                     Collection<chess.ChessMove> highlights,
+                                     ChessPosition highlightOrigin) {
     bgcolor = TeamColor.BLACK;
     int start;
     int end;
@@ -87,7 +88,9 @@ public class BoardRender {
   }
 
   private static void drawColumn(PrintStream out, ChessPiece[][] pieces,
-      int col, TeamColor color, Collection<chess.ChessMove> highlights, ChessPosition highlightOrigin) {
+                                 int col, TeamColor color,
+                                 Collection<chess.ChessMove> highlights,
+                                 ChessPosition highlightOrigin) {
     setContextColors(out);
     out.print(" " + (col + 1) + " ");
     alternateColor(out);
@@ -108,53 +111,54 @@ public class BoardRender {
     for (int i = colstart; i != colend; i += colstep) {
       alternateColor(out);
       ChessPiece piece = pieces[i][col];
-      if (piece == null) {
-        out.print(EMPTY);
-      } else {
+      if (piece != null) {
         TeamColor team = piece.getTeamColor();
         if (team == TeamColor.WHITE) {
           setWhite(out);
         } else {
           setBlack(out);
         }
-        if (highlights != null) {
-          for (ChessMove pos : highlights) {
-            if (pos.getEndPosition().equals(new ChessPosition(i + 1, col + 1))) {
-              out.print(SET_BG_COLOR_RED);
-            }
-            break;
-          }
-          if (highlightOrigin.equals(new ChessPosition(i + 1, col + 1))) {
-            out.print(SET_BG_COLOR_YELLOW);
-          }
-        }
-
-        switch (piece.getPieceType()) {
-          case PAWN:
-            out.print(team == TeamColor.BLACK ? BLACK_PAWN : WHITE_PAWN);
-            break;
-          case ROOK:
-            out.print(team == TeamColor.BLACK ? BLACK_ROOK : WHITE_ROOK);
-            break;
-          case BISHOP:
-            out.print(team == TeamColor.BLACK ? BLACK_BISHOP : WHITE_BISHOP);
-            break;
-          case KNIGHT:
-            out.print(team == TeamColor.BLACK ? BLACK_KNIGHT : WHITE_KNIGHT);
-            break;
-          case QUEEN:
-            out.print(team == TeamColor.BLACK ? BLACK_QUEEN : WHITE_QUEEN);
-            break;
-          case KING:
-            out.print(team == TeamColor.BLACK ? BLACK_KING : WHITE_KING);
-            break;
-          default:
-            out.print(EMPTY);
-        }
-        setBlack(out);
       }
-    }
 
+      if (highlights != null) {
+        for (ChessMove pos : highlights) {
+          if (pos.getEndPosition().equals(new ChessPosition(col + 1, i + 1))) {
+            out.print(SET_BG_COLOR_RED);
+          }
+        }
+        if (highlightOrigin.equals(new ChessPosition(col + 1, i + 1))) {
+          out.print(SET_BG_COLOR_YELLOW);
+        }
+      }
+      if (piece == null) {
+        out.print(EMPTY);
+      } else {
+        TeamColor team = piece.getTeamColor();
+        switch (piece.getPieceType()) {
+        case PAWN:
+          out.print(team == TeamColor.BLACK ? BLACK_PAWN : WHITE_PAWN);
+          break;
+        case ROOK:
+          out.print(team == TeamColor.BLACK ? BLACK_ROOK : WHITE_ROOK);
+          break;
+        case BISHOP:
+          out.print(team == TeamColor.BLACK ? BLACK_BISHOP : WHITE_BISHOP);
+          break;
+        case KNIGHT:
+          out.print(team == TeamColor.BLACK ? BLACK_KNIGHT : WHITE_KNIGHT);
+          break;
+        case QUEEN:
+          out.print(team == TeamColor.BLACK ? BLACK_QUEEN : WHITE_QUEEN);
+          break;
+        case KING:
+          out.print(team == TeamColor.BLACK ? BLACK_KING : WHITE_KING);
+          break;
+        default:
+          out.print(EMPTY);
+        }
+      }
+      setBlack(out);
+    }
     setContextColors(out);
     out.print(" " + (col + 1) + " ");
     out.println();

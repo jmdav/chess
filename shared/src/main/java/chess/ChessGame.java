@@ -24,6 +24,7 @@ public class ChessGame {
   }
 
   public Collection<ChessMove> getValidMoves(ChessPosition position) {
+    System.out.println(validMoves(position));
     return validMoves(position);
   }
 
@@ -31,13 +32,9 @@ public class ChessGame {
    * @return Which team's turn it is
    */
 
-  public TeamColor getTeamTurn() {
-    return teamTurn;
-  }
+  public TeamColor getTeamTurn() { return teamTurn; }
 
-  public boolean isActiveGame() {
-    return activeGame;
-  }
+  public boolean isActiveGame() { return activeGame; }
 
   public boolean endGame() {
     activeGame = false;
@@ -49,17 +46,13 @@ public class ChessGame {
    *
    * @param team the team whose turn it is
    */
-  public void setTeamTurn(TeamColor team) {
-    teamTurn = team;
-  }
+  public void setTeamTurn(TeamColor team) { teamTurn = team; }
 
   /**
    * Enum identifying the 2 possible teams in a chess game
    */
 
-  public enum TeamColor {
-    WHITE, BLACK
-  }
+  public enum TeamColor { WHITE, BLACK }
 
   /**
    * Gets a valid moves for a piece at the given location
@@ -74,7 +67,8 @@ public class ChessGame {
     HashSet<ChessMove> moves = new HashSet<ChessMove>();
     ChessPiece targetPiece = board.getPiece(startPosition);
     TeamColor targetColor = board.getPiece(startPosition).getTeamColor();
-    Collection<ChessMove> possibleMoves = targetPiece.pieceMoves(board, startPosition);
+    Collection<ChessMove> possibleMoves =
+        targetPiece.pieceMoves(board, startPosition);
     // System.out.println("Before elimination: " + possibleMoves);
     for (ChessMove move : possibleMoves) {
       ChessBoard hypothetical = new ChessBoard(board);
@@ -93,7 +87,8 @@ public class ChessGame {
    * @throws InvalidMoveException if move is invalid
    */
 
-  public boolean doesMovePlaceInCheck(TeamColor teamColor, ChessMove move, ChessBoard targetBoard) {
+  public boolean doesMovePlaceInCheck(TeamColor teamColor, ChessMove move,
+                                      ChessBoard targetBoard) {
     ChessPiece piece = targetBoard.popPiece(move.getStartPosition());
     targetBoard.addPiece(move.getEndPosition(), piece);
     return isInCheck(teamColor, targetBoard);
@@ -112,11 +107,13 @@ public class ChessGame {
         piece = board.popPiece(move.getStartPosition());
 
         if (move.getPromotionPiece() != null) {
-          piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+          piece =
+              new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
         }
 
         board.addPiece(move.getEndPosition(), piece);
-        this.teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+        this.teamTurn =
+            (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
         System.out.println(teamTurn);
         return;
       }
@@ -142,7 +139,8 @@ public class ChessGame {
 
     for (int row = 0; row < targetBoard.length(); row++) {
       for (int col = 0; col < targetBoard.length(); col++) {
-        ChessPiece piece = targetBoard.getPiece(new ChessPosition(row + 1, col + 1));
+        ChessPiece piece =
+            targetBoard.getPiece(new ChessPosition(row + 1, col + 1));
         if (piece == null) {
           continue;
         }
@@ -221,25 +219,21 @@ public class ChessGame {
    *
    * @param board the new board to use
    */
-  public void setBoard(ChessBoard board) {
-    this.board = board;
-  }
+  public void setBoard(ChessBoard board) { this.board = board; }
 
   /**
    * Gets the current chessboard
    *
    * @return the chessboard
    */
-  public ChessBoard getBoard() {
-    return board;
-  }
+  public ChessBoard getBoard() { return board; }
 
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ChessGame chessGame = (ChessGame) o;
+    ChessGame chessGame = (ChessGame)o;
     return teamTurn == chessGame.teamTurn &&
         Objects.equals(board, chessGame.board);
   }
@@ -251,8 +245,7 @@ public class ChessGame {
 
   @Override
   public String toString() {
-    return "ChessGame{" +
-        "teamTurn=" + teamTurn +
-        ", board=\n" + board.toString();
+    return "ChessGame{"
+        + "teamTurn=" + teamTurn + ", board=\n" + board.toString();
   }
 }

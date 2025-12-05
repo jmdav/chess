@@ -141,12 +141,12 @@ public class WebSocketHandler
       AuthData sessionData = userService.getSession(authToken);
       ChessGame game = gameService.getGameById(gameID).game();
       TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
-      if (color != game.getTeamTurn()) {
-        connections.send(session, gameID, new ErrorMessage("Error: Not active player"));
-        return;
-      }
       if (game.isActiveGame() == false) {
         connections.send(session, gameID, new ErrorMessage("Error: Game has ended"));
+        return;
+      }
+      if (color != game.getTeamTurn()) {
+        connections.send(session, gameID, new ErrorMessage("Error: Not active player"));
         return;
       }
       try {

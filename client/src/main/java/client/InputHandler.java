@@ -2,6 +2,7 @@ package client;
 
 import chess.ChessGame;
 import chess.ChessGame.TeamColor;
+import chess.ChessPosition;
 import client.errors.ResponseException;
 import client.websocket.WebSocketFacade;
 import java.util.List;
@@ -22,6 +23,10 @@ public class InputHandler {
   public InputHandler(ServerFacade server, WebSocketFacade socket) {
     this.server = server;
     this.socket = socket;
+    this.game = new ChessGame();
+    BoardRender.render(game.getBoard(), color,
+                       game.getValidMoves(new ChessPosition(2, 2)),
+                       new ChessPosition(2, 2));
   }
 
   public HandlerResponse parseSignedOut(SessionData data, String in)
@@ -236,14 +241,13 @@ public class InputHandler {
       }
       socket.resign(data.authToken(), gameID);
       out = "You have resigned from the game.";
-      data = new SessionData(data.authToken(), data.username(), State.SIGNEDIN);
       break;
 
     case "i":
     case "highlight":
-      if (tokens.length < 3) {
+      if (tokens.length < 2) {
         throw new ResponseException(
-            "Error: insufficient arguments. Expected <piece position>)");
+            "Error: insufficient arguments. Expected <piece position>");
       }
       chess.ChessPosition position = parsePosition(tokens[1]);
       BoardRender.render(game.getBoard(), color, game.getValidMoves(position),
@@ -290,8 +294,8 @@ public class InputHandler {
       throw new ResponseException(
           "Error: invalid position. Expected <column><row> (e.g. d4)");
     }
-    int col = Character.getNumericValue(pos.charAt(0)) - 9;
-    int row = Character.getNumericValue(pos.charAt(1));
+    int row = Character.getNumericValue(pos.charAt(0)) - 9;
+    int col = Character.getNumericValue(pos.charAt(1));
 
     return new chess.ChessPosition(col, row);
   }
@@ -315,5 +319,6 @@ public class InputHandler {
   void updateGame(ChessGame game) {
     this.game = game;
     BoardRender.render(game.getBoard(), color);
+    socket.printCaret();
   }
 }
