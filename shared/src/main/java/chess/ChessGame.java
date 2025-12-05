@@ -23,6 +23,10 @@ public class ChessGame {
     board.resetBoard();
   }
 
+  public Collection<ChessMove> getValidMoves(ChessPosition position) {
+    return validMoves(position);
+  }
+
   /**
    * @return Which team's turn it is
    */
