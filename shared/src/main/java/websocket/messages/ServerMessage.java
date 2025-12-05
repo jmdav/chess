@@ -55,4 +55,8 @@ public class ServerMessage {
     return serverMessageType;
   }
 
+  public String getMessage() {
+    return this.message;
+  }
+
 }
