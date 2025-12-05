@@ -74,15 +74,15 @@ public class WebSocketHandler
       } else {
         message = String.format("%s has joined the game as an observer.", sessionData.username());
       }
-      connections.add(session);
-      connections.send(session, new LoadGameMessage(gameService.getGameById(gameID).game()));
+      connections.add(session, gameID);
+      connections.send(session, gameID, new LoadGameMessage(gameService.getGameById(gameID).game()));
       System.out.println(message);
       var notification = new NotificationMessage(message);
-      connections.broadcast(session, notification);
+      connections.broadcast(session, gameID, notification);
     } catch (IndexOutOfBoundsException e) {
-      connections.send(session, new ErrorMessage("Error: Game not found"));
+      connections.send(session, gameID, new ErrorMessage("Error: Game not found"));
     } catch (DataAccessException e) {
-      connections.send(session, new ErrorMessage("Error: Unauthorized"));
+      connections.send(session, gameID, new ErrorMessage("Error: Unauthorized"));
     }
   }
 
@@ -99,10 +99,10 @@ public class WebSocketHandler
         message = String.format("%s (observer) has left the game.", sessionData.username());
       }
       var notification = new NotificationMessage(message);
-      connections.broadcast(session, notification);
+      connections.broadcast(session, gameID, notification);
       connections.remove(session);
     } catch (DataAccessException e) {
-      connections.send(session, new ErrorMessage("Error: Unauthorized"));
+      connections.send(session, gameID, new ErrorMessage("Error: Unauthorized"));
     }
   }
 
@@ -113,7 +113,7 @@ public class WebSocketHandler
       TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
       var message = "";
       if (game.isActiveGame() == false) {
-        connections.send(session, new ErrorMessage("Error: Game has already ended."));
+        connections.send(session, gameID, new ErrorMessage("Error: Game has already ended."));
         return;
       }
       if (color != null) {
@@ -121,17 +121,17 @@ public class WebSocketHandler
             color.toString().toLowerCase());
         game.endGame();
       } else {
-        connections.send(session, new ErrorMessage("Error: Observers cannot resign. Try [L]eave"));
+        connections.send(session, gameID, new ErrorMessage("Error: Observers cannot resign. Try [L]eave"));
         return;
       }
       var notification = new NotificationMessage(message);
       gameService.updateGameData(gameID, game);
-      connections.broadcast(null, notification);
+      connections.broadcast(null, gameID, notification);
       // connections.broadcast(null, new
       // LoadGameMessage(gameService.getGameById(gameID).game()));
 
     } catch (DataAccessException e) {
-      connections.send(session, new ErrorMessage("Error: Unauthorized"));
+      connections.send(session, gameID, new ErrorMessage("Error: Unauthorized"));
     }
   }
 
@@ -143,11 +143,11 @@ public class WebSocketHandler
       ChessGame game = gameService.getGameById(gameID).game();
       TeamColor color = gameService.getColorByUsername(gameService.getGameById(gameID), sessionData.username());
       if (color != game.getTeamTurn()) {
-        connections.send(session, new ErrorMessage("Error: Not active player"));
+        connections.send(session, gameID, new ErrorMessage("Error: Not active player"));
         return;
       }
       if (game.isActiveGame() == false) {
-        connections.send(session, new ErrorMessage("Error: Game has ended"));
+        connections.send(session, gameID, new ErrorMessage("Error: Game has ended"));
         return;
       }
       try {
@@ -155,7 +155,7 @@ public class WebSocketHandler
         game.makeMove(moveData);
         System.out.println("Post move: " + game.getTeamTurn());
       } catch (InvalidMoveException e) {
-        connections.send(session, new ErrorMessage("Error: Invalid move"));
+        connections.send(session, gameID, new ErrorMessage("Error: Invalid move"));
         return;
       }
       System.out.println("Pre announce: " + game.getTeamTurn());
@@ -183,15 +183,15 @@ public class WebSocketHandler
       System.out.println("Pre update: " + game.getTeamTurn());
       gameService.updateGameData(gameID, game);
       System.out.println("Post update: " + game.getTeamTurn());
-      connections.broadcast(null, new LoadGameMessage(game));
-      connections.broadcast(session, message);
+      connections.broadcast(null, gameID, new LoadGameMessage(game));
+      connections.broadcast(session, gameID, message);
 
       if (!checkMessage.isEmpty()) {
-        connections.broadcast(null, new NotificationMessage(checkMessage));
+        connections.broadcast(null, gameID, new NotificationMessage(checkMessage));
       }
 
     } catch (DataAccessException e) {
-      connections.send(session, new ErrorMessage("Error:" + e.getMessage()));
+      connections.send(session, gameID, new ErrorMessage("Error:" + e.getMessage()));
     }
   }
 

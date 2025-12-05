@@ -6,17 +6,18 @@ import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.*;
 
 public class ConnectionManager {
-  public final ConcurrentHashMap<Session, Session> connections = new ConcurrentHashMap<>();
 
-  public void add(Session session) {
-    connections.put(session, session);
+  public final ConcurrentHashMap<Session, Integer> connections = new ConcurrentHashMap<>();
+
+  public void add(Session session, Integer gameID) {
+    connections.put(session, gameID);
   }
 
   public void remove(Session session) {
     connections.remove(session);
   }
 
-  public void send(Session session, ServerMessage message)
+  public void send(Session session, Integer gameID, ServerMessage message)
       throws IOException {
     if (session.isOpen()) {
       String msg = message.toString();
@@ -24,11 +25,11 @@ public class ConnectionManager {
     }
   }
 
-  public void broadcast(Session excludeSession, ServerMessage notification)
+  public void broadcast(Session excludeSession, Integer gameID, ServerMessage notification)
       throws IOException {
     String msg = notification.toString();
-    for (Session c : connections.values()) {
-      if (c.isOpen()) {
+    for (Session c : connections.keySet()) {
+      if (c.isOpen() && connections.get(c).equals(gameID)) {
         if (!c.equals(excludeSession)) {
           c.getRemote().sendString(msg);
         }
