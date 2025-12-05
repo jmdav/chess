@@ -25,8 +25,10 @@ public class WebSocketFacade extends Endpoint {
             URI socketURI = new URI(url + "/ws");
             this.notificationHandler = notificationHandler;
 
+            System.out.println("Connecting to WebSocket at: " + socketURI);
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
+            System.out.println("WebSocket connected, adding message handler...");
 
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
@@ -44,6 +46,7 @@ public class WebSocketFacade extends Endpoint {
                     }
                 }
             });
+            System.out.println("Message handler registered successfully");
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new ResponseException(ex.getMessage());
         }
@@ -52,6 +55,7 @@ public class WebSocketFacade extends Endpoint {
     // Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+        System.out.println("WebSocket connection opened!");
     }
 
     public void load_game(ChessGame game) throws ResponseException {

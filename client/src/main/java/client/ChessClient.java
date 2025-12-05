@@ -59,6 +59,7 @@ public class ChessClient implements ServerMessageHandler {
 
   @Override
   public void handleMessage(ServerMessage notification) {
+    System.out.println("\n--- Notification from server ---");
     switch (notification.getServerMessageType()) {
       case ERROR ->
         System.out.println("Error from server: " + ((ErrorMessage) notification).getErrorMessage());

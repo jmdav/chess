@@ -145,6 +145,7 @@ public class InputHandler {
                 "Error: invalid color. Expected <gameID> <color (W or B)>");
         }
         server.joinGame(data, gameID, color);
+        socket.join(data.authToken(), gameID);
         out = "Game " + tokens[1] + " joined as " + color;
         this.color = color;
         data = new SessionData(data.authToken(), data.username(), State.INGAME);
@@ -158,6 +159,7 @@ public class InputHandler {
         }
         Integer observeGameID = listToGameID(tokens[1]);
         out = server.observeGame(data, observeGameID);
+        socket.join(data.authToken(), observeGameID);
         this.color = TeamColor.WHITE;
         data = new SessionData(data.authToken(), data.username(), State.INGAME);
         break;

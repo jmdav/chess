@@ -117,14 +117,16 @@ public class BoardRender {
         } else {
           setBlack(out);
         }
-        for (ChessMove pos : highlights) {
-          if (pos.getEndPosition().equals(new ChessPosition(i + 1, col + 1))) {
-            out.print(SET_BG_COLOR_RED);
+        if (highlights != null) {
+          for (ChessMove pos : highlights) {
+            if (pos.getEndPosition().equals(new ChessPosition(i + 1, col + 1))) {
+              out.print(SET_BG_COLOR_RED);
+            }
+            break;
           }
-          break;
-        }
-        if (highlightOrigin.equals(new ChessPosition(i + 1, col + 1))) {
-          out.print(SET_BG_COLOR_YELLOW);
+          if (highlightOrigin.equals(new ChessPosition(i + 1, col + 1))) {
+            out.print(SET_BG_COLOR_YELLOW);
+          }
         }
 
         switch (piece.getPieceType()) {

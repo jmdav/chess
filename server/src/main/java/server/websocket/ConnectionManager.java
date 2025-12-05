@@ -19,9 +19,15 @@ public class ConnectionManager {
 
   public void send(Session session, Integer gameID, ServerMessage message)
       throws IOException {
-    if (session.isOpen()) {
+    System.out.println("ConnectionManager.send called - session: " + session + ", isOpen: "
+        + (session != null ? session.isOpen() : "null"));
+    if (session != null && session.isOpen()) {
       String msg = message.toString();
+      System.out.println("Sending message: " + msg);
       session.getRemote().sendString(msg);
+      System.out.println("Message sent successfully");
+    } else {
+      System.out.println("Cannot send - session is " + (session == null ? "null" : "closed"));
     }
   }
 
