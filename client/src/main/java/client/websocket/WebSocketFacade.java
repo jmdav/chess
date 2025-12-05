@@ -1,42 +1,41 @@
 package client.websocket;
 
-import com.google.gson.Gson;
-
 import chess.ChessGame;
 import client.errors.ResponseException;
-import websocket.commands.*;
-import websocket.messages.*;
-
+import com.google.gson.Gson;
 import jakarta.websocket.*;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import websocket.commands.*;
+import websocket.messages.*;
 
-//need to extend Endpoint for websocket to work properly
+// need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
 
-    Session session;
-    ServerMessageHandler notificationHandler;
+  Session session;
+  ServerMessageHandler notificationHandler;
 
-    public WebSocketFacade(String url, ServerMessageHandler notificationHandler) throws ResponseException {
-        try {
-            url = url.replace("http", "ws");
-            URI socketURI = new URI(url + "/ws");
-            this.notificationHandler = notificationHandler;
+  public WebSocketFacade(String url, ServerMessageHandler notificationHandler)
+      throws ResponseException {
+    try {
+      url = url.replace("http", "ws");
+      URI socketURI = new URI(url + "/ws");
+      this.notificationHandler = notificationHandler;
 
-            System.out.println("Connecting to WebSocket at: " + socketURI);
-            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            this.session = container.connectToServer(this, socketURI);
-            System.out.println("WebSocket connected, adding message handler...");
+      System.out.println("Connecting to WebSocket at: " + socketURI);
+      WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+      this.session = container.connectToServer(this, socketURI);
+      System.out.println("WebSocket connected, adding message handler...");
 
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-                @Override
-                public void onMessage(String message) {
-                    System.out.println("Websocket message received");
-                    try {
-                        ServerMessage servermsg = new Gson().fromJson(message, ServerMessage.class);
-                        switch (servermsg.getServerMessageType()) {
+        @Override
+        public void onMessage(String message) {
+          System.out.println("Websocket message received");
+          try {
+            ServerMessage servermsg =
+                new Gson().fromJson(message, ServerMessage.class);
+            switch (servermsg.getServerMessageType()) {
                             case LOAD_GAME -> load_game(servermsg.getGame());
                             case ERROR -> notificationHandler.handleMessage(servermsg);
                             case NOTIFICATION -> notificationHandler.handleMessage(servermsg);
@@ -74,6 +73,8 @@ public class WebSocketFacade extends Endpoint {
 
     public void make_move(String authToken, Integer gameID, chess.ChessMove move) throws ResponseException {
         try {
+            System.out.println(authToken);
+            System.out.println(gameID);
             var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {

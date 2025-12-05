@@ -1,10 +1,9 @@
 package server.websocket;
 
-import com.google.gson.Gson;
-
 import chess.ChessGame;
-import chess.InvalidMoveException;
 import chess.ChessGame.TeamColor;
+import chess.InvalidMoveException;
+import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
@@ -12,16 +11,14 @@ import io.javalin.websocket.WsConnectContext;
 import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
+import java.io.IOException;
 import model.AuthData;
 import model.GameRequestData;
-
-import java.io.IOException;
-
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.commands.UserGameCommand;
-import websocket.messages.*;
 import service.GameService;
 import service.UserService;
+import websocket.commands.UserGameCommand;
+import websocket.messages.*;
 
 public class WebSocketHandler
     implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
@@ -46,7 +43,8 @@ public class WebSocketHandler
   public void handleMessage(WsMessageContext ctx) {
     System.out.println("Websocket message received");
     try {
-      UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
+      UserGameCommand action =
+          new Gson().fromJson(ctx.message(), UserGameCommand.class);
       switch (action.getCommandType()) {
         case CONNECT -> join(action.getAuthToken(), action.getGameID(), ctx.session);
         case MAKE_MOVE -> processMove(action.getAuthToken(), action.getGameID(), action.getMove(), ctx.session);
