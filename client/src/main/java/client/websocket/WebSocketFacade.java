@@ -35,7 +35,7 @@ public class WebSocketFacade extends Endpoint {
             ServerMessage servermsg =
                 new Gson().fromJson(message, ServerMessage.class);
             switch (servermsg.getServerMessageType()) {
-                            case LOAD_GAME -> load_game(servermsg.getGame());
+                            case LOAD_GAME -> loadGame(servermsg.getGame());
                             case ERROR -> notificationHandler.handleMessage(new Gson().fromJson(message, ErrorMessage.class));
                             case NOTIFICATION -> notificationHandler.handleMessage(new Gson().fromJson(message, NotificationMessage.class));
                         }
@@ -54,7 +54,7 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void load_game(ChessGame game) throws ResponseException {
+    public void loadGame(ChessGame game) throws ResponseException {
         notificationHandler.updateGame(game);
     }
 
@@ -67,7 +67,7 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void make_move(String authToken, Integer gameID, chess.ChessMove move) throws ResponseException {
+    public void makeMove(String authToken, Integer gameID, chess.ChessMove move) throws ResponseException {
         try {
             //System.out.println(move);
             var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);

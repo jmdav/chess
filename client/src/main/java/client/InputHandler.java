@@ -223,7 +223,7 @@ public class InputHandler {
         move = new chess.ChessMove(parsePosition(tokens[1]),
                                    parsePosition(tokens[2]), null);
       }
-      socket.make_move(data.authToken(), gameID, move);
+      socket.makeMove(data.authToken(), gameID, move);
       // out = "Move made: " + move.toString();
       break;
 
