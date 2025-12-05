@@ -75,7 +75,7 @@ public class WebSocketHandler
         message = String.format("%s has joined the game as an observer.", sessionData.username());
       }
       connections.add(session, gameID);
-      connections.send(session, gameID, new LoadGameMessage(gameService.getGameById(gameID).game()));
+      connections.send(null, gameID, new LoadGameMessage(gameService.getGameById(gameID).game()));
       System.out.println(message);
       var notification = new NotificationMessage(message);
       connections.broadcast(session, gameID, notification);

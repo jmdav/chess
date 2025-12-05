@@ -55,7 +55,7 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void load_game(ChessGame game) throws ResponseException {
-
+        notificationHandler.updateGame(game);
     }
 
     public void join(String authToken, Integer gameID) throws ResponseException {

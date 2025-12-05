@@ -304,4 +304,9 @@ public class InputHandler {
     }
     return gameID;
   }
+
+  void updateGame(ChessGame game) {
+    this.game = game;
+    BoardRender.render(game.getBoard(), color);
+  }
 }
