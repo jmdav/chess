@@ -2,6 +2,7 @@ package client.websocket;
 
 import com.google.gson.Gson;
 
+import chess.ChessGame;
 import client.errors.ResponseException;
 import websocket.commands.*;
 import websocket.messages.*;
@@ -16,9 +17,9 @@ import java.net.URISyntaxException;
 public class WebSocketFacade extends Endpoint {
 
     Session session;
-    NotificationHandler notificationHandler;
+    ServerMessageHandler notificationHandler;
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException {
+    public WebSocketFacade(String url, ServerMessageHandler notificationHandler) throws ResponseException {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -27,12 +28,20 @@ public class WebSocketFacade extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
 
-            // set message handler
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
-                    notificationHandler.notify(notification);
+                    System.out.println("Websocket message received");
+                    try {
+                        ServerMessage servermsg = new Gson().fromJson(message, ServerMessage.class);
+                        switch (servermsg.getCommandType()) {
+                            case LOAD_GAME -> load_game(servermsg.getGame());
+                            case ERROR -> notificationHandler.notify(message);
+                            case NOTIFICATION -> resign(servermsg.getAuthToken(), servermsg.getGameID(), ctx.session);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -43,6 +52,10 @@ public class WebSocketFacade extends Endpoint {
     // Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
+
+    public void load_game(ChessGame game) throws ResponseException {
+
     }
 
     public void join(String authToken, Integer gameID) throws ResponseException {

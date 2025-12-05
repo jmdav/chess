@@ -1,13 +1,14 @@
 package client;
 
 import client.errors.ResponseException;
-import client.websocket.NotificationHandler;
+import client.websocket.ServerMessageHandler;
 import client.websocket.WebSocketFacade;
 import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
 
-public class ChessClient implements NotificationHandler {
+public class ChessClient implements ServerMessageHandler {
 
   private HandlerResponse response;
   private String in;
@@ -54,8 +55,9 @@ public class ChessClient implements NotificationHandler {
     scanner.close();
   }
 
-  public void notify(NotificationMessage notification) {
-    System.out.println(notification.getMessage());
+  @Override
+  public void handleMessage(ServerMessage notification) {
+    System.out.println(notification.message);
     printCaret();
   }
 

@@ -28,4 +28,8 @@ public class LoadGameMessage extends ServerMessage {
     return this.game;
   }
 
+  public String getMessage() {
+    return message;
+  }
+
 }
